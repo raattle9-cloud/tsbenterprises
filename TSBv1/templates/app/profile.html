@@ -1,0 +1,70 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %} Login {% endblock title %}
+
+{% block main-content %}
+<br><br>
+<br><br>
+    <div class="container col-11">
+        <div class="row">
+            {% if user.is_authenticated %}
+                <div class="col-sm-2">
+                    <ul class= "list-unstyled">
+                        <li class="d-grid my-1"><a href="{% url 'profile' %}" class="btn btn-success">Update Profile</a></li>
+                        <li class="d-grid my-1"><a href="{% url 'payments' %}" class="btn">Payments</a></li>
+                    </ul>
+                </div>
+            {% else %}
+                <div class="col-lg-8 offset-lg-2 my-3">
+                    <div class="card border-1">
+                        <div class="card-body">
+                            <p class="card-text text-center">Please Login to update the profile</p>
+                            <ul class="list-unstyled text-center">
+                                <li class="d-grid my-1"><a href="{% url 'customerlogin' %}" class="btn btn-success w-50 mx-auto">Login</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endif%}
+            {% if user.is_authenticated %}
+            <div class="col-md-6 offset-md-2">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {% for fm in form %}
+                        {{ fm.label_tag }}
+                        {{ fm }}
+                        <div class="text-danger">
+                            {{ fm.errors }}
+                        </div><br>  
+                    {% endfor %}
+                    <div class="col-12">
+                        <input type="submit" class="btn btn-success w-50 border bottom-shadow" value="Submit">
+                    </div>  
+                    <br>
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <p class="text-danger text-center" id="message">{{ error }}</p>
+                                <script>
+                                    setTimeout(function() {
+                                        document.getElementById('message').style.display = 'none';
+                                    }, 5000);
+                                </script>
+                        {% endfor %}
+                    {% endif %}  
+
+                    {% if messages %}
+                        {% for msg in messages %}
+                                <div class="alert alert-{{msg.tags}}" role="alert">
+                                    {{msg}}
+                                </div>
+                        {% endfor %}
+                    {% endif %}
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+
+{% endblock main-content %}
+

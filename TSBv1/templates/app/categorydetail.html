@@ -1,0 +1,65 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %} Details {% endblock title %}
+
+{% block main-content %}
+<br/><br/>
+    <div class="container border bottom-shadow">
+        <div class="row flex justify-content-between">
+            <div class="img2 col-lg-6 mt-5">
+                <img src="{{ services.service_image.url }}" class="image col-xs-6 col-sm-12 col-lg-12 mt-3 text-sm-center w-100 h-75" alt="NO"/>
+            </div>
+            <div class="servicedetail col-lg-5">
+                <br>
+                <h1 style="font-family: 'Poppins', sans-serif; font-size:50px">
+                    {{ services.title }}
+                </h1>
+                <h3 style="color: #000;">
+                    RS.{{ services.discounted_price }}/-
+                </h3>
+                <del class="text-fluid">
+                    <h5 class="fw-light">
+                        <del style="color: red;">
+                            {{ services.selling_price }}
+                        </del>
+                    </h5>
+                </del>
+                <p>
+                    <li>Address:
+                        {{ services.description }}
+                    </li>
+                    <li>Note:
+                        {{ services.composition }}
+                    </li>
+                    
+                    
+                </p>
+                <br>
+                
+                <form action ="/add-to-cart" class ="d-inline">
+                    <input type="hidden" name="serv_id" value="{{services.id}}">
+                    <button type="submit" class="btn btn-primary shadow px-5 py-2 ">Add to Cart</button>
+                </form>
+
+                <a href="{% url 'showcart' %}" class=" btn btn-warning shadow px-5 py-2 ms-4">Buy Now</a>
+                <br>
+                
+            </div>
+        </div>
+        <li class="list-unstyled"><br><br>
+            <p>
+            <button class="btn btn-warning w-50 mz-3" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            Note
+              </button>
+            </p>
+            <div class="collapse" id="collapseExample">
+                <div class="card card-body">
+                    {{ services.servapp }}
+                </div>
+                <br>
+            </div>
+        </li>
+    </div>
+<br><br>
+
+{% endblock main-content %}

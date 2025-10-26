@@ -1,0 +1,27 @@
+--------Gunicorn SERVICE---------
+[Unit]
+Description= Gunicorn Daemon for TSB
+After =network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/TSBEnterprises/TSB
+Environment="Path=/home/ubuntu/TSBEnterprises/TSB/venv/bin"
+ExecStart=/home/ubuntu/TSBEnterprises/TSB/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/ubuntu/TSBEnterprises/TSB/TSB/TSB.sock TSB.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+----Gunicorn Socket-----
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=/run/gunicorn.sock
+
+[Install]
+WantedBy=sockets.target
+------------------------------------

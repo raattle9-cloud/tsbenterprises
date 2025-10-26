@@ -1,0 +1,82 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %} Details {% endblock title %}
+
+{% block main-content %}
+<br/><br/>
+<!-- About 7 - Bootstrap Brain Component -->
+<section class="py-3 py-md-5 py-xl-8">
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6">
+                <h2 class="mb-4 display-5 text-center">Terms and Conditions</h2>
+                <p class="text-secondary mb-5 text-center lead fs-9">Welcome to Go Waterpark TSB! Please read our Terms and Conditions carefully before using our services.</p>
+                <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row gy-4 gy-lg-0 align-items-lg-center">
+            <div class="col-12 col-lg-6">
+                <img class="img-fluid" loading="lazy" src="{% static 'app/images/product/tsb_logo.png' %}" alt="TSB Logo">
+            </div>
+            <div class="col-12 col-lg-6 col-xxl-6">
+                <div class="row justify-content-lg-end">
+                    <div class="col-12 col-lg-11">
+                        <div class="about-wrapper">
+                            <div class="mb-4 mb-md-5">
+                                <h5 class="fw-bold">Terms and Conditions</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-3">
+                                        <strong>1.1 Acceptance of Terms:</strong> By accessing or purchasing from this website, you agree to these Terms.
+                                    </li>
+                                    <li class="mb-3">
+                                        <strong>1.2 Ticket Purchase:</strong> Tickets are subject to availability and grant access for the specified date. Prices may change without notice.
+                                    </li>
+                                    <li class="mb-3">
+                                        <strong>1.3 Use of Services:</strong> Misuse of our services or disruption of park operations is prohibited.
+                                    </li>
+                                    <li class="mb-3">
+                                        <strong>1.4 Safety and Conduct:</strong> Follow park rules and safety guidelines. We reserve the right to deny entry for inappropriate behavior.
+                                    </li>
+                                    <li class="mb-3">
+                                        <strong>1.5 Liability:</strong> We are not liable for personal injury, loss, or damage during your visit.
+                                    </li>
+                                    <li>
+                                        <strong>1.6 Changes to Terms:</strong> We may modify these Terms at any time. Continued use constitutes acceptance of changes.
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="row gy-4 mb-4 mb-md-5">
+                                <div class="col-12 col-md-6">
+                                    <div class="card border border-dark">
+                                        <div class="card-body p-4">
+                                            <h3 class="display-5 fw-bold text-success text-center mb-2">370+</h3>
+                                            <p class="fw-bold text-center m-0">Qualified Experts</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="card border border-dark">
+                                        <div class="card-body p-4">
+                                            <h3 class="display-5 fw-bold text-success text-center mb-2">1Lakh+</h3>
+                                            <p class="fw-bold text-center m-0">Satisfied Clients</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="#!" class="btn btn-success">
+                                Explore
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock main-content %}

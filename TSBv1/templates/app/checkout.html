@@ -1,0 +1,52 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %} Details {% endblock title %}
+
+{% block main-content %}
+<br/><br/>
+
+
+    {% if cart %}
+    <div class="container my-7">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Checkout</h5>
+                        <ul class="list-group list-group-flush">
+                            {% for item in cart %}
+                                <h5>{{ item.title }} </h5> <span style="float: right;">x1</span>
+                                <li class="list-group-item">Item 2 <span style="float: right;">x1</span></li>
+                                <li class="list-group-item">Item 3 <span style="float: right;">x1</span></li>
+                            {% endfor %}
+                            <!-- Add more items as needed -->
+                            <li class="list-group-item">Amount: ${{ item.amount }}</li>
+                            <li class="list-group-item">Total Amount: ${{ total_amount }}</li>
+                            <li class="list-group-item">GST: $40</li>
+                        </ul>
+                        <form action="#" method="post" class="mt-3">
+                            {% csrf_token %}
+                            <button type="submit" class="btn buttonshadow btn-primary btn-block">Proceed to Payment</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="container my-7">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Your cart is empty</h5>
+                        <p class="card-text text-center">Please add items to your cart before proceeding to checkout.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+{% endblock main-content %}
+

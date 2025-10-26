@@ -1,0 +1,21 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %} Payments and Trasactions {% endblock title %}
+
+{% block main-content %}
+<br><br><br><br>
+    <div class="container col-11">
+        <div class="row">
+            <div class="col-sm-2">
+                <ul class= "list-unstyled">
+                    <li class="d-grid my-1"><a href="{% url 'profile' %}" class="btn">Update Profile</a></li>
+                    <li class="d-grid my-1"><a href="{% url 'payments' %}" class="btn btn-success">Payments</a></li>
+                </ul>
+            </div>
+
+
+        </div>
+    </div>
+
+
+{% endblock main-content %}

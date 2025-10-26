@@ -1,0 +1,45 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %} Category {% endblock title %}
+
+{% block main-content %}
+    <br/>
+    <div class="container my-5 border-bottom shadow">
+        <div class="row">
+            <div class="col-sm-3 my-3">
+                <h3>names:</h3><br>
+                <div class="list-group">
+                    {% for val in title %}
+                        <a href="{% url 'category-title' val.title %}" class="list-group-item list-group-item-action">{{ val.title }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-sm-9 border-bottom shadow">
+                <div class="row">
+                    {% for serv in services %}
+                    <div class="col text-center mb-4">
+                        <a href="{% url 'category-detail' serv.id %}" class="btn">
+                            <div>
+                                <img src="{{ serv.service_image.url }}" width="300px" height="200px" alt="NO">
+                                <div class="fw-bold">
+                                    {{ serv.title }}
+                                </div>
+                                <div class="fw-bold text-danger">
+                                    <h3>RS.{{serv.discounted_price}}/-</h3>
+                                    <del class="text-fluid">
+                                        <h5 class="fw-light">
+                                            <del>{{ serv.selling_price }}</del>
+                                        </h5>
+                                    </del>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock main-content %}
+

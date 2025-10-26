@@ -1,0 +1,59 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %} Customer registration {% endblock title %}
+
+{% block main-content %}
+<br><br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Customer Registration</h3>
+                        <hr>
+
+                        <form action="#" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                        
+                            {% for field in form %}
+                                <div class="form-group">
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                    <div class="text-danger">{{ field.errors }}</div>
+                                </div>
+                            {% endfor %}
+                            <input type="submit" class="btn btn-success border bottom-shadow" value="Register">
+                            <br>
+                        </form>
+                        <br>
+                        <div class="card-footer text-center border bottom-shadow p-2">
+                            <a href="{% url 'customerlogin' %}">Already have an account? <span class="text-success">Login</span></a>
+                            <br>
+                        </div>
+                        {% if form.non_field_errors %}
+                            {% for error in form.non_field_errors %}
+                            <p class="text-danger" id="message">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                        {% if messages %}
+                            {% for msg in messages %}
+                            <p class="alert alert-{{msg.tags}}" role="alert" id="message">{{ msg }}</p>
+                            {% endfor %}
+                        {% endif %}
+                        <script>
+                            setTimeout(function() {
+                                var message = document.getElementById('message');
+                                if (message) {
+                                    message.style.display = 'none';
+                                }
+                            }, 5000);
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<br><br>
+
+{% endblock main-content %}
+
