@@ -254,16 +254,6 @@ input[type="submit"], button {
         align-items: center;
     }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/responsive.css
-=======
-<<<<<<< HEAD
-    .selector .selector-filter label {
-        margin: 0 8px 0 0;
-    }
-
-=======
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/responsive.css
     .selector .selector-filter input {
         width: 100%;
         min-height: 0;
@@ -283,37 +273,7 @@ input[type="submit"], button {
         margin-bottom: 5px;
     }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/responsive.css
     .selector-chooseall, .selector-clearall {
-=======
-<<<<<<< HEAD
-    .selector ul.selector-chooser {
-        width: 26px;
-        height: 52px;
-        padding: 2px 0;
-        border-radius: 20px;
-        transform: translateY(-10px);
-    }
-
-    .selector-add, .selector-remove {
-        width: 20px;
-        height: 20px;
-        background-size: 20px auto;
-    }
-
-    .selector-add {
-        background-position: 0 -120px;
-    }
-
-    .selector-remove {
-        background-position: 0 -80px;
-    }
-
-    a.selector-chooseall, a.selector-clearall {
-=======
-    .selector-chooseall, .selector-clearall {
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/responsive.css
         align-self: center;
     }
 
@@ -335,14 +295,6 @@ input[type="submit"], button {
     }
 
     .stacked ul.selector-chooser {
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/responsive.css
-=======
-<<<<<<< HEAD
-        width: 52px;
-        height: 26px;
-=======
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/responsive.css
         padding: 0 2px;
         transform: none;
     }
@@ -351,48 +303,6 @@ input[type="submit"], button {
         padding: 3px;
     }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/responsive.css
-=======
-<<<<<<< HEAD
-    .stacked .selector-add, .stacked .selector-remove {
-        background-size: 20px auto;
-    }
-
-    .stacked .selector-add {
-        background-position: 0 -40px;
-    }
-
-    .stacked .active.selector-add {
-        background-position: 0 -40px;
-    }
-
-    .active.selector-add:focus, .active.selector-add:hover {
-        background-position: 0 -140px;
-    }
-
-    .stacked .active.selector-add:focus, .stacked .active.selector-add:hover {
-        background-position: 0 -60px;
-    }
-
-    .stacked .selector-remove {
-        background-position: 0 0;
-    }
-
-    .stacked .active.selector-remove {
-        background-position: 0 0;
-    }
-
-    .active.selector-remove:focus, .active.selector-remove:hover {
-        background-position: 0 -100px;
-    }
-
-    .stacked .active.selector-remove:focus, .stacked .active.selector-remove:hover {
-        background-position: 0 -20px;
-    }
-
-=======
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/responsive.css
     .help-tooltip, .selector .help-icon {
         display: none;
     }
@@ -555,19 +465,6 @@ input[type="submit"], button {
         margin-left: 15px;
     }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/responsive.css
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/responsive.css
-    .object-tools:has(a.addlink) {
-        margin-top: 0px;
-    }
-
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/responsive.css
-=======
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/responsive.css
     /* Forms */
 
     .form-row {
@@ -688,14 +585,7 @@ input[type="submit"], button {
 
     .related-widget-wrapper .selector {
         order: 1;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/responsive.css
         flex: 1 0 auto;
-=======
-<<<<<<< HEAD
-=======
-        flex: 1 0 auto;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/responsive.css
     }
 
     .related-widget-wrapper > a {
@@ -726,21 +616,9 @@ input[type="submit"], button {
     }
 
     .selector ul.selector-chooser {
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/responsive.css
         display: flex;
         width: 60px;
         height: 30px;
-=======
-<<<<<<< HEAD
-        display: block;
-        width: 52px;
-        height: 26px;
-=======
-        display: flex;
-        width: 60px;
-        height: 30px;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/responsive.css
         padding: 0 2px;
         transform: none;
     }
@@ -753,27 +631,6 @@ input[type="submit"], button {
         background-position: 0 0;
     }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/responsive.css
-    :enabled.selector-remove:focus, :enabled.selector-remove:hover {
-        background-position: 0 -24px;
-=======
-<<<<<<< HEAD
-    .active.selector-remove:focus, .active.selector-remove:hover {
-        background-position: 0 -20px;
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/responsive.css
-    }
-
-    .selector-add  {
-        background-position: 0 -48px;
-    }
-
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/responsive.css
-    :enabled.selector-add:focus, :enabled.selector-add:hover {
-        background-position: 0 -72px;
-=======
-    .active.selector-add:focus, .active.selector-add:hover {
-        background-position: 0 -60px;
-=======
     :enabled.selector-remove:focus, :enabled.selector-remove:hover {
         background-position: 0 -24px;
     }
@@ -784,8 +641,6 @@ input[type="submit"], button {
 
     :enabled.selector-add:focus, :enabled.selector-add:hover {
         background-position: 0 -72px;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/responsive.css
     }
 
     /* Inlines */

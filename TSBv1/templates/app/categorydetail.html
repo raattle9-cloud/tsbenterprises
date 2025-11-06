@@ -1,65 +1,165 @@
 {% extends 'app/base.html' %}
 {% load static %}
-{% block title %} Details {% endblock title %}
+{% block title %} {{ services.title }} - Details {% endblock title %}
 
 {% block main-content %}
-<br/><br/>
-    <div class="container border bottom-shadow">
-        <div class="row flex justify-content-between">
-            <div class="img2 col-lg-6 mt-5">
-                <img src="{{ services.service_image.url }}" class="image col-xs-6 col-sm-12 col-lg-12 mt-3 text-sm-center w-100 h-75" alt="NO"/>
+<div class="section-padding detail-page-wrapper" style="background: var(--gray-50); padding-top: 120px;">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Service Image Gallery -->
+            <div class="col-lg-6">
+                <div class="modern-card overflow-hidden fade-in" style="border-radius: var(--radius-2xl);">
+                    <div class="position-relative" style="padding-top: 75%; background: var(--gray-200);">
+                        <img src="{{ services.service_image.url }}" 
+                             class="position-absolute top-0 start-0 w-100 h-100" 
+                             alt="{{ services.title }}"
+                             style="object-fit: cover; border-radius: var(--radius-xl);">
+                        {% if services.discounted_price < services.selling_price %}
+                        <div class="position-absolute top-0 end-0 m-4">
+                            <span class="badge bg-danger px-4 py-2" style="font-size: 1rem; box-shadow: var(--shadow-lg);">
+                                <i class="fas fa-tag me-2"></i>Special Offer
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-            <div class="servicedetail col-lg-5">
-                <br>
-                <h1 style="font-family: 'Poppins', sans-serif; font-size:50px">
-                    {{ services.title }}
-                </h1>
-                <h3 style="color: #000;">
-                    RS.{{ services.discounted_price }}/-
-                </h3>
-                <del class="text-fluid">
-                    <h5 class="fw-light">
-                        <del style="color: red;">
-                            {{ services.selling_price }}
-                        </del>
-                    </h5>
-                </del>
-                <p>
-                    <li>Address:
-                        {{ services.description }}
-                    </li>
-                    <li>Note:
-                        {{ services.composition }}
-                    </li>
-                    
-                    
-                </p>
-                <br>
-                
-                <form action ="/add-to-cart" class ="d-inline">
-                    <input type="hidden" name="serv_id" value="{{services.id}}">
-                    <button type="submit" class="btn btn-primary shadow px-5 py-2 ">Add to Cart</button>
-                </form>
 
-                <a href="{% url 'showcart' %}" class=" btn btn-warning shadow px-5 py-2 ms-4">Buy Now</a>
-                <br>
-                
+            <!-- Service Details -->
+            <div class="col-lg-6">
+                <div class="slide-in-left">
+                    <h1 class="display-4 fw-bold mb-4" style="color: var(--primary); font-family: var(--font-luxury);">
+                        {{ services.title }}
+                    </h1>
+                    
+                    <!-- Price Section -->
+                    <div class="mb-4 p-4 rounded-3" style="background: linear-gradient(135deg, rgba(26, 77, 110, 0.05) 0%, rgba(26, 77, 110, 0.02) 100%); border-left: 4px solid var(--primary-gold);">
+                        <div class="d-flex align-items-baseline flex-wrap mb-2">
+                            <span class="service-price">₹{{ services.discounted_price }}/-</span>
+                            {% if services.discounted_price < services.selling_price %}
+                            <span class="service-price-old">₹{{ services.selling_price }}</span>
+                            {% endif %}
+                        </div>
+                        {% if services.discounted_price < services.selling_price %}
+                        <div class="mt-2">
+                            <span class="service-discount">
+                                <i class="fas fa-percentage me-1"></i>
+                                Special Discount Available
+                            </span>
+                        </div>
+                        {% endif %}
+                        <p class="text-muted mb-0 mt-3 small">
+                            <i class="fas fa-info-circle me-2"></i>Price includes all applicable taxes
+                        </p>
+                    </div>
+
+                    <!-- Description -->
+                    {% if services.description %}
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-3" style="color: var(--primary);">
+                            <i class="fas fa-map-marker-alt me-2"></i>Location & Details
+                        </h5>
+                        <p class="text-muted" style="line-height: 1.8; font-size: 1.05rem;">
+                            {{ services.description }}
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Additional Info -->
+                    {% if services.composition %}
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-3" style="color: var(--primary);">
+                            <i class="fas fa-info-circle me-2"></i>Important Notes
+                        </h5>
+                        <div class="p-3 rounded-3" style="background: rgba(212, 175, 55, 0.1); border-left: 3px solid var(--primary-gold);">
+                            <p class="mb-0 text-muted" style="line-height: 1.8;">
+                                {{ services.composition }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
+                        <form action="/add-to-cart" class="d-inline flex-fill">
+                            <input type="hidden" name="serv_id" value="{{services.id}}">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                            </button>
+                        </form>
+                        <a href="{% url 'showcart' %}" class="btn btn-outline-primary btn-lg flex-fill">
+                            <i class="fas fa-bolt me-2"></i>Buy Now
+                        </a>
+                    </div>
+
+                    <!-- Additional Details Accordion -->
+                    {% if services.servapp %}
+                    <div class="accordion mb-4" id="serviceAccordion">
+                        <div class="accordion-item modern-card border-0">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="color: var(--primary); background: rgba(26, 77, 110, 0.05);">
+                                    <i class="fas fa-file-alt me-2"></i>Additional Information
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#serviceAccordion">
+                                <div class="accordion-body p-4" style="background: var(--white);">
+                                    <div class="text-muted" style="line-height: 1.8;">
+                                        {{ services.servapp|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Trust Badges -->
+                    <div class="row g-3 mt-4">
+                        <div class="col-6">
+                            <div class="text-center p-3 rounded-3" style="background: rgba(26, 77, 110, 0.05);">
+                                <i class="fas fa-shield-alt fa-2x mb-2" style="color: var(--primary);"></i>
+                                <p class="mb-0 small fw-bold" style="color: var(--gray-700);">Secure Booking</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center p-3 rounded-3" style="background: rgba(26, 77, 110, 0.05);">
+                                <i class="fas fa-headset fa-2x mb-2" style="color: var(--primary);"></i>
+                                <p class="mb-0 small fw-bold" style="color: var(--gray-700);">24/7 Support</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <li class="list-unstyled"><br><br>
-            <p>
-            <button class="btn btn-warning w-50 mz-3" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-            Note
-              </button>
-            </p>
-            <div class="collapse" id="collapseExample">
-                <div class="card card-body">
-                    {{ services.servapp }}
-                </div>
-                <br>
-            </div>
-        </li>
     </div>
-<br><br>
+</div>
+
+<style>
+    .accordion-button:not(.collapsed) {
+        background: rgba(26, 77, 110, 0.1);
+        color: var(--primary);
+    }
+    .accordion-button:focus {
+        box-shadow: 0 0 0 0.25rem rgba(26, 77, 110, 0.15);
+        border-color: var(--primary);
+    }
+    .accordion-item {
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+    @media (max-width: 767.98px) {
+        .detail-page-wrapper {
+            padding-top: 100px !important;
+        }
+    }
+    @media (max-width: 575.98px) {
+        .detail-page-wrapper {
+            padding-top: 80px !important;
+        }
+        .service-price {
+            font-size: 1.75rem !important;
+        }
+    }
+</style>
 
 {% endblock main-content %}

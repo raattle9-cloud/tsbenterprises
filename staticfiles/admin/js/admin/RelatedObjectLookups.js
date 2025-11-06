@@ -55,20 +55,9 @@
         if (elem.classList.contains('vManyToManyRawIdAdminField') && elem.value) {
             elem.value += ',' + chosenId;
         } else {
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/js/admin/RelatedObjectLookups.js
             elem.value = chosenId;
         }
         $(elem).trigger('change');
-=======
-<<<<<<< HEAD
-            document.getElementById(name).value = chosenId;
-        }
-=======
-            elem.value = chosenId;
-        }
-        $(elem).trigger('change');
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/js/admin/RelatedObjectLookups.js
         const index = relatedWindows.indexOf(win);
         if (index > -1) {
             relatedWindows.splice(index, 1);
@@ -99,15 +88,7 @@
         }
     }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/js/admin/RelatedObjectLookups.js
     function updateRelatedSelectsOptions(currentSelect, win, objId, newRepr, newId, skipIds = []) {
-=======
-<<<<<<< HEAD
-    function updateRelatedSelectsOptions(currentSelect, win, objId, newRepr, newId) {
-=======
-    function updateRelatedSelectsOptions(currentSelect, win, objId, newRepr, newId, skipIds = []) {
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/js/admin/RelatedObjectLookups.js
         // After create/edit a model from the options next to the current
         // select (+ or :pencil:) update ForeignKey PK of the rest of selects
         // in the page.
@@ -120,15 +101,7 @@
         const selectsRelated = document.querySelectorAll(`[data-model-ref="${modelName}"] [data-context="available-source"]`);
 
         selectsRelated.forEach(function(select) {
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/js/admin/RelatedObjectLookups.js
             if (currentSelect === select || skipIds && skipIds.includes(select.id)) {
-=======
-<<<<<<< HEAD
-            if (currentSelect === select) {
-=======
-            if (currentSelect === select || skipIds && skipIds.includes(select.id)) {
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/js/admin/RelatedObjectLookups.js
                 return;
             }
 
@@ -137,20 +110,11 @@
             if (!option) {
                 option = new Option(newRepr, newId);
                 select.options.add(option);
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/js/admin/RelatedObjectLookups.js
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/js/admin/RelatedObjectLookups.js
                 // Update SelectBox cache for related fields.
                 if (window.SelectBox !== undefined && !SelectBox.cache[currentSelect.id]) {
                     SelectBox.add_to_cache(select.id, option);
                     SelectBox.redisplay(select.id);
                 }
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/js/admin/RelatedObjectLookups.js
-=======
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/js/admin/RelatedObjectLookups.js
                 return;
             }
 
@@ -178,30 +142,14 @@
             $(elem).trigger('change');
         } else {
             const toId = name + "_to";
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/js/admin/RelatedObjectLookups.js
             const toElem = document.getElementById(toId);
             const o = new Option(newRepr, newId);
             SelectBox.add_to_cache(toId, o);
             SelectBox.redisplay(toId);
-=======
-<<<<<<< HEAD
-            const o = new Option(newRepr, newId);
-            SelectBox.add_to_cache(toId, o);
-            SelectBox.redisplay(toId);
-=======
-            const toElem = document.getElementById(toId);
-            const o = new Option(newRepr, newId);
-            SelectBox.add_to_cache(toId, o);
-            SelectBox.redisplay(toId);
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/js/admin/RelatedObjectLookups.js
             if (toElem && toElem.nodeName.toUpperCase() === 'SELECT') {
                 const skipIds = [name + "_from"];
                 updateRelatedSelectsOptions(toElem, win, null, newRepr, newId, skipIds);
             }
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/js/admin/RelatedObjectLookups.js
-=======
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/js/admin/RelatedObjectLookups.js
         }
         const index = relatedWindows.indexOf(win);
         if (index > -1) {
@@ -258,14 +206,7 @@
     window.dismissChangeRelatedObjectPopup = dismissChangeRelatedObjectPopup;
     window.dismissDeleteRelatedObjectPopup = dismissDeleteRelatedObjectPopup;
     window.dismissChildPopups = dismissChildPopups;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/js/admin/RelatedObjectLookups.js
     window.relatedWindows = relatedWindows;
-=======
-<<<<<<< HEAD
-=======
-    window.relatedWindows = relatedWindows;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/js/admin/RelatedObjectLookups.js
 
     // Kept for backward compatibility
     window.showAddAnotherPopup = showRelatedObjectPopup;

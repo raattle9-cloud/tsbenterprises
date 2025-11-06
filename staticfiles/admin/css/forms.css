@@ -449,23 +449,6 @@ body.popup .submit-row {
     _width: 700px;
 }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/forms.css
-=======
-<<<<<<< HEAD
-.inline-group ul.tools {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-}
-
-.inline-group ul.tools li {
-    display: inline;
-    padding: 0 5px;
-}
-
-=======
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/forms.css
 .inline-group div.add-row,
 .inline-group .tabular tr.add-row td {
     color: var(--body-quiet-color);
@@ -479,21 +462,8 @@ body.popup .submit-row {
     border-bottom: 1px solid var(--hairline-color);
 }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/forms.css
 .inline-group div.add-row a,
 .inline-group .tabular tr.add-row td a {
-=======
-<<<<<<< HEAD
-.inline-group ul.tools a.add,
-.inline-group div.add-row a,
-.inline-group .tabular tr.add-row td a {
-    background: url(../img/icon-addlink.svg) 0 1px no-repeat;
-    padding-left: 16px;
-=======
-.inline-group div.add-row a,
-.inline-group .tabular tr.add-row td a {
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/forms.css
     font-size: 0.75rem;
 }
 

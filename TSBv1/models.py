@@ -93,7 +93,7 @@ class Cart(models.Model):
 
     @property
     def total_cost(self):
-        return self.quantity * self.service.discounted_price
+        return self.quantity * self.services.discounted_price
 
 
 #Payment models

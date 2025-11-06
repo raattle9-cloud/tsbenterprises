@@ -2,15 +2,7 @@
 
 .selector {
     display: flex;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
     flex: 1;
-=======
-<<<<<<< HEAD
-    flex-grow: 1;
-=======
-    flex: 1;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     gap: 0 10px;
 }
 
@@ -22,44 +14,20 @@
 }
 
 .selector-available, .selector-chosen {
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-=======
-<<<<<<< HEAD
-    text-align: center;
-=======
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     display: flex;
     flex-direction: column;
     flex: 1 1;
 }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
 .selector-available-title, .selector-chosen-title {
-=======
-<<<<<<< HEAD
-.selector-available h2, .selector-chosen h2 {
-=======
-.selector-available-title, .selector-chosen-title {
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     border: 1px solid var(--border-color);
     border-radius: 4px 4px 0 0;
 }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
 .selector .helptext {
     font-size: 0.6875rem;
 }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-=======
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
 .selector-chosen .list-footer-display {
     border: 1px solid var(--border-color);
     border-top: none;
@@ -75,18 +43,13 @@
     color: var(--breadcrumbs-fg);
 }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
 .selector-chosen-title {
-=======
-<<<<<<< HEAD
-.selector-chosen h2 {
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     background: var(--secondary);
     color: var(--header-link-color);
     padding: 8px;
 }
 
-.aligned .selector-chosen-title label {
+.selector-chosen-title label {
     color: var(--header-link-color);
     width: 100%;
 }
@@ -94,33 +57,11 @@
 .selector-available-title {
     background: var(--darkened-bg);
     color: var(--body-quiet-color);
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-=======
-=======
-.selector-chosen-title {
-    background: var(--secondary);
-    color: var(--header-link-color);
     padding: 8px;
 }
 
-.aligned .selector-chosen-title label {
-    color: var(--header-link-color);
+.selector-available-title label {
     width: 100%;
-}
-
-.selector-available-title {
-    background: var(--darkened-bg);
-    color: var(--body-quiet-color);
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
-    padding: 8px;
-}
-
-.aligned .selector-available-title label {
-    width: 100%;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-=======
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
 }
 
 .selector .selector-filter {
@@ -132,14 +73,7 @@
     margin: 0;
     text-align: left;
     display: flex;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
     gap: 8px;
-=======
-<<<<<<< HEAD
-=======
-    gap: 8px;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
 }
 
 .selector .selector-filter label,
@@ -158,26 +92,9 @@
     flex-grow: 1;
 }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
 .selector ul.selector-chooser {
     align-self: center;
     width: 30px;
-=======
-<<<<<<< HEAD
-.selector .selector-available input,
-.selector .selector-chosen input {
-    margin-left: 8px;
-}
-
-.selector ul.selector-chooser {
-    align-self: center;
-    width: 22px;
-=======
-.selector ul.selector-chooser {
-    align-self: center;
-    width: 30px;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     background-color: var(--selected-bg);
     border-radius: 10px;
     margin: 0;
@@ -207,39 +124,13 @@
 }
 
 .selector-add, .selector-remove {
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
     width: 24px;
     height: 24px;
-=======
-<<<<<<< HEAD
-    width: 16px;
-    height: 16px;
-=======
-    width: 24px;
-    height: 24px;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     display: block;
     text-indent: -3000px;
     overflow: hidden;
     cursor: default;
     opacity: 0.55;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-    border: none;
-=======
-<<<<<<< HEAD
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
-}
-
-:enabled.selector-add, :enabled.selector-remove {
-    opacity: 1;
-}
-
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-:enabled.selector-add:hover, :enabled.selector-remove:hover {
-=======
-.active.selector-add:hover, .active.selector-remove:hover {
-=======
     border: none;
 }
 
@@ -248,39 +139,10 @@
 }
 
 :enabled.selector-add:hover, :enabled.selector-remove:hover {
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     cursor: pointer;
 }
 
 .selector-add {
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-    background: url(../img/selector-icons.svg) 0 -144px no-repeat;
-    background-size: 24px auto;
-=======
-<<<<<<< HEAD
-    background: url(../img/selector-icons.svg) 0 -96px no-repeat;
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
-}
-
-:enabled.selector-add:focus, :enabled.selector-add:hover {
-    background-position: 0 -168px;
-}
-
-.selector-remove {
-    background: url(../img/selector-icons.svg) 0 -96px no-repeat;
-    background-size: 24px auto;
-}
-
-:enabled.selector-remove:focus, :enabled.selector-remove:hover {
-    background-position: 0 -120px;
-}
-
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-.selector-chooseall, .selector-clearall {
-=======
-a.selector-chooseall, a.selector-clearall {
-=======
     background: url(../img/selector-icons.svg) 0 -144px no-repeat;
     background-size: 24px auto;
 }
@@ -299,8 +161,6 @@ a.selector-chooseall, a.selector-clearall {
 }
 
 .selector-chooseall, .selector-clearall {
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     display: inline-block;
     height: 16px;
     text-align: left;
@@ -311,31 +171,6 @@ a.selector-chooseall, a.selector-clearall {
     color: var(--body-quiet-color);
     text-decoration: none;
     opacity: 0.55;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-    border: none;
-=======
-<<<<<<< HEAD
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
-}
-
-:enabled.selector-chooseall:focus, :enabled.selector-clearall:focus,
-:enabled.selector-chooseall:hover, :enabled.selector-clearall:hover {
-    color: var(--link-fg);
-}
-
-:enabled.selector-chooseall, :enabled.selector-clearall {
-    opacity: 1;
-}
-
-:enabled.selector-chooseall:hover, :enabled.selector-clearall:hover {
-    cursor: pointer;
-}
-
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-.selector-chooseall {
-=======
-a.selector-chooseall {
-=======
     border: none;
 }
 
@@ -353,48 +188,22 @@ a.selector-chooseall {
 }
 
 .selector-chooseall {
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     padding: 0 18px 0 0;
     background: url(../img/selector-icons.svg) right -160px no-repeat;
     cursor: default;
 }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
 :enabled.selector-chooseall:focus, :enabled.selector-chooseall:hover {
     background-position: 100% -176px;
 }
 
 .selector-clearall {
-=======
-<<<<<<< HEAD
-a.active.selector-chooseall:focus, a.active.selector-chooseall:hover {
-    background-position: 100% -176px;
-}
-
-a.selector-clearall {
-=======
-:enabled.selector-chooseall:focus, :enabled.selector-chooseall:hover {
-    background-position: 100% -176px;
-}
-
-.selector-clearall {
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     padding: 0 0 0 18px;
     background: url(../img/selector-icons.svg) 0 -128px no-repeat;
     cursor: default;
 }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
 :enabled.selector-clearall:focus, :enabled.selector-clearall:hover {
-=======
-<<<<<<< HEAD
-a.active.selector-clearall:focus, a.active.selector-clearall:hover {
-=======
-:enabled.selector-clearall:focus, :enabled.selector-clearall:hover {
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     background-position: 0 -144px;
 }
 
@@ -424,20 +233,9 @@ a.active.selector-clearall:focus, a.active.selector-clearall:hover {
 }
 
 .stacked ul.selector-chooser {
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
     display: flex;
     height: 30px;
     width: 64px;
-=======
-<<<<<<< HEAD
-    height: 22px;
-    width: 50px;
-=======
-    display: flex;
-    height: 30px;
-    width: 64px;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     margin: 0 0 10px 40%;
     background-color: #eee;
     border-radius: 10px;
@@ -454,28 +252,6 @@ a.active.selector-clearall:focus, a.active.selector-clearall:hover {
 }
 
 .stacked .selector-add {
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-    background: url(../img/selector-icons.svg) 0 -48px no-repeat;
-    background-size: 24px auto;
-=======
-<<<<<<< HEAD
-    background: url(../img/selector-icons.svg) 0 -32px no-repeat;
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
-    cursor: default;
-}
-
-.stacked :enabled.selector-add {
-    background-position: 0 -48px;
-    cursor: pointer;
-}
-
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
-.stacked :enabled.selector-add:focus, .stacked :enabled.selector-add:hover {
-    background-position: 0 -72px;
-=======
-.stacked .active.selector-add:focus, .stacked .active.selector-add:hover {
-    background-position: 0 -48px;
-=======
     background: url(../img/selector-icons.svg) 0 -48px no-repeat;
     background-size: 24px auto;
     cursor: default;
@@ -488,49 +264,22 @@ a.active.selector-clearall:focus, a.active.selector-clearall:hover {
 
 .stacked :enabled.selector-add:focus, .stacked :enabled.selector-add:hover {
     background-position: 0 -72px;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     cursor: pointer;
 }
 
 .stacked .selector-remove {
     background: url(../img/selector-icons.svg) 0 0 no-repeat;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
     background-size: 24px auto;
     cursor: default;
 }
 
 .stacked :enabled.selector-remove {
-=======
-<<<<<<< HEAD
-    cursor: default;
-}
-
-.stacked .active.selector-remove {
-=======
-    background-size: 24px auto;
-    cursor: default;
-}
-
-.stacked :enabled.selector-remove {
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     background-position: 0 0px;
     cursor: pointer;
 }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
 .stacked :enabled.selector-remove:focus, .stacked :enabled.selector-remove:hover {
     background-position: 0 -24px;
-=======
-<<<<<<< HEAD
-.stacked .active.selector-remove:focus, .stacked .active.selector-remove:hover {
-    background-position: 0 -16px;
-=======
-.stacked :enabled.selector-remove:focus, .stacked :enabled.selector-remove:hover {
-    background-position: 0 -24px;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     cursor: pointer;
 }
 
@@ -586,70 +335,30 @@ table p.datetime {
     position: relative;
     display: inline-block;
     vertical-align: middle;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
     height: 24px;
     width: 24px;
-=======
-<<<<<<< HEAD
-    height: 16px;
-    width: 16px;
-=======
-    height: 24px;
-    width: 24px;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     overflow: hidden;
 }
 
 .datetimeshortcuts .clock-icon {
     background: url(../img/icon-clock.svg) 0 0 no-repeat;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
     background-size: 24px auto;
-=======
-<<<<<<< HEAD
-=======
-    background-size: 24px auto;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
 }
 
 .datetimeshortcuts a:focus .clock-icon,
 .datetimeshortcuts a:hover .clock-icon {
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
     background-position: 0 -24px;
-=======
-<<<<<<< HEAD
-    background-position: 0 -16px;
-=======
-    background-position: 0 -24px;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
 }
 
 .datetimeshortcuts .date-icon {
     background: url(../img/icon-calendar.svg) 0 0 no-repeat;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
     background-size: 24px auto;
-=======
-<<<<<<< HEAD
-=======
-    background-size: 24px auto;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
     top: -1px;
 }
 
 .datetimeshortcuts a:focus .date-icon,
 .datetimeshortcuts a:hover .date-icon {
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
     background-position: 0 -24px;
-=======
-<<<<<<< HEAD
-    background-position: 0 -16px;
-=======
-    background-position: 0 -24px;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
 }
 
 .timezonewarning {
@@ -868,23 +577,10 @@ ul.timelist, .timelist li {
     float: right;
     text-indent: -9999px;
     background: url(../img/inline-delete.svg) 0 0 no-repeat;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/widgets.css
     width: 1.5rem;
     height: 1.5rem;
     border: 0px none;
     margin-bottom: .25rem;
-=======
-<<<<<<< HEAD
-    width: 16px;
-    height: 16px;
-    border: 0px none;
-=======
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 0px none;
-    margin-bottom: .25rem;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/widgets.css
 }
 
 .inline-deletelink:focus, .inline-deletelink:hover {

@@ -773,13 +773,7 @@ a.deletelink:focus, a.deletelink:hover {
     padding-left: 0;
     float: right;
     position: relative;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/base.css
-=======
-<<<<<<< HEAD
     margin-top: -48px;
-=======
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/base.css
 }
 
 .object-tools li {
@@ -827,19 +821,6 @@ a.deletelink:focus, a.deletelink:hover {
     background-image: url(../img/tooltag-add.svg);
 }
 
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/base.css
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/base.css
-.object-tools:has(a.addlink) {
-    margin-top: -48px;
-}
-
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/base.css
-=======
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/base.css
 /* OBJECT HISTORY */
 
 #change-history table {
@@ -1140,14 +1121,7 @@ a.deletelink:focus, a.deletelink:hover {
     margin: 0;
     border-top: 1px solid var(--hairline-color);
     width: 100%;
-<<<<<<< HEAD:TSB/TSB/staticfiles/admin/css/base.css
     box-sizing: border-box;
-=======
-<<<<<<< HEAD
-=======
-    box-sizing: border-box;
->>>>>>> 263b700 (Update: added latest changes12/4/25)
->>>>>>> 41f118ab88f791e02e7b283d87e9e7a7d0d270b7:staticfiles/admin/css/base.css
 }
 
 .paginator a:link, .paginator a:visited {
