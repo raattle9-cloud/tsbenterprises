@@ -36,6 +36,11 @@ WantedBy=multi-user.target
 """
 import os
 from pathlib import Path
+from urllib.parse import urlparse
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -100,22 +105,32 @@ WSGI_APPLICATION = 'TSB.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Get DATABASE_URL from environment variable
+DATABASE_URL = os.getenv('DATABASE_URL')
+
+if DATABASE_URL:
+    # Parse the DATABASE_URL (Supabase PostgreSQL connection string)
+    # Format: postgresql://user:password@host:port/database
+    db_url = urlparse(DATABASE_URL)
+    
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': db_url.path[1:],  # Remove leading '/'
+            'USER': db_url.username,
+            'PASSWORD': db_url.password,
+            'HOST': db_url.hostname,
+            'PORT': db_url.port or '5432',
+        }
     }
-}
-#DATABASES = {
-#    'default': {
-       # 'ENGINE': 'django.db.backends.postgresql',
-      #  'NAME': 'mydatabase',
-      #  'USER': 'TSBMain2001',
-      #  'PASSWORD': 'Mannan@1152',
-      #  'HOST': 'myrdshost.rds.amazonaws.com',
-       # 'PORT': '5432',
-    #}
-#}
+else:
+    # Fallback to SQLite if DATABASE_URL is not set
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation

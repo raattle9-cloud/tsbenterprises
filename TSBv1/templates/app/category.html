@@ -54,7 +54,11 @@
                             <div class="modern-card h-100 slide-in-up">
                                 <div class="position-relative overflow-hidden" style="height: 280px;">
                                     <a href="{% url 'category-detail' serv.id %}" class="text-decoration-none">
+                                        {% if serv.service_image %}
                                         <img src="{{ serv.service_image.url }}" class="card-img-top" alt="{{ serv.title }}" style="height: 100%; object-fit: cover; width: 100%;">
+                                        {% else %}
+                                        <img src="/static/app/images/aboutus.jpg" class="card-img-top" alt="{{ serv.title }}" style="height: 100%; object-fit: cover; width: 100%; background-color: #f0f0f0;">
+                                        {% endif %}
                                         <div class="position-absolute top-0 end-0 m-3">
                                             {% if serv.discounted_price < serv.selling_price %}
                                             <span class="badge bg-danger px-3 py-2" style="font-size: 0.85rem; box-shadow: var(--shadow-md);">
