@@ -50,19 +50,19 @@ class CategoryViewNoSlug(View):
 
 class CategoryView(View):
     def get(self, request, val):
-        services = Services.objects.filter(category=val)
+        services = Services.objects.filter(category=val).prefetch_related('images')
         title = Services.objects.filter(category=val).values('title')
         return render(request, "app/category.html",locals())
     
 class CategoryTitle(View):
     def get(self, request, val):
-        services = Services.objects.filter(title=val)
+        services = Services.objects.filter(title=val).prefetch_related('images')
         title = Services.objects.filter(category=services[0].category).values('title')
         return render(request, "app/category.html",locals())
     
 class CategoryDetail(View):
     def get(self, request,pk):
-        services = Services.objects.get(pk=pk)
+        services = Services.objects.prefetch_related('images').get(pk=pk)
         return render(request, "app/categorydetail.html",locals())
     
 #Customer Registration Logic
@@ -131,7 +131,7 @@ def add_to_cart(request):
 
 def show_cart(request):
     user = request.user
-    cart = Cart.objects.filter(user=user)
+    cart = Cart.objects.filter(user=user).select_related('services').prefetch_related('services__images')
     amount = 0
     for p in cart:
         value = p.quantity * p.services.discounted_price

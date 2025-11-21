@@ -9,11 +9,40 @@
             <!-- Service Image Gallery -->
             <div class="col-lg-6">
                 <div class="modern-card overflow-hidden fade-in" style="border-radius: var(--radius-2xl);">
-                    <div class="position-relative" style="padding-top: 75%; background: var(--gray-200);">
-                        <img src="{{ services.service_image.url }}" 
-                             class="position-absolute top-0 start-0 w-100 h-100" 
-                             alt="{{ services.title }}"
-                             style="object-fit: cover; border-radius: var(--radius-xl);">
+                    <div class="position-relative" style="background: var(--gray-200); border-radius: var(--radius-2xl);">
+                        <div id="serviceGallery" class="carousel slide" data-bs-ride="false">
+                            <div class="carousel-inner">
+                                {% for image in services.images.all %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <div style="padding-top: 75%; position: relative;">
+                                        <img src="{{ image.image.url }}"
+                                            class="position-absolute top-0 start-0 w-100 h-100"
+                                            alt="{{ services.title }} image {{ forloop.counter }}"
+                                            style="object-fit: cover; border-radius: var(--radius-xl);">
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="carousel-item active">
+                                    <div style="padding-top: 75%; position: relative;">
+                                        <img src="{% static 'app/images/aboutus.jpg' %}"
+                                            class="position-absolute top-0 start-0 w-100 h-100"
+                                            alt="{{ services.title }}"
+                                            style="object-fit: cover; border-radius: var(--radius-xl);">
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if services.images.all|length > 1 %}
+                            <button class="carousel-control-prev" type="button" data-bs-target="#serviceGallery" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#serviceGallery" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                            {% endif %}
+                        </div>
                         {% if services.discounted_price < services.selling_price %}
                         <div class="position-absolute top-0 end-0 m-4">
                             <span class="badge bg-danger px-4 py-2" style="font-size: 1rem; box-shadow: var(--shadow-lg);">
@@ -22,6 +51,15 @@
                         </div>
                         {% endif %}
                     </div>
+                    {% if services.images.all|length > 1 %}
+                    <div class="d-flex gap-2 p-3 flex-wrap">
+                        {% for image in services.images.all %}
+                        <button class="btn p-0 border-0 thumbnail-btn" type="button" data-bs-target="#serviceGallery" data-bs-slide-to="{{ forloop.counter0 }}">
+                            <img src="{{ image.image.url }}" alt="Thumbnail {{ forloop.counter }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md); border: 2px solid var(--gray-200);">
+                        </button>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -146,6 +184,13 @@
         border: 1px solid var(--gray-200);
         border-radius: var(--radius-lg);
         overflow: hidden;
+    }
+    .thumbnail-btn img {
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .thumbnail-btn:hover img {
+        transform: scale(1.05);
+        border-color: var(--primary);
     }
     @media (max-width: 767.98px) {
         .detail-page-wrapper {

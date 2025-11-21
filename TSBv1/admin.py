@@ -1,18 +1,29 @@
 from django.contrib import admin
-from .models import Customer, Services, Cart, Payment, OrderPlaced
+from django.utils.html import mark_safe
+from .models import Customer, Services, Cart, Payment, OrderPlaced, ServiceImage
 
 # Register your models here.
 
+class ServiceImageInline(admin.TabularInline):
+    model = ServiceImage
+    extra = 4
+    min_num = 1
+    max_num = 4
+    validate_min = True
+    validate_max = True
+
+
 @admin.register(Services)
 class ServicesModelAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'discounted_price', 'selling_price', 'category', 'service_image']
+    list_display = ['id', 'title', 'discounted_price', 'selling_price', 'category', 'primary_image_preview']
     list_filter = ['category']
     search_fields = ['title', 'description']
     list_editable = ['discounted_price', 'selling_price', 'category']
     readonly_fields = ['id']
+    inlines = [ServiceImageInline]
     fieldsets = (
         ('Basic Information', {
-            'fields': ('title', 'category', 'service_image')
+            'fields': ('title', 'category')
         }),
         ('Pricing', {
             'fields': ('selling_price', 'discounted_price')
@@ -21,6 +32,14 @@ class ServicesModelAdmin(admin.ModelAdmin):
             'fields': ('description', 'composition', 'servapp')
         }),
     )
+
+    def primary_image_preview(self, obj):
+        image = obj.get_primary_image()
+        if image:
+            return mark_safe(f'<img src="{image.image.url}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;" />')
+        return "-"
+
+    primary_image_preview.short_description = 'Primary Image'
 
 @admin.register(Customer)
 class CustomerModelAdmin(admin.ModelAdmin):

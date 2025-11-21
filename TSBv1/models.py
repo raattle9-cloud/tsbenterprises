@@ -60,12 +60,35 @@ class Services(models.Model):
     description = models.TextField()
     composition = models.TextField(default='')
     servapp = models.TextField(default='')
-    category = models.CharField(choices = CATEGORY_CHOICES, max_length=2)
-    service_image = models.ImageField(upload_to='service/')
-
+    category = models.CharField(choices=CATEGORY_CHOICES, max_length=2)
 
     def __str__(self):
         return self.title
+
+    def get_primary_image(self):
+        return self.images.first()
+
+    def get_primary_image_url(self):
+        image = self.get_primary_image()
+        if image and image.image:
+            return image.image.url
+        return ''
+
+
+class ServiceImage(models.Model):
+    service = models.ForeignKey(
+        Services,
+        related_name='images',
+        on_delete=models.CASCADE
+    )
+    image = models.ImageField(upload_to='service/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['id']
+
+    def __str__(self):
+        return f"{self.service.title} image"
     
 class Customer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
