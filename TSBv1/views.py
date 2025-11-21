@@ -1,5 +1,5 @@
 from django.db.models import Count
-from .models import Services, Customer, Cart
+from .models import Services, Customer, Cart, CATEGORY_CHOICES
 from django.views import View
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -40,6 +40,19 @@ def refundpolicy(request):
     return render(request,"app/refundpolicy.html")
 def shippingpolicy(request):
     return render(request,"app/shippingpolicy.html")
+
+
+def services_page(request):
+    category_groups = []
+    for code, label in CATEGORY_CHOICES:
+        services_qs = Services.objects.filter(category=code).prefetch_related('images')[:6]
+        display_label = label.replace('_', ' ').title()
+        category_groups.append({
+            'code': code,
+            'label': display_label,
+            'services': services_qs
+        })
+    return render(request, "app/services.html", {"category_groups": category_groups})
 
 
 

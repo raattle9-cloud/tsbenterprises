@@ -12,6 +12,7 @@ from django.contrib.auth import logout
 urlpatterns = [
     path("", views.home, name="home"),
     path("index2/", views.index2, name="index2"),
+    path("services/", views.services_page, name="services"),
     path("about/", views.about, name="about"),
     path("contact/", views.contact, name="contact"),
     path("termsandconditions/", views.termsandconditions, name="termsandconditions"),

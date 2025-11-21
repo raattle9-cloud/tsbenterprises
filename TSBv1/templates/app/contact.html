@@ -1,8 +1,103 @@
-{% extends 'app/base.html' %}
+{% extends 'app/layouts/landing_base.html' %}
 {% load static %}
-{% block title %} Details {% endblock title %}
+{% block title %}Contact Us | TSB{% endblock %}
 
-{% block main-content %}
-    
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'app/css/contact.css' %}">
+{% endblock %}
 
-{% endblock main-content %}
+{% block landing_content %}
+  <section class="contact-hero">
+    <div class="contact-hero-inner">
+      <span class="contact-pill">Talk To Us</span>
+      <h1>We’re here to plan your next unforgettable escape</h1>
+      <p>Reach out to our concierge team for curated itineraries, partnership queries, or customer care support.</p>
+      <div class="contact-hero-actions">
+        <a href="tel:+01234567890" class="header-btn secondary-btn"><i class="fas fa-phone me-2"></i>Call Support</a>
+        <a href="https://wa.me/7028768942/?text=NeedInformation" target="_blank" class="header-btn register-btn"><i class="fab fa-whatsapp me-2"></i>Chat on WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-info-section">
+    <div class="contact-info-grid">
+      <div class="contact-info-card">
+        <div class="contact-info-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <h3>Visit Us</h3>
+        <p>TSB Enterprises INC<br>Thane Station, Maharashtra</p>
+      </div>
+      <div class="contact-info-card">
+        <div class="contact-info-icon"><i class="fas fa-phone-alt"></i></div>
+        <h3>Call or Email</h3>
+        <p><a href="tel:+01234567890">+012 345 67890</a><br><a href="mailto:TSB@example.com">TSB@example.com</a></p>
+      </div>
+      <div class="contact-info-card">
+        <div class="contact-info-icon"><i class="fas fa-clock"></i></div>
+        <h3>Hours</h3>
+        <p>Mon – Sat: 9am to 8pm<br>Support team available 24/7</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-form-section" id="contact-form">
+    <div class="contact-form-wrapper">
+      <div class="contact-form-text">
+        <span class="contact-pill">Contact Form</span>
+        <h2>Tell us about your travel goals</h2>
+        <p>Share a few details and our concierge will craft personalized recommendations that match your vibe, budget, and timeline.</p>
+        <ul>
+          <li><i class="fas fa-check-circle"></i> Custom resort & villa curation</li>
+          <li><i class="fas fa-check-circle"></i> Group packages and events</li>
+          <li><i class="fas fa-check-circle"></i> Corporate retreats & tie-ups</li>
+        </ul>
+      </div>
+      <div class="contact-form-card">
+        <form>
+          <div class="form-grid">
+            <label>
+              <span>Full Name</span>
+              <input type="text" placeholder="Enter your name" required>
+            </label>
+            <label>
+              <span>Email</span>
+              <input type="email" placeholder="you@example.com" required>
+            </label>
+            <label>
+              <span>Phone Number</span>
+              <input type="tel" placeholder="+91 90000 00000" required>
+            </label>
+            <label>
+              <span>Travel Category</span>
+              <select required>
+                <option value="">Select category</option>
+                <option>Resorts</option>
+                <option>Villas</option>
+                <option>Waterparks</option>
+                <option>Dhaba Experiences</option>
+                <option>Destination Packages</option>
+                <option>Corporate / Events</option>
+              </select>
+            </label>
+          </div>
+          <label class="full-width">
+            <span>How can we help?</span>
+            <textarea rows="4" placeholder="Share your requirements, preferred dates, group size, or anything else."></textarea>
+          </label>
+          <button type="submit" class="header-btn logout-btn w-100">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-map-section">
+    <div class="contact-map-card">
+      <div>
+        <span class="contact-pill">Visit Our Studio</span>
+        <h2>Plan with us in person</h2>
+        <p>Prefer face-to-face conversations? Drop by our Thane studio and we’ll brainstorm trips over coffee.</p>
+        <a href="https://www.google.com/maps/place/Thane" target="_blank" class="header-btn secondary-btn">View on Maps</a>
+      </div>
+      <iframe title="TSB Location" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3774.64194561382!2d72.97441527606249!3d19.18632824831106!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b9028388c507%3A0xb3d78d502d7e364a!2sThane%20Station%2C%20Thane%20West!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" loading="lazy"></iframe>
+    </div>
+  </section>
+{% endblock %}

@@ -19,6 +19,9 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'app/css/owl.carousel.min.css' %}"/>
     <link rel="stylesheet" href="{% static 'app/css/style.css' %}"/>
+    <link rel="stylesheet" href="{% static 'app/css/styles.css' %}"/>
+    <link rel="stylesheet" href="{% static 'app/css/styles-1.css' %}"/>
+    {% block extra_head %}{% endblock extra_head %}
     
     <title>{% block title %}TSB Enterprises{% endblock title %}</title>
     <link rel="icon" href="{% static 'app/images/product/tsb_logo.png' %}" type="image/x-icon">
@@ -162,7 +165,7 @@
             <ul class="footer-links">
               <li><a href="{% url 'about' %}"><i class="fas fa-chevron-right me-2"></i>About Us</a></li>
               <li><a href="{% url 'contact' %}"><i class="fas fa-chevron-right me-2"></i>Contact Us</a></li>
-              <li><a href="{% url 'home' %}"><i class="fas fa-chevron-right me-2"></i>Our Services</a></li>
+              <li><a href="{% url 'services' %}"><i class="fas fa-chevron-right me-2"></i>Our Services</a></li>
               <li><a href="{% url 'privacypolicy' %}"><i class="fas fa-chevron-right me-2"></i>Privacy Policy</a></li>
               <li><a href="{% url 'termsandconditions' %}"><i class="fas fa-chevron-right me-2"></i>Terms & Conditions</a></li>
             </ul>

@@ -1,9 +1,13 @@
-{% extends 'app/base.html' %}
+{% extends 'app/layouts/landing_base.html' %}
 {% load static %}
-{% block title %} Category {% endblock title %}
+{% block title %}Category | TSB{% endblock %}
 
-{% block main-content %}
-    <div class="section-padding category-page-wrapper" style="background: var(--gray-50); padding-top: 120px;">
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'app/css/category.css' %}">
+{% endblock %}
+
+{% block landing_content %}
+    <div class="section-padding category-page-wrapper">
         <div class="container">
             <div class="row">
                 <!-- Premium Sidebar Filter -->
@@ -25,7 +29,7 @@
                                         <hr class="my-0" style="opacity: 0.1;">
                                     {% endif %}
                                 {% empty %}
-                                    <div class="p-4 text-center text-muted">
+                                    <div class="p-4 text-center text-muted empty-state">
                                         <i class="fas fa-inbox fa-2x mb-2"></i>
                                         <p class="mb-0 small">No categories available</p>
                                     </div>
@@ -115,7 +119,7 @@
                     </div>
                     {% else %}
                     <div class="text-center py-5 fade-in">
-                        <div class="modern-card p-5" style="max-width: 500px; margin: 0 auto;">
+                        <div class="modern-card p-5 empty-services-card">
                             <i class="fas fa-inbox fa-4x text-muted mb-4" style="opacity: 0.5;"></i>
                             <h3 class="fw-bold mb-3" style="color: var(--primary);">No Services Found</h3>
                             <p class="text-muted mb-4">We couldn't find any services in this category. Try exploring other categories or check back later.</p>
@@ -130,28 +134,4 @@
         </div>
     </div>
 
-    <style>
-        .list-group-item:hover {
-            background: rgba(26, 77, 110, 0.05);
-            padding-left: 1.75rem !important;
-        }
-        .list-group-item:hover i {
-            transform: translateX(5px);
-            transition: transform var(--transition-base);
-        }
-        .sticky-top {
-            z-index: 100;
-        }
-        @media (max-width: 767.98px) {
-            .category-page-wrapper {
-                padding-top: 100px !important;
-            }
-        }
-        @media (max-width: 575.98px) {
-            .category-page-wrapper {
-                padding-top: 80px !important;
-            }
-        }
-    </style>
-
-{% endblock main-content %}
+{% endblock %}

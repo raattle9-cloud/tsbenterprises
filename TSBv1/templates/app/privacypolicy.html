@@ -1,82 +1,118 @@
-{% extends 'app/base.html' %}
+{% extends 'app/layouts/landing_base.html' %}
 {% load static %}
-{% block title %} Details {% endblock title %}
+{% block title %}Privacy Policy | TSB{% endblock %}
 
-{% block main-content %}
-<br/><br/>
-<!-- About 7 - Bootstrap Brain Component -->
-<section class="py-3 py-md-5 py-xl-8">
-    <div class="container">
-        <div class="row justify-content-md-center">
-            <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6">
-                <h2 class="mb-4 display-5 text-center">Privacy Policy</h2>
-                <p class="text-secondary mb-5 text-center lead fs-9">At Go Waterpark TSB, your privacy is important to us. This policy explains how we collect, use, and protect your personal information.</p>
-                <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
-            </div>
-        </div>
-    </div>
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'app/css/privacypolicy.css' %}">
+{% endblock %}
 
-    <div class="container">
-        <div class="row gy-4 gy-lg-0 align-items-lg-center">
-            <div class="col-12 col-lg-6">
-                <img class="img-fluid" loading="lazy" src="{% static 'app/images/product/tsb_logo.png' %}" alt="TSB Logo">
-            </div>
-            <div class="col-12 col-lg-6 col-xxl-6">
-                <div class="row justify-content-lg-end">
-                    <div class="col-12 col-lg-11">
-                        <div class="about-wrapper">
-                            
-                            <div class="mb-4 mb-md-5">
-                                <h5 class="fw-bold">Privacy Policy</h5>
-                                <p><strong>Effective Date:</strong> January 2025 </p>
-                                <p>At Go Waterpark TSB, your privacy is important to us. This policy explains how we collect, use, and protect your personal information.</p>
-                                <ul class="list-unstyled">
-                                    <li class="mb-3">
-                                        <strong>1.1 Information We Collect:</strong> Name, email, phone number, and payment information. Website usage data via cookies and analytics tools.
-                                    </li>
-                                    <li class="mb-3">
-                                        <strong>1.2 How We Use Your Data:</strong> To process ticket purchases and send confirmations. To provide customer support. For marketing (with your consent).
-                                    </li>
-                                    <li class="mb-3">
-                                        <strong>1.3 Data Security:</strong> We implement industry-standard measures to protect your data from unauthorized access.
-                                    </li>
-                                    <li class="mb-3">
-                                        <strong>1.4 Sharing of Information:</strong> We do not sell or rent your data. We may share it only with trusted third-party service providers (e.g., payment gateways).
-                                    </li>
-                                    <li>
-                                        <strong>1.5 Your Rights:</strong> You may request access to or deletion of your personal data at any time by contacting us.
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="row gy-4 mb-4 mb-md-5">
-                                <div class="col-12 col-md-6">
-                                    <div class="card border border-dark">
-                                        <div class="card-body p-4">
-                                            <h3 class="display-5 fw-bold text-success text-center mb-2">370+</h3>
-                                            <p class="fw-bold text-center m-0">Qualified Experts</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <div class="card border border-dark">
-                                        <div class="card-body p-4">
-                                            <h3 class="display-5 fw-bold text-success text-center mb-2">1Lakh+</h3>
-                                            <p class="fw-bold text-center m-0">Satisfied Clients</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="#!" class="btn btn-success">
-                                Explore
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{% block landing_content %}
+  <section class="policy-hero">
+    <div class="container policy-hero-container">
+      <h1 class="policy-title">Privacy Policy</h1>
+      <p class="policy-subtitle">
+        At TSB Enterprises, your privacy is important to us. This policy explains how we collect, use, and protect your personal information.
+      </p>
     </div>
-</section>
-{% endblock main-content %}
+  </section>
+
+  <section class="policy-content-section">
+    <div class="container policy-content-container">
+      <div class="policy-img-col">
+        <img class="policy-img" src="{% static 'app/images/tsb_logo.png' %}" alt="TSB Logo">
+      </div>
+      <div class="policy-details-col">
+        <div class="policy-details-wrapper">
+          <h2 class="policy-section-title"><i class="fas fa-user-shield"></i> Privacy Policy</h2>
+          <p><strong>Effective Date:</strong> January 2025</p>
+          <p>At TSB Enterprises, your privacy is important to us. This policy explains how we collect, use, and protect your personal information.</p>
+          <div class="policy-list-modern">
+            <div class="policy-item">
+              <span class="policy-icon"><i class="fas fa-id-card"></i></span>
+              <div><strong>Information We Collect:</strong> Name, email, phone number, payment information, and website usage data via cookies and analytics tools.</div>
+            </div>
+            <div class="policy-item">
+              <span class="policy-icon"><i class="fas fa-tasks"></i></span>
+              <div><strong>How We Use Your Data:</strong> To process bookings, send confirmations, provide customer support, and share offers (with your consent).</div>
+            </div>
+            <div class="policy-item">
+              <span class="policy-icon"><i class="fas fa-lock"></i></span>
+              <div><strong>Data Security:</strong> We use industry-standard safeguards to prevent unauthorized access or disclosure of your information.</div>
+            </div>
+            <div class="policy-item">
+              <span class="policy-icon"><i class="fas fa-share-alt"></i></span>
+              <div><strong>Sharing of Information:</strong> We never sell or rent your data. Limited sharing occurs only with trusted vendors (payments, hosting) to fulfill services.</div>
+            </div>
+            <div class="policy-item">
+              <span class="policy-icon"><i class="fas fa-user-check"></i></span>
+              <div><strong>Your Rights:</strong> Request access, updates, or deletion of your personal data any time by contacting our support team.</div>
+            </div>
+          </div>
+          <div class="policy-stats-row">
+            <div class="policy-stat-card">
+              <h3>370+</h3>
+              <p>Qualified Experts</p>
+            </div>
+            <div class="policy-stat-card">
+              <h3>1Lakh+</h3>
+              <p>Satisfied Clients</p>
+            </div>
+          </div>
+          <a href="{% url 'services' %}" class="policy-btn">Explore Services</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="modern-footer">
+    <div class="footer-container">
+      <div class="footer-row">
+        <div class="footer-col">
+          <h5 class="footer-title"><i class="fas fa-map-marker-alt"></i>Get In Touch</h5>
+          <p><i class="fas fa-map-marker-alt text-primary"></i> TSB, Thane Station</p>
+          <p><i class="fas fa-phone-alt text-primary"></i> <a href="tel:+01234567890">+012 345 67890</a></p>
+          <p><i class="fas fa-envelope text-primary"></i> <a href="mailto:TSB@example.com">TSB@example.com</a></p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h5 class="footer-title">Quick Links</h5>
+          <ul class="footer-links">
+            <li><a href="{% url 'about' %}">About Us</a></li>
+            <li><a href="{% url 'home' %}#contact">Contact Us</a></li>
+            <li><a href="{% url 'services' %}">Our Services</a></li>
+            <li><a href="{% url 'privacypolicy' %}">Privacy Policy</a></li>
+            <li><a href="{% url 'termsandconditions' %}">Terms & Conditions</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5 class="footer-title">Support</h5>
+          <ul class="footer-links">
+            <li><a href="{% url 'refundpolicy' %}">Refund Policy</a></li>
+            <li><a href="{% url 'shippingpolicy' %}">Shipping Policy</a></li>
+            <li><a href="{% url 'contact' %}">Help Center</a></li>
+            <li><a href="{% url 'contact' %}#faqs">FAQs</a></li>
+            <li><a href="{% url 'contact' %}">Customer Care</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5 class="footer-title">Newsletter</h5>
+          <p>Subscribe to our newsletter for latest updates.</p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Your email" required>
+            <button type="submit">Send</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 <strong>TSB Enterprises INC</strong>. All Rights Reserved. Designed by <a href="https://github.com/Mannan0313" target="_blank">Mannan Shaikh</a></p>
+      <a href="#" class="back-to-top">↑</a>
+    </div>
+  </footer>
+{% endblock %}

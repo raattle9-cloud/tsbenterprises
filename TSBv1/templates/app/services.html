@@ -1,0 +1,98 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Services | TSB Enterprises{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'app/css/services.css' %}">
+{% endblock %}
+
+{% block main-content %}
+  <section class="services-hero">
+    <div class="services-hero-inner">
+      <p class="services-pill">Premium Experiences</p>
+      <h1>Curated Stays, Thrills & Gourmet Journeys</h1>
+      <p class="services-subtitle">
+        Choose from handpicked resorts, villas, dhabas, waterparks, and more — all vetted by our expert travel
+        team to guarantee unforgettable escapes across India.
+      </p>
+      <div class="services-hero-actions">
+        <a href="{% url 'contact' %}" class="header-btn secondary-btn">Talk to an expert</a>
+        <a href="{% url 'contact' %}#contact-form" class="header-btn register-btn">Plan my trip</a>
+      </div>
+    </div>
+  </section>
+
+  {% for group in category_groups %}
+  <section class="services-category" id="category-{{ group.code|lower }}">
+      <div class="category-header">
+        <div>
+          <span class="category-pill">{{ group.label }}</span>
+          <h2>Signature {{ group.label }}</h2>
+          <p>Experience the best of {{ group.label }} curated exclusively by TSB.</p>
+        </div>
+        <a href="{% url 'mainCategory' group.code %}" class="header-btn secondary-btn">
+          View all {{ group.label }}
+        </a>
+      </div>
+
+      {% if group.services %}
+        <div class="premium-grid services-grid">
+          {% for service in group.services %}
+            <div class="premium-card service-card">
+              <div class="service-image">
+                <a href="{% url 'category-detail' service.id %}">
+                  {% with primary=service.get_primary_image %}
+                    {% if primary %}
+                      <img src="{{ primary.image.url }}" alt="{{ service.title }}">
+                    {% else %}
+                      <img src="{% static 'app/images/aboutus.jpg' %}" alt="{{ service.title }}">
+                    {% endif %}
+                  {% endwith %}
+                </a>
+                <div class="service-price-chip">
+                  ₹{{ service.discounted_price|floatformat:0 }}/-
+                </div>
+              </div>
+              <div class="card-text">
+                <h3>{{ service.title }}</h3>
+                {% if service.description %}
+                  <p>{{ service.description|truncatewords:20 }}</p>
+                {% endif %}
+                <div class="service-actions">
+                  <a href="{% url 'category-detail' service.id %}" class="explore-btn">View Details</a>
+                  <a href="{% url 'category-detail' service.id %}" class="service-link">
+                    <i class="fas fa-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="services-empty">
+          <p>No {{ group.label|lower }} available yet. Check back soon!</p>
+          <a href="{% url 'contact' %}" class="explore-btn">Request availability</a>
+        </div>
+      {% endif %}
+    </section>
+  {% endfor %}
+
+  <section class="services-cta">
+    <div class="services-cta-card">
+      <div>
+        <p class="services-pill">Need Custom Plans?</p>
+        <h2>Let’s craft an itinerary that fits your vibe</h2>
+        <p>Our concierge team designs bespoke journeys, handles reservations, and unlocks exclusive perks.</p>
+      </div>
+      <div class="services-cta-actions">
+        <a href="tel:+01234567890" class="header-btn secondary-btn">
+          <i class="fas fa-phone me-2"></i>Call Us
+        </a>
+        <a href="https://wa.me/7028768942/?text=NeedInformation" target="_blank" class="header-btn logout-btn">
+          <i class="fab fa-whatsapp me-2"></i>Chat on WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+

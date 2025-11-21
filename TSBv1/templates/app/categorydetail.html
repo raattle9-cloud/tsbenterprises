@@ -1,33 +1,35 @@
-{% extends 'app/base.html' %}
+{% extends 'app/layouts/landing_base.html' %}
 {% load static %}
-{% block title %} {{ services.title }} - Details {% endblock title %}
+{% block title %}{{ services.title }} - Details{% endblock %}
 
-{% block main-content %}
-<div class="section-padding detail-page-wrapper" style="background: var(--gray-50); padding-top: 120px;">
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'app/css/service-detail.css' %}">
+{% endblock %}
+
+{% block landing_content %}
+<div class="section-padding detail-page-wrapper">
     <div class="container">
         <div class="row g-5">
             <!-- Service Image Gallery -->
             <div class="col-lg-6">
-                <div class="modern-card overflow-hidden fade-in" style="border-radius: var(--radius-2xl);">
-                    <div class="position-relative" style="background: var(--gray-200); border-radius: var(--radius-2xl);">
-                        <div id="serviceGallery" class="carousel slide" data-bs-ride="false">
+                <div class="modern-card overflow-hidden fade-in hero-media-card">
+                    <div class="position-relative">
+                        <div id="serviceGallery" class="carousel slide service-gallery" data-bs-ride="false">
                             <div class="carousel-inner">
                                 {% for image in services.images.all %}
                                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                    <div style="padding-top: 75%; position: relative;">
+                                    <div class="gallery-frame">
                                         <img src="{{ image.image.url }}"
-                                            class="position-absolute top-0 start-0 w-100 h-100"
-                                            alt="{{ services.title }} image {{ forloop.counter }}"
-                                            style="object-fit: cover; border-radius: var(--radius-xl);">
+                                            class="gallery-image"
+                                            alt="{{ services.title }} image {{ forloop.counter }}">
                                     </div>
                                 </div>
                                 {% empty %}
                                 <div class="carousel-item active">
-                                    <div style="padding-top: 75%; position: relative;">
+                                    <div class="gallery-frame">
                                         <img src="{% static 'app/images/aboutus.jpg' %}"
-                                            class="position-absolute top-0 start-0 w-100 h-100"
-                                            alt="{{ services.title }}"
-                                            style="object-fit: cover; border-radius: var(--radius-xl);">
+                                            class="gallery-image"
+                                            alt="{{ services.title }}">
                                     </div>
                                 </div>
                                 {% endfor %}
@@ -45,7 +47,7 @@
                         </div>
                         {% if services.discounted_price < services.selling_price %}
                         <div class="position-absolute top-0 end-0 m-4">
-                            <span class="badge bg-danger px-4 py-2" style="font-size: 1rem; box-shadow: var(--shadow-lg);">
+                            <span class="badge bg-danger px-4 py-2 shadow-lg">
                                 <i class="fas fa-tag me-2"></i>Special Offer
                             </span>
                         </div>
@@ -71,7 +73,7 @@
                     </h1>
                     
                     <!-- Price Section -->
-                    <div class="mb-4 p-4 rounded-3" style="background: linear-gradient(135deg, rgba(26, 77, 110, 0.05) 0%, rgba(26, 77, 110, 0.02) 100%); border-left: 4px solid var(--primary-gold);">
+                    <div class="price-panel">
                         <div class="d-flex align-items-baseline flex-wrap mb-2">
                             <span class="service-price">₹{{ services.discounted_price }}/-</span>
                             {% if services.discounted_price < services.selling_price %}
@@ -109,8 +111,8 @@
                         <h5 class="fw-bold mb-3" style="color: var(--primary);">
                             <i class="fas fa-info-circle me-2"></i>Important Notes
                         </h5>
-                        <div class="p-3 rounded-3" style="background: rgba(212, 175, 55, 0.1); border-left: 3px solid var(--primary-gold);">
-                            <p class="mb-0 text-muted" style="line-height: 1.8;">
+                        <div class="notes-panel">
+                            <p class="mb-0 text-muted">
                                 {{ services.composition }}
                             </p>
                         </div>
@@ -135,13 +137,13 @@
                     <div class="accordion mb-4" id="serviceAccordion">
                         <div class="accordion-item modern-card border-0">
                             <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="color: var(--primary); background: rgba(26, 77, 110, 0.05);">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                                     <i class="fas fa-file-alt me-2"></i>Additional Information
                                 </button>
                             </h2>
                             <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#serviceAccordion">
-                                <div class="accordion-body p-4" style="background: var(--white);">
-                                    <div class="text-muted" style="line-height: 1.8;">
+                                <div class="accordion-body p-4">
+                                    <div class="text-muted">
                                         {{ services.servapp|linebreaks }}
                                     </div>
                                 </div>
@@ -153,15 +155,15 @@
                     <!-- Trust Badges -->
                     <div class="row g-3 mt-4">
                         <div class="col-6">
-                            <div class="text-center p-3 rounded-3" style="background: rgba(26, 77, 110, 0.05);">
-                                <i class="fas fa-shield-alt fa-2x mb-2" style="color: var(--primary);"></i>
-                                <p class="mb-0 small fw-bold" style="color: var(--gray-700);">Secure Booking</p>
+                            <div class="info-chip text-center">
+                                <i class="fas fa-shield-alt fa-2x mb-2"></i>
+                                <p class="mb-0 small fw-bold">Secure Booking</p>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="text-center p-3 rounded-3" style="background: rgba(26, 77, 110, 0.05);">
-                                <i class="fas fa-headset fa-2x mb-2" style="color: var(--primary);"></i>
-                                <p class="mb-0 small fw-bold" style="color: var(--gray-700);">24/7 Support</p>
+                            <div class="info-chip text-center">
+                                <i class="fas fa-headset fa-2x mb-2"></i>
+                                <p class="mb-0 small fw-bold">24/7 Support</p>
                             </div>
                         </div>
                     </div>
@@ -170,41 +172,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    .accordion-button:not(.collapsed) {
-        background: rgba(26, 77, 110, 0.1);
-        color: var(--primary);
-    }
-    .accordion-button:focus {
-        box-shadow: 0 0 0 0.25rem rgba(26, 77, 110, 0.15);
-        border-color: var(--primary);
-    }
-    .accordion-item {
-        border: 1px solid var(--gray-200);
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-    }
-    .thumbnail-btn img {
-        transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-    .thumbnail-btn:hover img {
-        transform: scale(1.05);
-        border-color: var(--primary);
-    }
-    @media (max-width: 767.98px) {
-        .detail-page-wrapper {
-            padding-top: 100px !important;
-        }
-    }
-    @media (max-width: 575.98px) {
-        .detail-page-wrapper {
-            padding-top: 80px !important;
-        }
-        .service-price {
-            font-size: 1.75rem !important;
-        }
-    }
-</style>
-
-{% endblock main-content %}
+{% endblock %}
