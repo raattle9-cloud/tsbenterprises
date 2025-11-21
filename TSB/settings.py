@@ -46,6 +46,16 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'TSB.settings')
 
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
+SUPABASE_MEDIA_BUCKET = os.getenv('SUPABASE_MEDIA_BUCKET', 'media')
+SUPABASE_MEDIA_PUBLIC = os.getenv('SUPABASE_MEDIA_PUBLIC', 'true').lower() in {'1', 'true', 'yes', 'on'}
+SUPABASE_MEDIA_PUBLIC_URL = os.getenv('SUPABASE_MEDIA_PUBLIC_URL')
+SUPABASE_SIGNED_URL_EXPIRY = int(os.getenv('SUPABASE_SIGNED_URL_EXPIRY', '3600'))
+
+if SUPABASE_URL and not SUPABASE_MEDIA_PUBLIC_URL:
+    SUPABASE_MEDIA_PUBLIC_URL = f"{SUPABASE_URL.rstrip('/')}/storage/v1/object/public/{SUPABASE_MEDIA_BUCKET}"
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -169,14 +179,27 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR/'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 LOGIN_REDIRECT_URL = '/profile/'
 
-
-MEDIA_ROOT = os.path.join(BASE_DIR,'static/images')
-STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
+if SUPABASE_URL and SUPABASE_SERVICE_KEY:
+    STORAGES = {
+        "default": {
+            "BACKEND": "TSB.storage_backends.SupabaseMediaStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+    MEDIA_ROOT = None
+    if SUPABASE_MEDIA_PUBLIC_URL:
+        MEDIA_URL = SUPABASE_MEDIA_PUBLIC_URL
 
 
 # Default primary key field type
