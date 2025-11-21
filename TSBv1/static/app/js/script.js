@@ -13,6 +13,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
     }
+  
+    // Sync navbar animation delays (including dropdown support link)
+    const desktopNavLinks = document.querySelectorAll('.site-header .nav-left .nav-link');
+    if (desktopNavLinks.length) {
+      const baseDelay = 0.2;
+      desktopNavLinks.forEach((link, index) => {
+        const delay = (index + 1) * baseDelay;
+        link.style.animationDelay = `${delay}s`;
+      });
+    }
   });
   // Mobile menu toggle
   document.addEventListener('DOMContentLoaded', function() {

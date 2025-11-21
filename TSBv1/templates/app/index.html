@@ -2,6 +2,11 @@
 {% load static %}
 {% block title %}TSB-Enterprise{% endblock %}
 
+{% block extra_head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'app/css/about.css' %}">
+{% endblock %}
+
 {% block landing_content %}
   <section class="hero" id="hero-section">
       <div class="image-card">
@@ -154,7 +159,77 @@
         </div>
       </section>
 
-      
+  <section class="about-hero" id="about">
+    <div class="container">
+      <div class="about-hero-bg"></div>
+      <div class="about-hero-content">
+        <h1 class="about-hero-title">
+          Creating unforgettable<br>
+          experiences, one journey<br>
+          at a time.
+        </h1>
+        <p class="about-hero-subtitle">
+          We're redefining travel with premium destinations, exceptional service,<br>
+          and a commitment to making every moment count.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="figures-section">
+    <div class="orb orb-left"></div>
+    <div class="orb orb-right"></div>
+    <h1>Our Achievements</h1>
+    <div class="figures-row">
+      <div class="figure-card">
+        <div class="figure-icon"><i class="fas fa-users"></i></div>
+        <span class="figure-value">0</span>
+        <span class="figure-label">Happy Customers</span>
+      </div>
+      <div class="figure-card">
+        <div class="figure-icon"><i class="fas fa-smile"></i></div>
+        <span class="figure-value">0</span>
+        <span class="figure-label">Satisfaction</span>
+      </div>
+      <div class="figure-card">
+        <div class="figure-icon"><i class="fas fa-handshake"></i></div>
+        <span class="figure-value">0</span>
+        <span class="figure-label">Partners</span>
+      </div>
+      <div class="figure-card">
+        <div class="figure-icon"><i class="fas fa-trophy"></i></div>
+        <span class="figure-value">0</span>
+        <span class="figure-label">Awards</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq-section" id="faqs">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question">How do I make a booking? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
+        <div class="faq-answer">You can book directly on our website by selecting your destination and dates. Our team is also available to assist you with any queries.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Is my payment information secure? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
+        <div class="faq-answer">Absolutely. We use industry-leading encryption to ensure all your payment details are safe and confidential.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Can I modify or cancel my reservation? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
+        <div class="faq-answer">Yes, you can modify or cancel your booking from your account dashboard. Please check our policy for any applicable fees.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">What destinations do you offer? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
+        <div class="faq-answer">We offer a wide range of destinations including resorts, waterparks, and unique local experiences across India.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">How can I contact customer support? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
+        <div class="faq-answer">Our support team is available 24/7 via phone, email, or live chat to assist you with any questions or concerns.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="trust-section">
     <div class="trust-orb-1"></div>
     <div class="trust-orb-2"></div>
@@ -282,41 +357,6 @@
   </div>
 </section>
 
-<section class="about-us-section" id="about">
-  <div class="about-us-image"></div>
-  <div class="about-us-content">
-    <h2>Welcome to TSB</h2>
-    <h4>Your Trusted Travel Partner</h4>
-    <p>
-      At TSB, we are dedicated to providing you with exceptional travel experiences. Whether you're seeking a relaxing resort getaway, an exciting waterpark adventure, or a luxurious villa retreat, we curate the perfect destinations for every traveler.
-    </p>
-    <ul class="about-features">
-      <li>
-        <span class="about-feature-icon">💎</span>
-        <div class="about-feature-text">
-          <div class="about-feature-title">Best Deals & Offers</div>
-          <div class="about-feature-desc">Exclusive discounts and special packages for our valued customers</div>
-        </div>
-      </li>
-      <li>
-        <span class="about-feature-icon">🕑</span>
-        <div class="about-feature-text">
-          <div class="about-feature-title">24/7 Support</div>
-          <div class="about-feature-desc">Round-the-clock assistance from our certified travel experts</div>
-        </div>
-      </li>
-      <li>
-        <span class="about-feature-icon">🔒</span>
-        <div class="about-feature-text">
-          <div class="about-feature-title">Secure Payments</div>
-          <div class="about-feature-desc">Safe and convenient payment methods with complete transaction security</div>
-        </div>
-      </li>
-    </ul>
-    <a href="#about" class="about-us-btn">Learn More About Us</a>
-  </div>
-</section>
-
 <section class="contact-section" id="contact">
   <div class="trust-orb-1"></div>
     <div class="trust-orb-2"></div>
@@ -371,17 +411,6 @@
       </div>
 
       <div class="footer-col">
-        <h5 class="footer-title">Quick Links</h5>
-        <ul class="footer-links">
-          <li><a href="{% url 'about' %}">About Us</a></li>
-          <li><a href="#contact">Contact Us</a></li>
-          <li><a href="{% url 'services' %}">Our Services</a></li>
-          <li><a href="{% url 'privacypolicy' %}">Privacy Policy</a></li>
-          <li><a href="{% url 'termsandconditions' %}">Terms & Conditions</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
         <h5 class="footer-title">Support</h5>
         <ul class="footer-links">
           <li><a href="{% url 'refundpolicy' %}">Refund Policy</a></li>
@@ -411,4 +440,77 @@
     <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
   </div>
 </footer>
+
+{% endblock %}
+
+{% block landing_scripts %}
+  {{ block.super }}
+  <script>
+    (function() {
+      const faqInit = () => {
+        document.querySelectorAll('.faq-question').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const answer = this.nextElementSibling;
+            const icon = this.querySelector('.faq-toggle i');
+            const isOpen = answer.style.maxHeight && answer.style.maxHeight !== '0px';
+            if (!isOpen) {
+              answer.style.maxHeight = answer.scrollHeight + 'px';
+              answer.style.padding = '12px 0 12px 18px';
+              if (icon) {
+                icon.style.transform = 'rotate(180deg)';
+                icon.style.color = '#1976d2';
+              }
+            } else {
+              answer.style.maxHeight = null;
+              answer.style.padding = null;
+              if (icon) {
+                icon.style.transform = '';
+                icon.style.color = '';
+              }
+            }
+          });
+        });
+      };
+  
+      const figureData = [
+        { target: 1500, suffix: '+' },
+        { target: 80, suffix: '%' },
+        { target: 200, suffix: '' },
+        { target: 20, suffix: '+' }
+      ];
+      let figuresAnimated = false;
+      const animateCounter = (element, target, suffix, duration = 2000) => {
+        const increment = target / (duration / 16);
+        let current = 0;
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+          element.textContent = Math.floor(current) + suffix;
+        }, 16);
+      };
+      const checkFiguresVisibility = () => {
+        const figuresSection = document.querySelector('.figures-section');
+        const figureCards = document.querySelectorAll('.figure-card .figure-value');
+        if (figuresAnimated || !figuresSection) return;
+        const rect = figuresSection.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        if (isVisible) {
+          figuresAnimated = true;
+          figureCards.forEach((card, index) => {
+            const { target, suffix } = figureData[index];
+            animateCounter(card, target, suffix);
+          });
+        }
+      };
+  
+      window.addEventListener('DOMContentLoaded', () => {
+        faqInit();
+        checkFiguresVisibility();
+      });
+      document.addEventListener('scroll', checkFiguresVisibility);
+    })();
+  </script>
 {% endblock %}

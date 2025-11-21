@@ -30,8 +30,20 @@
         <a href="{% url 'home' %}#hero-section" class="nav-link">Home</a>
         <a href="{% url 'services' %}" class="nav-link">Services</a>
         <a href="{% url 'home' %}#review" class="nav-link">Reviews</a>
-        <a href="{% url 'about' %}" class="nav-link">About Us</a>
+        <a href="{% url 'home' %}#about" class="nav-link">About Us</a>
         <a href="{% url 'home' %}#contact" class="nav-link">Contact</a>
+        <div class="dropdown nav-link-dropdown">
+          <a class="nav-link dropdown-toggle support-link" href="#" id="landingSupportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Support
+          </a>
+          <ul class="dropdown-menu modern-dropdown" aria-labelledby="landingSupportDropdown">
+            <li><a class="dropdown-item" href="{% url 'refundpolicy' %}"><i class="fas fa-undo me-2"></i>Refund Policy</a></li>
+            <li><a class="dropdown-item" href="{% url 'shippingpolicy' %}"><i class="fas fa-truck me-2"></i>Shipping Policy</a></li>
+            <li><a class="dropdown-item" href="{% url 'contact' %}"><i class="fas fa-life-ring me-2"></i>Help Center</a></li>
+            <li><a class="dropdown-item" href="{% url 'home' %}#faqs"><i class="fas fa-question-circle me-2"></i>FAQs</a></li>
+            <li><a class="dropdown-item" href="{% url 'contact' %}#contact-form"><i class="fas fa-headset me-2"></i>Customer Care</a></li>
+          </ul>
+        </div>
       </nav>
       <div class="nav-right">
         {% if request.user.is_authenticated %}
@@ -52,8 +64,20 @@
           <a href="{% url 'home' %}#hero-section" class="nav-link">Home</a>
           <a href="{% url 'services' %}" class="nav-link">Services</a>
           <a href="{% url 'home' %}#review" class="nav-link">Reviews</a>
-          <a href="{% url 'about' %}" class="nav-link">About Us</a>
+          <a href="{% url 'home' %}#about" class="nav-link">About Us</a>
           <a href="{% url 'home' %}#contact" class="nav-link">Contact</a>
+          <div class="dropdown mobile-nav-dropdown">
+            <a class="nav-link dropdown-toggle support-link" href="#" id="mobileSupportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Support
+            </a>
+            <ul class="dropdown-menu modern-dropdown" aria-labelledby="mobileSupportDropdown">
+              <li><a class="dropdown-item" href="{% url 'refundpolicy' %}"><i class="fas fa-undo me-2"></i>Refund Policy</a></li>
+              <li><a class="dropdown-item" href="{% url 'shippingpolicy' %}"><i class="fas fa-truck me-2"></i>Shipping Policy</a></li>
+              <li><a class="dropdown-item" href="{% url 'contact' %}"><i class="fas fa-life-ring me-2"></i>Help Center</a></li>
+              <li><a class="dropdown-item" href="{% url 'home' %}#faqs"><i class="fas fa-question-circle me-2"></i>FAQs</a></li>
+              <li><a class="dropdown-item" href="{% url 'contact' %}#contact-form"><i class="fas fa-headset me-2"></i>Customer Care</a></li>
+            </ul>
+          </div>
         </nav>
         <div class="mobile-nav-right">
           {% if request.user.is_authenticated %}

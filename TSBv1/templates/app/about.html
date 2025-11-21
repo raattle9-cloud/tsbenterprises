@@ -1,122 +1,244 @@
-{% extends 'app/layouts/landing_base.html' %}
-{% load static %}
-{% block title %}About TSB{% endblock %}
-
-{% block extra_head %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About TSB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet">
+  {% load static %}
   <link rel="stylesheet" href="{% static 'app/css/about.css' %}">
-{% endblock %}
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+</head>
+<body>
+  <main>
 
-{% block landing_content %}
-  <section class="about-hero">
-    <div class="container">
-      <div class="about-hero-content">
-        <div class="hero-badge">About TSB</div>
-        <h1 class="about-hero-title">
-          Creating unforgettable<br>
-          experiences, one journey<br>
-          at a time.
-        </h1>
-        <p class="about-hero-subtitle">
-          We're redefining travel with premium destinations, exceptional service,<br>
-          and a commitment to making every moment count.
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="logo">
+            <img src="Images/tsb_logo.png" alt="TSB Logo" class="logo-img">
+        </div>
+          <nav class="nav nav-left">
+            <a href="#hero-section" class="nav-link">Home</a>
+            <a href="#premium" class="nav-link">Services</a>
+            <a href="#review" class="nav-link">Reviews</a>
+            <a href="#about" class="nav-link">About Us</a>
+            <a href="#contact" class="nav-link">Contact</a>
+          </nav>
+          <div class="nav-right">
+            <button class="header-btn login-btn">Login</button>
+            <button class="header-btn register-btn">Register</button>
+          </div>
+      </div>
+    </header>
+
+    <section class="about-hero">
+      <div class="container">
+        <div class="about-hero-bg"></div>
+        <div class="about-hero-content">
+          <!-- <div class="hero-badge">About TSB</div> -->
+          <h1 class="about-hero-title">
+            Creating unforgettable<br>
+            experiences, one journey<br>
+            at a time.
+          </h1>
+          <p class="about-hero-subtitle">
+            We're redefining travel with premium destinations, exceptional service,<br>
+            and a commitment to making every moment count.
+          </p>
+        </div>
+      </div>
+    </section>
+
+
+<script>
+
+// FAQ Dropdown Logic with Arrow Toggle (independent open/close)
+window.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const answer = this.nextElementSibling;
+      const icon = this.querySelector('.faq-toggle i');
+      const isOpen = answer.style.maxHeight && answer.style.maxHeight !== '0px';
+      if (!isOpen) {
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+        answer.style.padding = '12px 0 12px 18px';
+        if (icon) {
+          icon.style.transform = 'rotate(180deg)';
+          icon.style.color = '#1976d2';
+        }
+      } else {
+        answer.style.maxHeight = null;
+        answer.style.padding = null;
+        if (icon) {
+          icon.style.transform = '';
+          icon.style.color = '';
+        }
+      }
+    });
+  });
+});
+</script>
+
+      <!-- Figures Counter Section -->
+      <section class="figures-section">
+        <div class="orb orb-left"></div>
+        <div class="orb orb-right"></div>
+        <h1>Our Achievements</h1>
+        <div class="figures-row">
+          <div class="figure-card">
+            <div class="figure-icon"><i class="fas fa-users"></i></div>
+            <span class="figure-value">0</span>
+            <span class="figure-label">Happy Customers</span>
+          </div>
+          <div class="figure-card">
+            <div class="figure-icon"><i class="fas fa-smile"></i></div>
+            <span class="figure-value">0</span>
+            <span class="figure-label">Satisfaction</span>
+          </div>
+          <div class="figure-card">
+            <div class="figure-icon"><i class="fas fa-handshake"></i></div>
+            <span class="figure-value">0</span>
+            <span class="figure-label">Partners</span>
+          </div>
+          <div class="figure-card">
+            <div class="figure-icon"><i class="fas fa-trophy"></i></div>
+            <span class="figure-value">0</span>
+            <span class="figure-label">Awards</span>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- FAQ Section -->
+      <section class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question">How do I make a booking? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
+            <div class="faq-answer">You can book directly on our website by selecting your destination and dates. Our team is also available to assist you with any queries.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">Is my payment information secure? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
+            <div class="faq-answer">Absolutely. We use industry-leading encryption to ensure all your payment details are safe and confidential.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">Can I modify or cancel my reservation? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
+            <div class="faq-answer">Yes, you can modify or cancel your booking from your account dashboard. Please check our policy for any applicable fees.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">What destinations do you offer? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
+            <div class="faq-answer">We offer a wide range of destinations including resorts, waterparks, and unique local experiences across India.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">How can I contact customer support? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
+            <div class="faq-answer">Our support team is available 24/7 via phone, email, or live chat to assist you with any questions or concerns.</div>
+          </div>
+        </div>
+      </section>
+
+
+    <footer class="modern-footer">
+      <div class="footer-container">
+        <div class="footer-row">
+          <!-- Contact Section -->
+          <div class="footer-col">
+            <h5 class="footer-title"><i class="fas fa-map-marker-alt"></i> Get In Touch</h5>
+            <p><i class="fas fa-map-marker-alt text-primary"></i> TSB, Thane Station</p>
+            <p><i class="fas fa-phone-alt text-primary"></i> <a href="tel:+01234567890">+012 345 67890</a></p>
+            <p><i class="fas fa-envelope text-primary"></i> <a href="mailto:TSB@example.com">TSB@example.com</a></p>
+    
+            <div class="social-links">
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+              <a href="#"><i class="fab fa-youtube"></i></a>
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+          </div>
+    
+          <!-- Support -->
+          <div class="footer-col">
+            <h5 class="footer-title">Support</h5>
+            <ul class="footer-links">
+              <li><a href="{% url 'refundpolicy' %}">Refund Policy</a></li>
+              <li><a href="{% url 'shippingpolicy' %}">Shipping Policy</a></li>
+              <li><a href="#">Help Center</a></li>
+              <li><a href="#">FAQs</a></li>
+              <li><a href="#">Customer Care</a></li>
+            </ul>
+          </div>
+    
+          <!-- Newsletter -->
+          <div class="footer-col">
+            <h5 class="footer-title">Newsletter</h5>
+            <p>Subscribe to our newsletter for latest updates.</p>
+            <form class="newsletter-form">
+              <input type="email" placeholder="Your email" required>
+              <button type="submit"><i class="fas fa-paper-plane"></i></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    
+      <div class="footer-bottom">
+        <p>
+          &copy; 2024 <strong>TSB Enterprises INC</strong>. All Rights Reserved.
+          Designed by <a href="https://github.com/Mannan0313" target="_blank">Mannan Shaikh</a>
         </p>
+        <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
       </div>
-    </div>
-  </section>
+    </footer>
+    <!-- Premium Footer End -->
 
-  <section class="about-us-section" id="about">
-    <div class="about-us-image"></div>
-    <div class="about-us-content">
-      <h2>Welcome to TSB</h2>
-      <p>
-        At TSB, we deliver curated travel experiences that combine exceptional service,
-        premium destinations, and seamless planning for unforgettable journeys.
-      </p>
-      <ul class="about-features">
-        <li>
-          <span class="about-feature-icon">💎</span>
-          <div class="about-feature-text">
-            <div class="about-feature-title">Premium Partners</div>
-            <div class="about-feature-desc">Handpicked resorts, villas, and attractions you can trust.</div>
-          </div>
-        </li>
-        <li>
-          <span class="about-feature-icon">🕑</span>
-          <div class="about-feature-text">
-            <div class="about-feature-title">Always-On Support</div>
-            <div class="about-feature-desc">Travel experts ready to help 24/7 before, during, and after trips.</div>
-          </div>
-        </li>
-        <li>
-          <span class="about-feature-icon">🔒</span>
-          <div class="about-feature-text">
-            <div class="about-feature-title">Secure Payments</div>
-            <div class="about-feature-desc">End-to-end protection with trusted gateways and policies.</div>
-          </div>
-        </li>
-      </ul>
-      <a href="{% url 'services' %}" class="about-us-btn">Discover Experiences</a>
-    </div>
-  </section>
+</main>
+</body>
+</html>
+<script>
+// FIGURES COUNTER ANIMATION
+const figureData = [
+  { target: 1500, suffix: '+' },
+  { target: 80, suffix: '%' },
+  { target: 200, suffix: '' },
+  { target: 20, suffix: '+' }
+];
 
-  <footer class="modern-footer">
-    <div class="footer-container">
-      <div class="footer-row">
-        <div class="footer-col">
-          <h5 class="footer-title"><i class="fas fa-map-marker-alt"></i> Get In Touch</h5>
-          <p><i class="fas fa-map-marker-alt text-primary"></i> TSB, Thane Station</p>
-          <p><i class="fas fa-phone-alt text-primary"></i> <a href="tel:+01234567890">+012 345 67890</a></p>
-          <p><i class="fas fa-envelope text-primary"></i> <a href="mailto:TSB@example.com">TSB@example.com</a></p>
+let figuresAnimated = false;
 
-          <div class="social-links">
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-youtube"></i></a>
-            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-          </div>
-        </div>
+function animateCounter(element, target, suffix, duration = 2000) {
+  let start = 0;
+  const increment = target / (duration / 16); // 60fps
+  let current = 0;
+  
+  const timer = setInterval(() => {
+    current += increment;
+    if (current >= target) {
+      current = target;
+      clearInterval(timer);
+    }
+    element.textContent = Math.floor(current) + suffix;
+  }, 16);
+}
 
-        <div class="footer-col">
-          <h5 class="footer-title">Quick Links</h5>
-          <ul class="footer-links">
-            <li><a href="{% url 'about' %}">About Us</a></li>
-            <li><a href="{% url 'home' %}#contact">Contact Us</a></li>
-            <li><a href="{% url 'services' %}">Our Services</a></li>
-            <li><a href="{% url 'privacypolicy' %}">Privacy Policy</a></li>
-            <li><a href="{% url 'termsandconditions' %}">Terms & Conditions</a></li>
-          </ul>
-        </div>
+function checkFiguresVisibility() {
+  const figuresSection = document.querySelector('.figures-section');
+  const figureCards = document.querySelectorAll('.figure-card .figure-value');
+  
+  if (figuresAnimated) return;
+  if (!figuresSection) return;
+  const rect = figuresSection.getBoundingClientRect();
+  const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+  
+  if (isVisible) {
+    figuresAnimated = true;
+    figureCards.forEach((card, index) => {
+      const { target, suffix } = figureData[index];
+      animateCounter(card, target, suffix);
+    });
+  }
+}
 
-        <div class="footer-col">
-          <h5 class="footer-title">Support</h5>
-          <ul class="footer-links">
-            <li><a href="{% url 'refundpolicy' %}">Refund Policy</a></li>
-            <li><a href="{% url 'shippingpolicy' %}">Shipping Policy</a></li>
-            <li><a href="{% url 'contact' %}">Help Center</a></li>
-            <li><a href="{% url 'contact' %}#faqs">FAQs</a></li>
-            <li><a href="{% url 'contact' %}">Customer Care</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h5 class="footer-title">Newsletter</h5>
-          <p>Subscribe to our newsletter for latest updates.</p>
-          <form class="newsletter-form">
-            <input type="email" placeholder="Your email" required>
-            <button type="submit"><i class="fas fa-paper-plane"></i></button>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>
-        &copy; 2024 <strong>TSB Enterprises INC</strong>. All Rights Reserved.
-        Designed by <a href="https://github.com/Mannan0313" target="_blank">Mannan Shaikh</a>
-      </p>
-      <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
-    </div>
-  </footer>
-{% endblock %}
- 
+document.addEventListener('scroll', checkFiguresVisibility);
+window.addEventListener('DOMContentLoaded', checkFiguresVisibility);
+</script>
+</html>

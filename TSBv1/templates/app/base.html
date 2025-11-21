@@ -58,7 +58,7 @@
               </ul>
             </li>
             <li class="nav-item">
-              <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">
+              <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}#about">
                 <i class="fas fa-info-circle me-1"></i>About Us
               </a>
             </li>
@@ -68,14 +68,15 @@
               </a>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name in 'termsandconditions,privacypolicy,refundpolicy,shippingpolicy' %}active{% endif %}" href="#" id="supportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name in 'refundpolicy,shippingpolicy,contact' %}active{% endif %}" href="#" id="supportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-headset me-1"></i>Support
               </a>
               <ul class="dropdown-menu modern-dropdown" aria-labelledby="supportDropdown">
-                <li><a class="dropdown-item" href="{% url 'termsandconditions' %}"><i class="fas fa-file-contract me-2"></i>Terms & Conditions</a></li>
-                <li><a class="dropdown-item" href="{% url 'privacypolicy' %}"><i class="fas fa-shield-alt me-2"></i>Privacy Policy</a></li>
                 <li><a class="dropdown-item" href="{% url 'refundpolicy' %}"><i class="fas fa-undo me-2"></i>Refund Policy</a></li>
                 <li><a class="dropdown-item" href="{% url 'shippingpolicy' %}"><i class="fas fa-truck me-2"></i>Shipping Policy</a></li>
+                <li><a class="dropdown-item" href="{% url 'contact' %}"><i class="fas fa-life-ring me-2"></i>Help Center</a></li>
+                <li><a class="dropdown-item" href="{% url 'home' %}#faqs"><i class="fas fa-question-circle me-2"></i>FAQs</a></li>
+                <li><a class="dropdown-item" href="{% url 'contact' %}#contact-form"><i class="fas fa-headset me-2"></i>Customer Care</a></li>
               </ul>
             </li>
           </ul>
@@ -159,16 +160,6 @@
                 <a href="#" class="social-icon" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
               </div>
             </div>
-          </div>
-          <div class="col-lg-2 col-md-6">
-            <h5 class="footer-title mb-4">Quick Links</h5>
-            <ul class="footer-links">
-              <li><a href="{% url 'about' %}"><i class="fas fa-chevron-right me-2"></i>About Us</a></li>
-              <li><a href="{% url 'contact' %}"><i class="fas fa-chevron-right me-2"></i>Contact Us</a></li>
-              <li><a href="{% url 'services' %}"><i class="fas fa-chevron-right me-2"></i>Our Services</a></li>
-              <li><a href="{% url 'privacypolicy' %}"><i class="fas fa-chevron-right me-2"></i>Privacy Policy</a></li>
-              <li><a href="{% url 'termsandconditions' %}"><i class="fas fa-chevron-right me-2"></i>Terms & Conditions</a></li>
-            </ul>
           </div>
           <div class="col-lg-3 col-md-6">
             <h5 class="footer-title mb-4">Support</h5>
