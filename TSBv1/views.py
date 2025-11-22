@@ -43,35 +43,64 @@ def shippingpolicy(request):
 
 
 def services_page(request):
-    category_groups = []
+    # Get all services with images
+    services = Services.objects.all().prefetch_related('images')
+    
+    # Prepare categories list for sidebar
+    categories = []
     for code, label in CATEGORY_CHOICES:
-        services_qs = Services.objects.filter(category=code).prefetch_related('images')[:6]
         display_label = label.replace('_', ' ').title()
-        category_groups.append({
+        categories.append({
             'code': code,
-            'label': display_label,
-            'services': services_qs
+            'label': display_label
         })
-    return render(request, "app/services.html", {"category_groups": category_groups})
+    
+    return render(request, "app/services.html", {
+        "services": services,
+        "categories": categories,
+        "CATEGORY_CHOICES": CATEGORY_CHOICES
+    })
 
 
 
 #Category Page Logic main branch use case
 class CategoryViewNoSlug(View):
     def get(self, request):
-        return render(request, "app/category.html",locals())
+        # Get all categories for sidebar
+        categories = []
+        for code, label in CATEGORY_CHOICES:
+            display_label = label.replace('_', ' ').title()
+            categories.append({
+                'code': code,
+                'label': display_label
+            })
+        return render(request, "app/category.html", locals())
 
 class CategoryView(View):
     def get(self, request, val):
         services = Services.objects.filter(category=val).prefetch_related('images')
-        title = Services.objects.filter(category=val).values('title')
-        return render(request, "app/category.html",locals())
+        # Get all categories for sidebar (not individual service titles)
+        categories = []
+        for code, label in CATEGORY_CHOICES:
+            display_label = label.replace('_', ' ').title()
+            categories.append({
+                'code': code,
+                'label': display_label
+            })
+        return render(request, "app/category.html", locals())
     
 class CategoryTitle(View):
     def get(self, request, val):
         services = Services.objects.filter(title=val).prefetch_related('images')
-        title = Services.objects.filter(category=services[0].category).values('title')
-        return render(request, "app/category.html",locals())
+        # Get all categories for sidebar (not individual service titles)
+        categories = []
+        for code, label in CATEGORY_CHOICES:
+            display_label = label.replace('_', ' ').title()
+            categories.append({
+                'code': code,
+                'label': display_label
+            })
+        return render(request, "app/category.html", locals())
     
 class CategoryDetail(View):
     def get(self, request,pk):
