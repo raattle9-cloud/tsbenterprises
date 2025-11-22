@@ -1,9 +1,10 @@
-{% extends 'app/base.html' %}
+{% extends 'app/layouts/landing_base.html' %}
 {% load static %}
-{% block title %} Details {% endblock title %}
+{% block title %}Cart - TSB Enterprises{% endblock title %}
 
-{% block main-content %}
-<div class="container py-5 mt-4">
+{% block landing_content %}
+<div class="section-padding" style="padding-top: 120px;">
+<div class="container py-5">
     {% if cart %}
     <div class="row">
         <div class="col-12 mb-4">
@@ -116,16 +117,8 @@
     </div>
     {% endif %}
 </div>
-    
-
-
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-{% endblock main-content %}
- 
-{% block payment-gateway %}
-    <!-- <button id="rzp-button1">Pay with Razorpay</button> -->
-    
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
         var options = {
             "key": "rzp_live_ZWQJtI7AM0kdlA", // Enter the Key ID generated from the Dashboard
@@ -136,12 +129,6 @@
             "image": "{% static 'app/images/product/tsb_logo.png' %}",
             "order_id": "{{order_id}}", 
 
-            /*"handler": function (response){
-                var form = document.getElementById('payment-form');
-                window.location.href = `/paymentdone?order_id=${response.razorpay_order_id}&payment_id=${response.razorpay_payment_id}&cust_id=${form.elements["custid"].value}`;
-              handler color -----------------------------  #3399cc
-            },
-            */
             "handler": function (response){
                 try {
                     console.log("Razorpay Payment Successful:", response);
@@ -154,10 +141,8 @@
                 }
             },
 
-           
             "theme": {
                 "color": "#25d366"
-                
             }
         };
         var rzp1 = new Razorpay(options);
@@ -169,6 +154,5 @@
             e.preventDefault();
         }
     </script>
-
-{% endblock payment-gateway %}
+{% endblock landing_content %}
 

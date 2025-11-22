@@ -4,7 +4,7 @@ Short README with setup, run and deployment notes for the TSB Enterprises Django
 
 ## Project Overview
 
-This repository is a Django application (project root contains `manage.py` and `TSB/settings.py`). The main app is `TSBv1` and the project uses SQLite by default. The project includes Razorpay integration and has production-service snippets for Gunicorn + Nginx included in `TSB/settings.py` comments.
+This repository is a Django application (project root contains `manage.py` and `TSB/settings.py`). The main app is `TSBv1` and the project uses Supabase (PostgreSQL) for database storage. The project includes Razorpay integration and has production-service snippets for Gunicorn + Nginx included in `TSB/settings.py` comments.
 
 ## Quick Prerequisites
 
@@ -32,14 +32,22 @@ py -3 -m venv .venv
 . .\.venv\Scripts\Activate
 ```
 
-3) Upgrade pip and install requirements
+3) Create a `.env` file with your Supabase database connection string
+
+```powershell
+# Copy the example file
+Copy-Item .env.example .env
+# Then edit .env and add your Supabase DATABASE_URL
+```
+
+4) Upgrade pip and install requirements
 
 ```powershell
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-4) Apply database migrations
+5) Apply database migrations
 
 ```powershell
 python manage.py migrate
@@ -87,7 +95,18 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 Example `.env` placeholders (do NOT commit real keys):
 
 ```
+# REQUIRED: Supabase PostgreSQL Connection String
+# Get this from: Supabase Dashboard > Project Settings > Database > Connection String > URI
+DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:5432/postgres
+
+# Optional: Supabase Storage Configuration
+SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+SUPABASE_SERVICE_KEY=your_service_role_key_here
+
+# Optional: Django Secret Key (for production, generate a new one)
 SECRET_KEY=your-secret-key
+
+# Optional: Razorpay Keys
 RAZORPAY_KEY_ID=rzp_test_xxx
 RAZORPAY_KEY_SECRET=your-razorpay-secret
 ```

@@ -30,6 +30,11 @@ WantedBy=multi-user.target
 """
 import os
 from pathlib import Path
+from urllib.parse import urlparse
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -97,10 +102,30 @@ WSGI_APPLICATION = 'TSB.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# Get DATABASE_URL from environment variable (REQUIRED for Supabase PostgreSQL)
+DATABASE_URL = os.getenv('DATABASE_URL')
+
+if not DATABASE_URL:
+    raise ValueError(
+        "DATABASE_URL environment variable is required. "
+        "Please set it to your Supabase PostgreSQL connection string. "
+        "Format: postgresql://user:password@host:port/database"
+    )
+
+# Parse the DATABASE_URL (Supabase PostgreSQL connection string)
+db_url = urlparse(DATABASE_URL)
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': db_url.path[1:],  # Remove leading '/'
+        'USER': db_url.username,
+        'PASSWORD': db_url.password,
+        'HOST': db_url.hostname,
+        'PORT': db_url.port or '5432',
+        'OPTIONS': {
+            'connect_timeout': 10,
+        },
     }
 }
 #DATABASES = {
