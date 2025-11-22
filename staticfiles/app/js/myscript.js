@@ -72,7 +72,9 @@ $('.remove-cart').click(function(){
         success:function(data){
             document.getElementById("amount").innerText=data.amount 
             document.getElementById("totalamount").innerText=data.totalamount
-            eml.parentNode.parentNode.parentNode.parentNode.remove() 
+            // remove the closest cart-item container (only this item)
+            var cartItem = eml.closest('.cart-item');
+            if (cartItem) { cartItem.remove(); }
         }
     })
 })

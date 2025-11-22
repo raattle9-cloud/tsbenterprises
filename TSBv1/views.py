@@ -139,7 +139,11 @@ def add_to_cart(request):
     user = request.user
     services_id = request.GET.get('serv_id')
     services = Services.objects.get(id = services_id)
-    Cart(user=user,services=services).save()
+    # Use get_or_create to avoid creating duplicate Cart rows for the same user+service
+    cart_item, created = Cart.objects.get_or_create(user=user, services=services, defaults={'quantity': 1})
+    if not created:
+        cart_item.quantity = (cart_item.quantity or 0) + 1
+        cart_item.save()
     return redirect("/cart")
 
 def show_cart(request):
@@ -184,12 +188,20 @@ class checkout(View):
 
 def plus_cart(request):
     if request.method=='GET':
-
-        serv_id = request.GET['serv_id']
+        # Accept either 'serv_id' (used in some templates) or 'prod_id' (used elsewhere)
+        serv_id = request.GET.get('serv_id') or request.GET.get('prod_id')
+        if not serv_id:
+            return JsonResponse({'error': 'missing serv_id or prod_id'}, status=400)
         print(serv_id)
-        c = Cart.objects.get(Q(services=serv_id) & Q(user=request.user))
-        c.quantity += 1
-        c.save()
+        # Operate on the first matching cart item; get_or_create ensures duplicates are unlikely
+        c = Cart.objects.filter(Q(services=serv_id) & Q(user=request.user)).first()
+        if not c:
+            # create a new one if missing
+            services = Services.objects.get(id=serv_id)
+            c = Cart.objects.create(user=request.user, services=services, quantity=1)
+        else:
+            c.quantity = (c.quantity or 0) + 1
+            c.save()
 
         user = request.user
         cart = Cart.objects.filter(user=user)
@@ -208,11 +220,18 @@ def plus_cart(request):
     
 def minus_cart(request):
     if request.method=='GET':
-        serv_id = request.GET['serv_id']
+        serv_id = request.GET.get('serv_id') or request.GET.get('prod_id')
+        if not serv_id:
+            return JsonResponse({'error': 'missing serv_id or prod_id'}, status=400)
         print(serv_id)
-        c = Cart.objects.get(Q(services=serv_id) & Q(user=request.user))
-        c.quantity -= 1
-        c.save()
+        c = Cart.objects.filter(Q(services=serv_id) & Q(user=request.user)).first()
+        if not c:
+            return JsonResponse({'error': 'cart item not found'}, status=404)
+        c.quantity = (c.quantity or 0) - 1
+        if c.quantity <= 0:
+            c.delete()
+        else:
+            c.save()
 
         user = request.user
         cart = Cart.objects.filter(user=user)
@@ -231,20 +250,29 @@ def minus_cart(request):
     
 def remove_cart(request):
     if request.method=='GET':
-        serv_id = request.GET['serv_id']
-        c = Cart.objects.get(Q(services=serv_id) & Q(user=request.user))
-        c.delete()
+        serv_id = request.GET.get('serv_id') or request.GET.get('prod_id')
+        if not serv_id:
+            return JsonResponse({'error': 'missing serv_id or prod_id'}, status=400)
+
+        qs = Cart.objects.filter(Q(services=serv_id) & Q(user=request.user))
+        if not qs.exists():
+            return JsonResponse({'error': 'cart item not found'}, status=404)
+
+        # Sum quantities across any duplicate rows to report removed quantity
+        removed_quantity = sum((item.quantity or 0) for item in qs)
+        # Delete all matching rows
+        qs.delete()
 
         user = request.user
         cart = Cart.objects.filter(user=user)
-        amount =0
+        amount = 0
         for p in cart:
             value = p.quantity * p.services.discounted_price
             amount = amount + value
         totalamount = amount + 40
 
         data = {
-            'quantity': c.quantity,
+            'quantity': removed_quantity,
             'amount': amount,
             'totalamount': totalamount
         }
