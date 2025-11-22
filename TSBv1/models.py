@@ -97,7 +97,7 @@ class Customer(models.Model):
     city = models.CharField(max_length=20)
     mobile = models.CharField(max_length=10, validators=[
         RegexValidator(
-            regex='^\d{10}$',
+            regex=r'^\d{10}$',
             message='Mobile number must be 10 digits',
             code='invalid_mobile'
         ),
