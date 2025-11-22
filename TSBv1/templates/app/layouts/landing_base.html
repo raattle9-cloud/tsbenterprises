@@ -28,7 +28,19 @@
       </div>
       <nav class="nav nav-left">
         <a href="{% url 'home' %}#hero-section" class="nav-link">Home</a>
-        <a href="{% url 'services' %}" class="nav-link">Services</a>
+        <div class="dropdown nav-link-dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="landingServicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Services
+          </a>
+          <ul class="dropdown-menu modern-dropdown" aria-labelledby="landingServicesDropdown">
+            <li><a class="dropdown-item" href="{% url 'services' %}#category-re"><i class="fas fa-hotel me-2"></i>Resort</a></li>
+            <li><a class="dropdown-item" href="{% url 'services' %}#category-wp"><i class="fas fa-swimming-pool me-2"></i>Waterparks</a></li>
+            <li><a class="dropdown-item" href="{% url 'services' %}#category-dp"><i class="fas fa-map-marked-alt me-2"></i>Destination Packages</a></li>
+            <li><a class="dropdown-item" href="{% url 'services' %}#category-db"><i class="fas fa-utensils me-2"></i>Dhaba</a></li>
+            <li><a class="dropdown-item" href="{% url 'services' %}#category-vi"><i class="fas fa-home me-2"></i>Villas</a></li>
+            <li><a class="dropdown-item" href="{% url 'services' %}#category-go"><i class="fas fa-gamepad me-2"></i>Game On</a></li>
+          </ul>
+        </div>
         <a href="{% url 'home' %}#review" class="nav-link">Reviews</a>
         <a href="{% url 'home' %}#about" class="nav-link">About Us</a>
         <a href="{% url 'home' %}#contact" class="nav-link">Contact</a>
@@ -62,7 +74,19 @@
       <div class="mobile-menu">
         <nav class="mobile-nav">
           <a href="{% url 'home' %}#hero-section" class="nav-link">Home</a>
-          <a href="{% url 'services' %}" class="nav-link">Services</a>
+          <div class="dropdown mobile-nav-dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="mobileServicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Services
+            </a>
+            <ul class="dropdown-menu modern-dropdown" aria-labelledby="mobileServicesDropdown">
+              <li><a class="dropdown-item" href="{% url 'services' %}#category-re"><i class="fas fa-hotel me-2"></i>Resort</a></li>
+              <li><a class="dropdown-item" href="{% url 'services' %}#category-wp"><i class="fas fa-swimming-pool me-2"></i>Waterparks</a></li>
+              <li><a class="dropdown-item" href="{% url 'services' %}#category-dp"><i class="fas fa-map-marked-alt me-2"></i>Destination Packages</a></li>
+              <li><a class="dropdown-item" href="{% url 'services' %}#category-db"><i class="fas fa-utensils me-2"></i>Dhaba</a></li>
+              <li><a class="dropdown-item" href="{% url 'services' %}#category-vi"><i class="fas fa-home me-2"></i>Villas</a></li>
+              <li><a class="dropdown-item" href="{% url 'services' %}#category-go"><i class="fas fa-gamepad me-2"></i>Game On</a></li>
+            </ul>
+          </div>
           <a href="{% url 'home' %}#review" class="nav-link">Reviews</a>
           <a href="{% url 'home' %}#about" class="nav-link">About Us</a>
           <a href="{% url 'home' %}#contact" class="nav-link">Contact</a>

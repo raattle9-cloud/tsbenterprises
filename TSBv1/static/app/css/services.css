@@ -80,13 +80,33 @@
 .services-grid {
   margin-top: 16px;
   gap: 18px;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr); /* Always 3 cards per row */
   grid-template-rows: auto;
-  grid-auto-rows: auto;
+  grid-auto-rows: 1fr; /* Make all rows same height */
 }
+/* --- Uniform Service Card Sizing --- */
 .services-grid .service-card {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  height: 500px; /* Fixed uniform height for all cards */
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.services-grid .service-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+/* Ensure consistent spacing within card content */
+.service-card .card-text {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .service-image {
   position: relative;
@@ -117,21 +137,29 @@
   font-weight: 600;
   font-size: 0.95rem;
 }
-.service-card .card-text {
-  padding-top: 20px;
-}
 .service-card h3 {
   font-size: 1.35rem;
   margin-bottom: 12px;
   color: #0f2027;
+  min-height: 3.5rem; /* Consistent title height (2 lines) */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .service-card p {
   color: #5d6b7c;
   font-size: 0.98rem;
-  min-height: 48px;
+  min-height: 3rem; /* Consistent description height */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1; /* Allow description to grow */
 }
 .service-actions {
-  margin-top: 20px;
+  margin-top: auto; /* Push actions to bottom */
+  padding-top: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -188,6 +216,24 @@
   }
   .services-cta-actions {
     justify-content: center;
+  }
+  /* Responsive: 2 cards per row on tablet */
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  /* Responsive card height */
+  .services-grid .service-card {
+    height: 460px;
+  }
+}
+@media (max-width: 768px) {
+  /* Responsive: 1 card per row on mobile */
+  .services-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .services-grid .service-card {
+    height: auto;
+    max-height: 500px;
   }
 }
 @media (max-width: 576px) {

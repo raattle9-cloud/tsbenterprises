@@ -412,7 +412,20 @@
   .support-link {
     animation-delay: 1.2s;
   }
-  .nav-link::after {
+  /* Underline animation using ::after for regular links */
+  .nav-link:not(.dropdown-toggle)::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    background: #fff;
+    transition: width 0.3s;
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+  }
+  /* Underline animation using ::before for dropdown-toggle links */
+  .nav-link.dropdown-toggle::before {
     content: '';
     display: block;
     width: 0;
@@ -426,8 +439,37 @@
   .nav-link:hover {
     color: #ffd700;
   }
-  .nav-link:hover::after {
+  .nav-link:not(.dropdown-toggle):hover::after {
     width: 100%;
+  }
+  .nav-link.dropdown-toggle:hover::before {
+    width: 100%;
+  }
+  /* Bootstrap dropdown chevron using ::after for dropdown-toggle */
+  .nav-link.dropdown-toggle::after {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 0.5rem;
+    vertical-align: 0.255em;
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-bottom: 0;
+    border-left: 0.3em solid transparent;
+    position: static;
+    background: none;
+    transition: transform 0.3s ease;
+  }
+  .nav-link.dropdown-toggle[aria-expanded="true"]::after {
+    transform: rotate(180deg);
+  }
+  /* Sleek dropdown-toggle styling */
+  .nav-link.dropdown-toggle {
+    position: relative;
+  }
+  .nav-link.dropdown-toggle:hover {
+    color: #ffd700;
   }
   .nav-right {
     display: flex;

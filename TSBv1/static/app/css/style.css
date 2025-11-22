@@ -192,7 +192,9 @@ p {
 }
 
 .modern-navbar .nav-link:hover::before,
-.modern-navbar .nav-link.active::before {
+.modern-navbar .nav-link.active::before,
+.modern-navbar .nav-link.dropdown-toggle:hover::before,
+.modern-navbar .nav-link.dropdown-toggle[aria-expanded="true"]::before {
     transform: translateX(-50%) scaleX(1);
 }
 
@@ -204,6 +206,32 @@ p {
 .modern-navbar .nav-link.active {
     color: var(--primary) !important;
     background: rgba(26, 77, 110, 0.08);
+}
+
+/* Sleek dropdown-toggle styling - maintain same spacing as regular links */
+.modern-navbar .nav-link.dropdown-toggle {
+    position: relative;
+    padding-right: 1.6rem !important;
+}
+
+/* Ensure Bootstrap's dropdown chevron has proper spacing */
+.modern-navbar .nav-link.dropdown-toggle::after {
+    margin-left: 0.4rem;
+}
+
+.modern-navbar .nav-link.dropdown-toggle:hover {
+    color: var(--primary) !important;
+    background: rgba(26, 77, 110, 0.05);
+}
+
+.modern-navbar .nav-link.dropdown-toggle[aria-expanded="true"] {
+    color: var(--primary) !important;
+    background: rgba(26, 77, 110, 0.08);
+}
+
+/* Ensure Bootstrap's dropdown chevron rotates when open */
+.modern-navbar .nav-link.dropdown-toggle[aria-expanded="true"]::after {
+    transform: rotate(180deg);
 }
 
 .modern-navbar .user-menu {
