@@ -75,7 +75,7 @@
 .contact-info-card h3 {
   font-size: 1.3rem;
   margin-bottom: 10px;
-  color: #0f2027;
+  color: #0096c7;
 }
 .contact-info-card p,
 .contact-info-card a {
@@ -102,7 +102,7 @@
 .contact-form-text h2 {
   font-size: clamp(2rem, 3vw, 2.6rem);
   margin: 16px 0;
-  color: #0f2027;
+  color: #0096c7;
 }
 .contact-form-text p {
   color: #5d6b7c;
@@ -181,7 +181,7 @@
 .contact-map-card {
   max-width: 1100px;
   margin: 0 auto;
-  background: #0f2027;
+  background: #0096c7;
   color: #fff;
   border-radius: 32px;
   padding: 40px;

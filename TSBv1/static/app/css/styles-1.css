@@ -26,7 +26,7 @@
 .partners-heading {
 	font-size: 2.2rem;
 	font-weight: 800;
-	color: #2c5364;
+	color: #48cae4;
 	margin-bottom: 8px;
 	font-family: 'Lato', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial;
 }
@@ -185,7 +185,7 @@
 }
 .review-quote-icon {
 	font-size: 40px;
-	color: #0f2027;
+	color: #0096c7;
 	margin-bottom: 16px;
 }
 .review-title {
@@ -208,12 +208,12 @@
 	align-items: center;
 	justify-content: center;
 	font-size: 1.3rem;
-	color: #0f2027;
+	color: #0096c7;
 	cursor: pointer;
 	transition: background 0.2s, color 0.2s;
 }
 .review-arrow:hover {
-	background: #0f2027;
+	background: #0096c7;
 	color: #fff;
 }
 /* --- Updated Review Slider for Multiple Cards --- */
@@ -340,7 +340,7 @@
 }
 .contact-content {
 	flex: 1 1 55%;
-	color: #2c5364;
+	color: #48cae4;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -349,7 +349,7 @@
 	font-size: 2rem;
 	font-weight: 800;
 	margin-bottom: 18px;
-	color: #2c5364;
+	color: #48cae4;
 }
 .contact-desc {
 	font-size: 1.1rem;
@@ -373,21 +373,21 @@
 	box-shadow: 0 2px 8px rgba(44,83,100,0.10);
 }
 .contact-btn-primary {
-	background: linear-gradient(90deg, #0f2027, #2c5364);
+	background: linear-gradient(90deg, #0096c7, #48cae4);
 	color: #fff;
 	border: none;
 }
 .contact-btn-primary:hover {
 	background: #ffd700;
-	color: #2c5364;
+	color: #48cae4;
 }
 .contact-btn-secondary {
 	background: #fff;
-	color: #2c5364;
-	border: 2px solid #2c5364;
+	color: #48cae4;
+	border: 2px solid #48cae4;
 }
 .contact-btn-secondary:hover {
-	background: #2c5364;
+	background: #48cae4;
 	color: #fff;
 }
 

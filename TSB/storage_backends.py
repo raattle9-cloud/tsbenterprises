@@ -33,30 +33,40 @@ class SupabaseMediaStorage(Storage):
         _require_supabase_settings()
         self.bucket = _get_bucket()
 
+    def _normalize_path(self, path: str) -> str:
+        """Normalize path to use forward slashes (required by Supabase)."""
+        return path.replace("\\", "/")
+
     def _save(self, name: str, content: File) -> str:
+        # Normalize path to use forward slashes (Windows uses backslashes)
+        normalized_name = self._normalize_path(name)
         data = content.read()
-        content_type, _ = mimetypes.guess_type(name)
+        content_type, _ = mimetypes.guess_type(normalized_name)
         metadata = {"content-type": content_type or "application/octet-stream"}
 
-        self.bucket.upload(path=name, file=data, file_options=metadata)
-        return name
+        self.bucket.upload(path=normalized_name, file=data, file_options=metadata)
+        return normalized_name
 
     def _open(self, name: str, mode: str = "rb") -> ContentFile:
-        response = self.bucket.download(name)
+        normalized_name = self._normalize_path(name)
+        response = self.bucket.download(normalized_name)
         return ContentFile(response)
 
     def delete(self, name: str) -> None:
-        self.bucket.remove([name])
+        normalized_name = self._normalize_path(name)
+        self.bucket.remove([normalized_name])
 
     def exists(self, name: str) -> bool:
-        folder = name.rsplit("/", 1)[0] if "/" in name else ""
-        filename = name.split("/")[-1]
+        normalized_name = self._normalize_path(name)
+        folder = normalized_name.rsplit("/", 1)[0] if "/" in normalized_name else ""
+        filename = normalized_name.split("/")[-1]
         objects = self.bucket.list(path=folder or "")
         return any(obj.get("name") == filename for obj in objects)
 
     def size(self, name: str) -> int:
-        folder = name.rsplit("/", 1)[0] if "/" in name else ""
-        filename = name.split("/")[-1]
+        normalized_name = self._normalize_path(name)
+        folder = normalized_name.rsplit("/", 1)[0] if "/" in normalized_name else ""
+        filename = normalized_name.split("/")[-1]
         objects = self.bucket.list(path=folder or "")
         for obj in objects:
             if obj.get("name") == filename:
@@ -65,11 +75,12 @@ class SupabaseMediaStorage(Storage):
         return 0
 
     def url(self, name: str) -> str:
+        normalized_name = self._normalize_path(name)
         if settings.SUPABASE_MEDIA_PUBLIC:
             public_base = settings.SUPABASE_MEDIA_PUBLIC_URL
             if public_base:
-                return f"{public_base.rstrip('/')}/{name.lstrip('/')}"
-            return self.bucket.get_public_url(name)
-        response = self.bucket.create_signed_url(path=name, expires_in=settings.SUPABASE_SIGNED_URL_EXPIRY)
+                return f"{public_base.rstrip('/')}/{normalized_name.lstrip('/')}"
+            return self.bucket.get_public_url(normalized_name)
+        response = self.bucket.create_signed_url(path=normalized_name, expires_in=settings.SUPABASE_SIGNED_URL_EXPIRY)
         return response["signedURL"]
 

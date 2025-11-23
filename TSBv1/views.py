@@ -1,5 +1,5 @@
 from django.db.models import Count
-from .models import Services, Customer, Cart, CATEGORY_CHOICES
+from .models import Services, Customer, Cart, Wishlist, CATEGORY_CHOICES
 from django.views import View
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -46,6 +46,11 @@ def services_page(request):
     # Get all services with images
     services = Services.objects.all().prefetch_related('images')
     
+    # Get wishlist items for authenticated users
+    wishlist_service_ids = set()
+    if request.user.is_authenticated:
+        wishlist_service_ids = set(Wishlist.objects.filter(user=request.user).values_list('services_id', flat=True))
+    
     # Prepare categories list for sidebar
     categories = []
     for code, label in CATEGORY_CHOICES:
@@ -58,6 +63,7 @@ def services_page(request):
     return render(request, "app/services.html", {
         "services": services,
         "categories": categories,
+        "wishlist_service_ids": wishlist_service_ids,
         "CATEGORY_CHOICES": CATEGORY_CHOICES
     })
 
@@ -105,6 +111,10 @@ class CategoryTitle(View):
 class CategoryDetail(View):
     def get(self, request,pk):
         services = Services.objects.prefetch_related('images').get(pk=pk)
+        # Check if item is in wishlist
+        in_wishlist = False
+        if request.user.is_authenticated:
+            in_wishlist = Wishlist.objects.filter(user=request.user, services=services).exists()
         return render(request, "app/categorydetail.html",locals())
     
 #Customer Registration Logic
@@ -164,6 +174,9 @@ def logout_user(request):
     return redirect('customerlogin')
 
 def add_to_cart(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Please login to add items to your cart.")
+        return redirect('customerlogin')
     
     user = request.user
     services_id = request.GET.get('serv_id')
@@ -176,13 +189,17 @@ def add_to_cart(request):
     return redirect("/cart")
 
 def show_cart(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Please login to view your cart.")
+        return redirect('customerlogin')
+    
     user = request.user
     cart = Cart.objects.filter(user=user).select_related('services').prefetch_related('services__images')
     amount = 0
     for p in cart:
         value = p.quantity * p.services.discounted_price
         amount = amount + value
-    totalamount= amount + 1
+    totalamount= amount + 40
     razoramount= int(totalamount * 100)
 
     #client = razorpay.Client(auth = (settings.razor_pay_key_id, settings.key_secret))
@@ -306,3 +323,57 @@ def remove_cart(request):
             'totalamount': totalamount
         }
         return JsonResponse(data)
+
+def plus_wishlist(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=401)
+    
+    if request.method == 'GET':
+        serv_id = request.GET.get('prod_id')
+        if not serv_id:
+            return JsonResponse({'error': 'missing prod_id'}, status=400)
+        
+        try:
+            user = request.user
+            services = Services.objects.get(id=serv_id)
+            
+            # Check if item already exists in wishlist
+            wishlist_item, created = Wishlist.objects.get_or_create(user=user, services=services)
+            
+            if created:
+                message = 'Item added to wishlist'
+            else:
+                message = 'Item already in wishlist'
+            
+            return JsonResponse({'message': message, 'added': created})
+        except Services.DoesNotExist:
+            return JsonResponse({'error': 'Service not found'}, status=404)
+
+def minus_wishlist(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=401)
+    
+    if request.method == 'GET':
+        serv_id = request.GET.get('prod_id')
+        if not serv_id:
+            return JsonResponse({'error': 'missing prod_id'}, status=400)
+        
+        user = request.user
+        wishlist_item = Wishlist.objects.filter(user=user, services__id=serv_id).first()
+        
+        if wishlist_item:
+            wishlist_item.delete()
+            message = 'Item removed from wishlist'
+        else:
+            message = 'Item not found in wishlist'
+        
+        return JsonResponse({'message': message, 'removed': wishlist_item is not None})
+
+def show_wishlist(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Please login to view your wishlist.")
+        return redirect('customerlogin')
+    
+    user = request.user
+    wishlist = Wishlist.objects.filter(user=user).select_related('services').prefetch_related('services__images')
+    return render(request, 'app/wishlist.html', {'wishlist': wishlist})

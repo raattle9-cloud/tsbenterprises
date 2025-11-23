@@ -66,7 +66,7 @@
 .category-header h2 {
   margin: 12px 0 8px;
   font-size: clamp(2rem, 3vw, 2.4rem);
-  color: #0f2027;
+  color: #0096c7;
 }
 .category-header p {
   color: #5d6b7c;
@@ -140,7 +140,7 @@
 .service-card h3 {
   font-size: 1.35rem;
   margin-bottom: 12px;
-  color: #0f2027;
+  color: #0096c7;
   min-height: 3.5rem; /* Consistent title height (2 lines) */
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -172,7 +172,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #0f2027;
+  color: #0096c7;
 }
 .services-empty {
   padding: 40px;
@@ -187,7 +187,7 @@
 .services-cta-card {
   max-width: 1100px;
   margin: 0 auto;
-  background: #0f2027;
+  background: #0096c7;
   color: #fff;
   border-radius: 32px;
   padding: 50px;

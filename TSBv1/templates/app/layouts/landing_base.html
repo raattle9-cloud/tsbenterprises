@@ -63,12 +63,17 @@
             <i class="fas fa-shopping-cart"></i>
             {% with cart_count=request.user.cart_set.all|length %}
               {% if cart_count > 0 %}
-                <span class="cart-badge-landing">{{ cart_count }}</span>
+                <span class="cart-badge-landing cart-count-badge">{{ cart_count }}</span>
               {% endif %}
             {% endwith %}
           </a>
-          <a href="#" class="header-btn wishlist-btn">
+          <a href="{% url 'showwishlist' %}" class="header-btn wishlist-btn position-relative">
             <i class="fas fa-heart"></i>
+            {% with wishlist_count=request.user.wishlist_set.all|length %}
+              {% if wishlist_count > 0 %}
+                <span class="cart-badge-landing wishlist-count-badge">{{ wishlist_count }}</span>
+              {% endif %}
+            {% endwith %}
           </a>
           <div class="user-chip">
             <i class="fas fa-user-circle"></i>
@@ -120,12 +125,17 @@
               <i class="fas fa-shopping-cart"></i>
               {% with cart_count=request.user.cart_set.all|length %}
                 {% if cart_count > 0 %}
-                  <span class="cart-badge-landing">{{ cart_count }}</span>
+                  <span class="cart-badge-landing cart-count-badge">{{ cart_count }}</span>
                 {% endif %}
               {% endwith %}
             </a>
-            <a href="#" class="header-btn wishlist-btn">
+            <a href="{% url 'showwishlist' %}" class="header-btn wishlist-btn position-relative">
               <i class="fas fa-heart"></i>
+              {% with wishlist_count=request.user.wishlist_set.all|length %}
+                {% if wishlist_count > 0 %}
+                  <span class="cart-badge-landing wishlist-count-badge">{{ wishlist_count }}</span>
+                {% endif %}
+              {% endwith %}
             </a>
             <div class="user-chip">
               <i class="fas fa-user-circle"></i>

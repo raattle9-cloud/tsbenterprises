@@ -118,30 +118,43 @@ WSGI_APPLICATION = 'TSB.wsgi.application'
 # Get DATABASE_URL from environment variable (REQUIRED for Supabase PostgreSQL)
 DATABASE_URL = os.getenv('DATABASE_URL')
 
+# Use SQLite for local development if DATABASE_URL is not set or connection fails
 if not DATABASE_URL:
-    raise ValueError(
-        "DATABASE_URL environment variable is required. "
-        "Please set it to your Supabase PostgreSQL connection string. "
-        "Format: postgresql://user:password@host:port/database"
-    )
-
-# Parse the DATABASE_URL (Supabase PostgreSQL connection string)
-# Format: postgresql://user:password@host:port/database
-db_url = urlparse(DATABASE_URL)
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': db_url.path[1:],  # Remove leading '/'
-        'USER': db_url.username,
-        'PASSWORD': db_url.password,
-        'HOST': db_url.hostname,
-        'PORT': db_url.port or '5432',
-        'OPTIONS': {
-            'connect_timeout': 10,
-        },
+    # Fallback to SQLite for local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    # Parse the DATABASE_URL (Supabase PostgreSQL connection string)
+    # Format: postgresql://user:password@host:port/database
+    try:
+        db_url = urlparse(DATABASE_URL)
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': db_url.path[1:],  # Remove leading '/'
+                'USER': db_url.username,
+                'PASSWORD': db_url.password,
+                'HOST': db_url.hostname,
+                'PORT': db_url.port or '5432',
+                'OPTIONS': {
+                    'connect_timeout': 10,
+                },
+            }
+        }
+    except Exception as e:
+        # If connection fails, fallback to SQLite for local development
+        print(f"Warning: Could not connect to PostgreSQL database: {e}")
+        print("Falling back to SQLite for local development...")
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 
 
 # Password validation

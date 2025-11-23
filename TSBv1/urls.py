@@ -34,6 +34,10 @@ urlpatterns = [
     path('minuscart/', views.minus_cart, name="minus-cart"),
     path('removecart/', views.remove_cart, name="remove-cart"),
 
+    path('pluswishlist/', views.plus_wishlist, name="plus-wishlist"),
+    path('minuswishlist/', views.minus_wishlist, name="minus-wishlist"),
+    path('wishlist/', views.show_wishlist, name="showwishlist"),
+
 
 
     # No slug value empty category page url

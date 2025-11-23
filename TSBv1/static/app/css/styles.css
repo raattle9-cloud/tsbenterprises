@@ -1,17 +1,18 @@
 /* Mobile Hero Section Styles */
 @media (max-width: 768px) {
     .hero {
-      padding: 18px 0 24px 0;
+      padding: 0;
       min-height: auto;
       display: block;
       background: transparent;
+      margin-top: -90px;
     }
     .image-card {
-      width: 95vw;
-      max-width: 95vw;
-      border-radius: 18px;
-      margin: 0 auto;
-      box-shadow: 0 4px 24px rgba(44,83,100,0.10);
+      width: 100%;
+      max-width: 100%;
+      border-radius: 0;
+      margin: 0;
+      box-shadow: none;
       overflow: hidden;
       background: #000;
       padding: 0;
@@ -21,9 +22,9 @@
       max-width: 100%;
       height: 400px;
       min-height: 400px;
-      border-radius: 18px;
-      box-shadow: 0 2px 12px rgba(44,83,100,0.10);
-      margin: 0 auto;
+      border-radius: 0;
+      box-shadow: none;
+      margin: 0;
       overflow: hidden;
     }
     .slides {
@@ -89,17 +90,18 @@
   
   @media (max-width: 480px) {
     .hero {
-      padding: 12px 0 20px 0;
+      padding: 0;
+      margin-top: -90px;
     }
     .image-card {
-      width: 98vw;
-      max-width: 98vw;
-      border-radius: 14px;
+      width: 100%;
+      max-width: 100%;
+      border-radius: 0;
     }
     .carousel {
       height: 350px;
       min-height: 350px;
-      border-radius: 14px;
+      border-radius: 0;
     }
     .slide img {
       min-height: 350px;
@@ -157,8 +159,8 @@
       top: 100%;
       left: 0;
       width: 100vw;
-      background: linear-gradient(90deg, #0f2027, #2c5364);
-      box-shadow: 0 8px 32px rgba(44,83,100,0.18);
+      background: linear-gradient(90deg, #0096c7, #48cae4);
+      box-shadow: 0 8px 32px rgba(72,202,228,0.18);
       padding: 24px 0 18px 0;
       flex-direction: column;
       align-items: center;
@@ -223,7 +225,7 @@
   .stat-value {
     font-size: 2.1rem;
     font-weight: 700;
-    color: #2c5364;
+    color: #48cae4;
     margin-bottom: 6px;
     letter-spacing: 1px;
   }
@@ -271,7 +273,7 @@
   .trust-orb-1 {
     width: 220px; height: 220px;
     left: 2%; top: 18%;
-    background: radial-gradient(circle, #2c5364 0%, #0f2027 100%);
+    background: radial-gradient(circle, #48cae4 0%, #0096c7 100%);
   }
   .trust-orb-2 {
     width: 180px; height: 180px;
@@ -286,7 +288,7 @@
   }
   .trust-pill {
     display: inline-block;
-    background: linear-gradient(90deg, #0f2027, #2c5364);
+    background: linear-gradient(90deg, #0096c7, #48cae4);
     color: #fff;
     font-weight: 700;
     border-radius: 20px;
@@ -299,7 +301,7 @@
     font-size: 2.2rem;
     font-weight: 800;
     margin-bottom: 12px;
-    color: #2c5364;
+    color: #48cae4;
   }
   .trust-header p {
     font-size: 1.1rem;
@@ -319,7 +321,7 @@
   .trust-badge {
     background: #fff;
     border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(44,83,100,0.10);
+    box-shadow: 0 4px 24px rgba(72,202,228,0.10);
     padding: 32px 18px 24px 18px;
     display: flex;
     flex-direction: column;
@@ -331,11 +333,11 @@
   }
   .trust-badge:hover {
     transform: translateY(-8px) scale(1.04);
-    box-shadow: 0 8px 32px rgba(44,83,100,0.18);
+    box-shadow: 0 8px 32px rgba(72,202,228,0.18);
   }
   .trust-badge .icon {
     font-size: 2.6rem;
-    color: #2c5364;
+    color: #48cae4;
     margin-bottom: 18px;
   }
   .trust-badge .icon:hover{
@@ -346,7 +348,7 @@
   .trust-badge h4 {
     font-size: 1.18rem;
     font-weight: 700;
-    color: #2c5364;
+    color: #48cae4;
     margin-bottom: 8px;
   }
   .trust-badge p {
@@ -386,19 +388,19 @@
   .explore-btn {
     display: inline-block;
     margin-top: 14px;
-    background: linear-gradient(90deg, #0f2027, #2c5364);
+    background: linear-gradient(90deg, #0096c7, #48cae4);
     color: #fff;
     font-weight: 700;
     padding: 8px 28px;
     border-radius: 20px;
     font-size: 1.05rem;
     text-decoration: none;
-    box-shadow: 0 2px 8px rgba(44,83,100,0.10);
+    box-shadow: 0 2px 8px rgba(72,202,228,0.10);
     transition: background 0.2s, transform 0.2s;
   }
   .explore-btn:hover {
     background: #ffd700;
-    color: #2c5364;
+    color: #48cae4;
     transform: scale(1.07);
   }
    /* Basic reset and layout */
@@ -416,9 +418,9 @@
   /* Header */
   
   .site-header {
-    background: linear-gradient(90deg, #0f2027, #2c5364);
+    background: linear-gradient(90deg, #0096c7, #48cae4);
     color: #fff;
-    box-shadow: 0 2px 8px rgba(44,83,100,0.08);
+    box-shadow: 0 2px 8px rgba(72,202,228,0.08);
     font-family: 'Segoe UI', Arial, sans-serif;
     animation: headerFadeIn 1.2s ease;
     position: fixed;
@@ -480,6 +482,13 @@
   }
   .nav-link-dropdown .dropdown-menu {
     margin-top: 12px;
+    /* Prevent any visual artifacts from dropdown animation */
+    border-top: none !important;
+    box-shadow: 0 4px 24px rgba(72,202,228,0.10) !important;
+  }
+  /* Prevent dropdown menu from creating visual line near nav-link */
+  .nav-link-dropdown .dropdown-menu::before {
+    display: none !important;
   }
   .support-link {
     animation-delay: 1.2s;
@@ -501,31 +510,7 @@
     position: relative;
     display: inline-block;
   }
-  .nav-link.dropdown-toggle::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%) scaleX(0);
-    width: 70%;
-    height: 2px;
-    background: #ffd700;
-    transition: transform 0.3s ease;
-    border-radius: 50px;
-    z-index: 1;
-  }
-  .nav-link:hover {
-    color: #ffd700;
-  }
-  .nav-link:not(.dropdown-toggle):hover::after {
-    width: 100%;
-  }
-  .nav-link.dropdown-toggle:hover::before,
-  .nav-link.dropdown-toggle.show::before,
-  .nav-link.dropdown-toggle[aria-expanded="true"]::before {
-    transform: translateX(-50%) scaleX(1); /* Centered underline animation */
-  }
-  /* Bootstrap dropdown chevron using ::after for dropdown-toggle */
+  /* Ensure dropdown-toggle doesn't get the regular ::after underline */
   .nav-link.dropdown-toggle::after {
     content: "";
     display: inline-block;
@@ -535,12 +520,69 @@
     vertical-align: 0.255em;
     border-top: 0.3em solid;
     border-right: 0.3em solid transparent;
-    border-bottom: 0;
+    border-bottom: 0 !important;
     border-left: 0.3em solid transparent;
     position: static;
-    background: none;
+    background: none !important;
     transition: transform 0.3s ease;
     z-index: 2; /* Above underline */
+    /* Ensure no underline effect from the chevron */
+    box-shadow: none !important;
+    text-decoration: none !important;
+  }
+  .nav-link.dropdown-toggle::before {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    transform-origin: center;
+    width: 50%;
+    height: 2px;
+    background: #ffd700;
+    transition: transform 0.3s ease;
+    border-radius: 50px;
+    z-index: 1;
+    /* Ensure it doesn't extend to the chevron area - be more conservative */
+    max-width: calc(100% - 3rem);
+    /* Ensure it stays within the link bounds */
+    box-sizing: border-box;
+    /* Prevent any overflow */
+    overflow: hidden;
+  }
+  /* Stricter boundaries for Services and Support dropdowns */
+  .nav-link.dropdown-toggle#landingServicesDropdown::before,
+  .nav-link.dropdown-toggle#landingSupportDropdown::before,
+  .nav-link.dropdown-toggle.support-link::before {
+    width: 40%;
+    max-width: calc(100% - 4rem);
+  }
+  .nav-link.dropdown-toggle:hover::before,
+  .nav-link.dropdown-toggle.show::before,
+  .nav-link.dropdown-toggle[aria-expanded="true"]::before {
+    transform: translateX(-50%) scaleX(1);
+    /* Ensure it doesn't extend beyond the text when visible */
+    max-width: calc(100% - 3rem);
+    width: 50%;
+  }
+  /* Stricter for Services and Support when active */
+  .nav-link.dropdown-toggle#landingServicesDropdown:hover::before,
+  .nav-link.dropdown-toggle#landingServicesDropdown.show::before,
+  .nav-link.dropdown-toggle#landingServicesDropdown[aria-expanded="true"]::before,
+  .nav-link.dropdown-toggle#landingSupportDropdown:hover::before,
+  .nav-link.dropdown-toggle#landingSupportDropdown.show::before,
+  .nav-link.dropdown-toggle#landingSupportDropdown[aria-expanded="true"]::before,
+  .nav-link.dropdown-toggle.support-link:hover::before,
+  .nav-link.dropdown-toggle.support-link.show::before,
+  .nav-link.dropdown-toggle.support-link[aria-expanded="true"]::before {
+    max-width: calc(100% - 4rem);
+    width: 40%;
+  }
+  .nav-link:hover {
+    color: #ffd700;
+  }
+  .nav-link:not(.dropdown-toggle):hover::after {
+    width: 100%;
   }
   .nav-link.dropdown-toggle[aria-expanded="true"]::after {
     transform: rotate(180deg);
@@ -554,14 +596,14 @@
   }
   .header-btn {
     background: #fff;
-    color: #2c5364;
+    color: #48cae4;
     border: none;
     border-radius: 20px;
     padding: 6px 18px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(44,83,100,0.10);
+    box-shadow: 0 2px 8px rgba(72,202,228,0.10);
     transition: background 0.2s, color 0.2s, transform 0.3s;
     opacity: 0;
     animation: btnFadeIn 1s forwards;
@@ -570,7 +612,7 @@
   .register-btn { animation-delay: 1.3s; }
   .header-btn:hover {
     background: #ffd700;
-    color: #0f2027;
+    color: #0096c7;
     transform: scale(1.08);
   }
   /* Cart and Wishlist Button Styling */
@@ -619,7 +661,7 @@
   }
   .secondary-btn:hover {
     background: #fff;
-    color: #0f2027;
+    color: #0096c7;
   }
   .logout-btn {
     background: #ff4d4d;
@@ -644,18 +686,18 @@
   }
   
   /* Hero */
-  .hero{padding:36px 0 48px}
-  .image-card{position:relative;width:95vw;max-width:1500px;margin:0 auto;border-radius:28px;overflow:hidden;background:#000;box-shadow:0 10px 30px rgba(0,0,0,0.15)}
+  .hero{padding:0;width:100vw;position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;margin-top:-90px;z-index:1}
+  .image-card{position:relative;width:100%;max-width:100%;margin:0;border-radius:0;overflow:hidden;background:#000;box-shadow:none}
   
   
-  .carousel{position:relative;width:100%;max-width:100%;height:520px;margin:0 auto;overflow:hidden}
+  .carousel{position:relative;width:100%;max-width:100%;height:85vh;margin:0 auto;overflow:hidden}
   /* Make review and contact containers full width */
   .review-container, .contact-container {
     width: 90vw !important;
     max-width: 90vw !important;
     margin-left: calc(-1 * ((100vw - 100%) / 2));
     border-radius: 24px;
-    box-shadow: 0 8px 32px rgba(44,83,100,0.08);
+    box-shadow: 0 8px 32px rgba(72,202,228,0.08);
     background: #fff;
     padding: 40px 32px;
   }
@@ -669,7 +711,7 @@
   .cta{margin-top:20px;display:inline-block;background:#fff;color:#111;border:0;padding:12px 36px;border-radius:28px;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(0, 0, 0, 0.379);pointer-events:auto}
   .cta:hover {
     background: #ffd700;
-    color: #0f2027;
+    color: #0096c7;
     transform: scale(1);
   }
   
@@ -690,7 +732,7 @@
   }
   .premium-pill {
     display: inline-block;
-    background: linear-gradient(90deg, #0f2027, #2c5364);
+    background: linear-gradient(90deg, #0096c7, #48cae4);
     color: #fff;
     font-weight: 700;
     border-radius: 20px;
@@ -703,7 +745,7 @@
     font-size: 2.4rem;
     font-weight: 800;
     margin-bottom: 12px;
-    color: #2c5364;
+    color: #48cae4;
   }
   .premium-header p {
     font-size: 1.15rem;
@@ -722,7 +764,7 @@
   .premium-card {
     background: #fff;
     border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(44,83,100,0.10);
+    box-shadow: 0 4px 24px rgba(72,202,228,0.10);
     padding: 24px 18px 18px 18px;
     display: flex;
     flex-direction: column;
@@ -733,7 +775,7 @@
   }
   .premium-card:hover {
     transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 8px 32px rgba(44,83,100,0.18);
+    box-shadow: 0 8px 32px rgba(72,202,228,0.18);
   }
   .card-carousel {
     position: relative;
@@ -774,7 +816,7 @@
     height: 36px;
     font-size: 1.3rem;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(44,83,100,0.10);
+    box-shadow: 0 2px 8px rgba(72,202,228,0.10);
     z-index: 3;
     transition: background 0.2s;
   }
@@ -794,7 +836,7 @@
   .card-text h3 {
     font-size: 1.3rem;
     font-weight: 700;
-    color: #2c5364;
+    color: #48cae4;
     margin-bottom: 8px;
   }
   .card-text p {
@@ -840,7 +882,7 @@
       margin: 40px auto 0 auto;
       overflow: hidden;
       border-radius: 18px;
-      box-shadow: 0 4px 24px rgba(44,83,100,0.12);
+      box-shadow: 0 4px 24px rgba(72,202,228,0.12);
       background: #fff;
     }
     .hero-carousel .carousel-track {
@@ -859,12 +901,12 @@
       height: 320px;
       object-fit: cover;
       border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(44,83,100,0.10);
+      box-shadow: 0 2px 12px rgba(72,202,228,0.10);
     }
     .hero-carousel .carousel-caption {
       margin-top: 18px;
       font-size: 1.3rem;
-      color: #2c5364;
+      color: #48cae4;
       font-weight: 500;
     }
     .hero-carousel .carousel-controls {
@@ -878,7 +920,7 @@
       pointer-events: none;
     }
     .hero-carousel .carousel-btn {
-      background: rgba(44,83,100,0.85);
+      background: rgba(72,202,228,0.85);
       color: #fff;
       border: none;
       border-radius: 50%;
@@ -886,12 +928,12 @@
       height: 44px;
       font-size: 1.6rem;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(44,83,100,0.10);
+      box-shadow: 0 2px 8px rgba(72,202,228,0.10);
       pointer-events: auto;
       transition: background 0.2s;
     }
     .hero-carousel .carousel-btn:hover {
-      background: #0f2027;
+      background: #0096c7;
     }
     .hero-carousel .carousel-indicators {
       position: absolute;
@@ -904,7 +946,7 @@
     .hero-carousel .carousel-indicator {
       width: 12px;
       height: 12px;
-      background: #2c5364;
+      background: #48cae4;
       border-radius: 50%;
       opacity: 0.4;
       cursor: pointer;
@@ -912,7 +954,7 @@
     }
     .hero-carousel .carousel-indicator.active {
       opacity: 1;
-      background: #0f2027;
+      background: #0096c7;
     }
   
     @media (max-width: 600px) {

@@ -1,0 +1,85 @@
+{% extends 'app/layouts/landing_base.html' %}
+{% load static %}
+{% block title %}Wishlist - TSB Enterprises{% endblock title %}
+
+{% block landing_content %}
+<div class="section-padding" style="padding-top: 120px;">
+<div class="container py-5">
+    {% if wishlist %}
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h1 class="display-5 fw-bold mb-2">
+                <i class="fas fa-heart me-2 text-danger"></i>Your Wishlist
+            </h1>
+            <p class="text-muted">Items you've saved for later</p>
+        </div>
+        
+        <!-- Wishlist Items -->
+        <div class="col-12">
+            <div class="card modern-card border-0">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Wishlist Items ({{ wishlist|length }})</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for item in wishlist %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="position-relative">
+                                    {% with primary=item.services.get_primary_image %}
+                                        {% if primary %}
+                                        <img src="{{ primary.image.url }}" class="card-img-top" alt="{{ item.services.title }}" style="height: 250px; object-fit: cover;">
+                                        {% else %}
+                                        <img src="{% static 'app/images/aboutus.jpg' %}" class="card-img-top" alt="{{ item.services.title }}" style="height: 250px; object-fit: cover;">
+                                        {% endif %}
+                                    {% endwith %}
+                                    <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 minus-wishlist" pid="{{ item.services.id }}" style="border-radius: 50%; width: 40px; height: 40px; padding: 0;">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title fw-bold mb-2">{{ item.services.title }}</h5>
+                                    <p class="card-text text-muted small mb-3 flex-grow-1">{{ item.services.description|truncatewords:20 }}</p>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <span class="h5 text-primary mb-0">₹{{ item.services.discounted_price }}</span>
+                                            {% if item.services.selling_price != item.services.discounted_price %}
+                                            <small class="text-muted text-decoration-line-through ms-2">₹{{ item.services.selling_price }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <a href="{% url 'category-detail' item.services.id %}" class="btn btn-outline-primary">
+                                            <i class="fas fa-eye me-2"></i>View Details
+                                        </a>
+                                        <a href="/add-to-cart/?serv_id={{ item.services.id }}" class="btn btn-primary">
+                                            <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5 my-5">
+        <div class="mb-4">
+            <i class="fas fa-heart fa-5x text-muted mb-4"></i>
+        </div>
+        <h1 class="display-5 fw-bold mb-3">Your Wishlist is Empty</h1>
+        <p class="lead text-muted mb-4">Start adding items you love to your wishlist!</p>
+        <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-arrow-left me-2"></i>Start Shopping
+        </a>
+    </div>
+    {% endif %}
+</div>
+</div>
+{% endblock landing_content %}
+
+
+

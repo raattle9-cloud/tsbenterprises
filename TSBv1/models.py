@@ -118,6 +118,16 @@ class Cart(models.Model):
     def total_cost(self):
         return self.quantity * self.services.discounted_price
 
+class Wishlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    services = models.ForeignKey(Services, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'services')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.services.title}"
+
 
 #Payment models
 STATUS_CHOICES =(

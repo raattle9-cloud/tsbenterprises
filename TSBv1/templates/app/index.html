@@ -12,11 +12,14 @@
       <div class="image-card">
         <div class="carousel" id="carousel">
           <div class="slides">
-            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/7.jpg' %}" alt="slide 1"></div>
-            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/2.webp' %}" alt="slide 2"></div>
-            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/3.avif' %}" alt="slide 3"></div>
-            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/4.webp' %}" alt="slide 4"></div>
-            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/5.jpg' %}" alt="slide 5"></div>
+            <div class="slide"><img src="{% static 'app/images/WATERPARKS/W-3.jpg' %}" alt="slide 1"></div>
+            <div class="slide"><img src="{% static 'app/images/herowp2.jpeg' %}" alt="slide 2"></div>
+            <div class="slide"><img src="{% static 'app/images/wp2.avif' %}" alt="slide 3"></div>
+            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/7.jpg' %}" alt="slide 4"></div>
+            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/2.webp' %}" alt="slide 5"></div>
+            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/3.avif' %}" alt="slide 6"></div>
+            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/4.webp' %}" alt="slide 7"></div>
+            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/5.jpg' %}" alt="slide 8"></div>
           </div>
 
           <div class="overlay">
@@ -30,6 +33,9 @@
             <button class="dot" data-index="2" aria-label="Go to slide 3"></button>
             <button class="dot" data-index="3" aria-label="Go to slide 4"></button>
             <button class="dot" data-index="4" aria-label="Go to slide 5"></button>
+            <button class="dot" data-index="5" aria-label="Go to slide 6"></button>
+            <button class="dot" data-index="6" aria-label="Go to slide 7"></button>
+            <button class="dot" data-index="7" aria-label="Go to slide 8"></button>
           </div>
         </div>
       </div>
@@ -42,7 +48,7 @@
             <div class="stat-label">Premium Destinations</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value">18k+</div>
+            <div class="stat-value">5L+</div>
             <div class="stat-label">Happy Customers</div>
           </div>
           <div class="stat-item">
@@ -74,7 +80,7 @@
             <div class="card-text">
                 <h3>RESORTS</h3>
                 <p>Experience world-class hospitality and comfort</p>
-                <a href="#" class="explore-btn">Explore Resorts</a>
+                <a href="{% url 'mainCategory' 'RE' %}" class="explore-btn">Explore Resorts</a>
             </div>
           </div>
           
@@ -90,7 +96,7 @@
             <div class="card-text">
                 <h3>WATERPARKS</h3>
                 <p>Dive into excitement and fun at amazing destinations</p>
-                <a href="#" class="explore-btn">Explore Waterparks</a>
+                <a href="{% url 'mainCategory' 'WP' %}" class="explore-btn">Explore Waterparks</a>
             </div>
           </div>
 
@@ -105,7 +111,7 @@
             <div class="card-text">
                 <h3>DESTINATION PACKAGES</h3>
                 <p>Discover amazing destinations with curated packages</p>
-                <a href="#" class="explore-btn">Explore Packages</a>
+                <a href="{% url 'mainCategory' 'DP' %}" class="explore-btn">Explore Packages</a>
             </div>
           </div>
 
@@ -122,7 +128,7 @@
             <div class="card-text">
                 <h3>DHABAS</h3>
                 <p>Savor authentic flavors and traditional cuisine</p>
-                <a href="#" class="explore-btn">Explore Dhabas</a>
+                <a href="{% url 'mainCategory' 'DB' %}" class="explore-btn">Explore Dhabas</a>
             </div>
           </div>
 
@@ -137,7 +143,7 @@
             <div class="card-text">
                 <h3>VILLAS</h3>
                 <p>Experience luxury living in beautifully designed villas</p>
-                <a href="#" class="explore-btn">Explore Villas</a>
+                <a href="{% url 'mainCategory' 'VI' %}" class="explore-btn">Explore Villas</a>
             </div>
           </div>
 
@@ -153,7 +159,7 @@
             <div class="card-text">
                 <h3>GAMES</h3>
                 <p>Unleash your spirit at exciting gaming destinations</p>
-                <a href="#" class="explore-btn">Explore Games</a>
+                <a href="{% url 'mainCategory' 'GO' %}" class="explore-btn">Explore Games</a>
             </div>
           </div>
         </div>
@@ -162,16 +168,41 @@
   <section class="about-hero" id="about">
     <div class="container">
       <div class="about-hero-bg"></div>
-      <div class="about-hero-content">
-        <h1 class="about-hero-title">
-          Creating unforgettable<br>
-          experiences, one journey<br>
-          at a time.
-        </h1>
-        <p class="about-hero-subtitle">
-          We're redefining travel with premium destinations, exceptional service,<br>
-          and a commitment to making every moment count.
-        </p>
+      <div class="about-hero-wrapper">
+        <div class="about-hero-content">
+          <h1 class="about-hero-title">
+            Creating unforgettable<br>
+            experiences, one journey<br>
+            at a time.
+          </h1>
+          <p class="about-hero-subtitle">
+            We're redefining travel with premium destinations, exceptional service,<br>
+            and a commitment to making every moment count.
+          </p>
+        </div>
+        <div class="about-hero-motto">
+          <div class="motto-badge">
+            <i class="fas fa-quote-left"></i> Our Motto
+          </div>
+          <h2 class="motto-title">Our Commitment</h2>
+          <p class="motto-text">
+            TSB Enterprises is dedicated to maximizing value and savings for our customers while ensuring their complete satisfaction and fulfillment. We strive to make premium travel experiences accessible to everyone.
+          </p>
+          <div class="motto-highlights">
+            <div class="motto-item">
+              <i class="fas fa-rupee-sign"></i>
+              <span>Maximum Savings</span>
+            </div>
+            <div class="motto-item">
+              <i class="fas fa-heart"></i>
+              <span>Customer Satisfaction</span>
+            </div>
+            <div class="motto-item">
+              <i class="fas fa-check-circle"></i>
+              <span>Complete Fulfillment</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -257,7 +288,7 @@
         </div>
         <div class="trust-badge bounce-in delay-3">
           <div class="icon"><i class="fas fa-heart"></i></div>
-          <h4>18k+ Happy Guests</h4>
+          <h4>500k+ Happy Guests</h4>
           <p>Join thousands of satisfied travelers</p>
         </div>
       </div>
@@ -452,17 +483,69 @@
           btn.addEventListener('click', function() {
             const answer = this.nextElementSibling;
             const icon = this.querySelector('.faq-toggle i');
-            const isOpen = answer.style.maxHeight && answer.style.maxHeight !== '0px';
+            const faqItem = this.closest('.faq-item');
+            
+            // Check if currently open by checking if it has the active class or if maxHeight is set
+            const isOpen = faqItem.classList.contains('active') || 
+                          (answer.style.maxHeight && answer.style.maxHeight !== '0px');
+            
+            // Close all other FAQs (optional - remove if you want multiple open)
+            document.querySelectorAll('.faq-item').forEach(item => {
+              if (item !== faqItem && item.classList.contains('active')) {
+                const otherAnswer = item.querySelector('.faq-answer');
+                const otherIcon = item.querySelector('.faq-toggle i');
+                otherAnswer.style.maxHeight = '0px';
+                otherAnswer.style.padding = '0';
+                item.classList.remove('active');
+                if (otherIcon) {
+                  otherIcon.style.transform = '';
+                  otherIcon.style.color = '';
+                }
+              }
+            });
+            
             if (!isOpen) {
-              answer.style.maxHeight = answer.scrollHeight + 'px';
-              answer.style.padding = '12px 0 12px 18px';
+              // Open the FAQ - calculate full height including padding
+              // Temporarily set to auto to measure the actual content height
+              answer.style.maxHeight = 'none';
+              answer.style.padding = '12px 0px 12px 18px';
+              answer.style.opacity = '1';
+              answer.style.overflow = 'visible';
+              
+              // Force a reflow to ensure styles are applied before measuring
+              answer.offsetHeight;
+              
+              // Get the full height including padding and border
+              // Use both scrollHeight and getBoundingClientRect for accuracy
+              const scrollHeight = answer.scrollHeight;
+              const boundingHeight = answer.getBoundingClientRect().height;
+              const fullHeight = Math.max(scrollHeight, boundingHeight);
+              
+              // Reset to 0 for animation
+              answer.style.maxHeight = '0px';
+              answer.style.padding = '0';
+              answer.style.opacity = '0';
+              answer.style.overflow = 'hidden';
+              
+              // Force reflow to ensure the reset is applied
+              answer.offsetHeight;
+              
+              // Now animate to full height with padding
+              // Add a buffer (15px) to ensure nothing is cut off due to rounding, line-height, or subpixel rendering
+              answer.style.maxHeight = (fullHeight + 15) + 'px';
+              answer.style.padding = '12px 0px 12px 18px';
+              answer.style.opacity = '1';
+              faqItem.classList.add('active');
               if (icon) {
                 icon.style.transform = 'rotate(180deg)';
                 icon.style.color = '#1976d2';
               }
             } else {
-              answer.style.maxHeight = null;
-              answer.style.padding = null;
+              // Close the FAQ
+              answer.style.maxHeight = '0px';
+              answer.style.padding = '0';
+              answer.style.opacity = '0';
+              faqItem.classList.remove('active');
               if (icon) {
                 icon.style.transform = '';
                 icon.style.color = '';
@@ -473,7 +556,7 @@
       };
   
       const figureData = [
-        { target: 1500, suffix: '+' },
+        { target: 500000, suffix: '+' },
         { target: 80, suffix: '%' },
         { target: 200, suffix: '' },
         { target: 20, suffix: '+' }

@@ -38,11 +38,11 @@
                                 <p class="text-muted small mb-3">{{ item.services.description|truncatewords:15 }}</p>
                                 <div class="d-flex align-items-center mb-3">
                                     <label class="me-3 fw-semibold">Quantity:</label>
-                                    <div class="btn-group" role="group">
+                                    <div class="btn-group cart-quantity-group" role="group">
                                         <a class="btn btn-outline-danger btn-sm minus-cart" pid="{{ item.services.id }}">
                                             <i class="fas fa-minus"></i>
                                         </a>
-                                        <span class="btn btn-outline-secondary btn-sm disabled" id="quantity-{{ item.services.id }}" style="min-width: 50px;">{{ item.quantity }}</span>
+                                        <span class="btn btn-outline-secondary btn-sm disabled cart-quantity-display" id="quantity-{{ item.services.id }}">{{ item.quantity }}</span>
                                         <a class="btn btn-outline-success btn-sm plus-cart" pid="{{ item.services.id }}">
                                             <i class="fas fa-plus"></i>
                                         </a>
@@ -155,4 +155,76 @@
         }
     </script>
 {% endblock landing_content %}
+{% block landing_scripts %}
+{{ block.super }}
+<style>
+    /* Fix quantity display overlapping buttons */
+    .cart-quantity-group {
+        display: inline-flex;
+        vertical-align: middle;
+    }
+    
+    .cart-quantity-group .btn {
+        position: relative;
+        border-radius: 0;
+        flex-shrink: 0;
+    }
+    
+    .cart-quantity-group .minus-cart {
+        border-top-left-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+    }
+    
+    .cart-quantity-group .plus-cart {
+        border-top-right-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
+    }
+    
+    .cart-quantity-display {
+        min-width: 50px !important;
+        max-width: 60px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        pointer-events: none !important;
+        user-select: none !important;
+        text-align: center !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+        padding: 0.25rem 0.5rem !important;
+        font-weight: 500 !important;
+        background-color: #e9ecef !important;
+        border-left: 1px solid #dee2e6 !important;
+        border-right: 1px solid #dee2e6 !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }
+    
+    .cart-quantity-group .minus-cart,
+    .cart-quantity-group .plus-cart {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative !important;
+        z-index: 2 !important;
+        min-width: 38px !important;
+    }
+    
+    .cart-quantity-group .minus-cart i,
+    .cart-quantity-group .plus-cart i {
+        display: inline-block !important;
+        position: relative !important;
+        z-index: 3 !important;
+        pointer-events: none !important;
+        line-height: 1 !important;
+    }
+    
+    .cart-quantity-group .minus-cart:focus,
+    .cart-quantity-group .plus-cart:focus {
+        z-index: 4 !important;
+    }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'app/js/myscript.js' %}"></script>
+{% endblock %}
 

@@ -65,7 +65,22 @@
                                             <img src="{% static 'app/images/aboutus.jpg' %}" class="card-img-top" alt="{{ serv.title }}" style="height: 100%; object-fit: cover; width: 100%; background-color: #f0f0f0;">
                                             {% endif %}
                                         {% endwith %}
-                                        <div class="position-absolute top-0 end-0 m-3">
+                                        <div class="position-absolute top-0 end-0 m-3 d-flex gap-2">
+                                            {% if request.user.is_authenticated %}
+                                                {% if serv.id in wishlist_service_ids %}
+                                                <button class="btn btn-sm btn-danger rounded-circle minus-wishlist" pid="{{ serv.id }}" title="Remove from Wishlist" style="width: 40px; height: 40px; padding: 0; z-index: 10;">
+                                                    <i class="fas fa-heart"></i>
+                                                </button>
+                                                {% else %}
+                                                <button class="btn btn-sm btn-light rounded-circle plus-wishlist" pid="{{ serv.id }}" title="Add to Wishlist" style="width: 40px; height: 40px; padding: 0; z-index: 10;">
+                                                    <i class="far fa-heart"></i>
+                                                </button>
+                                                {% endif %}
+                                            {% else %}
+                                                <a href="{% url 'customerlogin' %}" class="btn btn-sm btn-light rounded-circle" title="Login to add to Wishlist" style="width: 40px; height: 40px; padding: 0; z-index: 10;">
+                                                    <i class="far fa-heart"></i>
+                                                </a>
+                                            {% endif %}
                                             {% if serv.discounted_price < serv.selling_price %}
                                             <span class="badge bg-danger px-3 py-2" style="font-size: 0.85rem; box-shadow: var(--shadow-md);">
                                                 <i class="fas fa-tag me-1"></i>Sale
@@ -134,5 +149,10 @@
         </div>
     </div>
 
+{% endblock %}
+{% block landing_scripts %}
+{{ block.super }}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'app/js/myscript.js' %}"></script>
 {% endblock %}
 
