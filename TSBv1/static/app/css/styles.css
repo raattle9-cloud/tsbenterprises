@@ -479,6 +479,7 @@
     position: relative;
     display: flex;
     align-items: center;
+    overflow: visible;
   }
   .nav-link-dropdown .dropdown-menu {
     margin-top: 12px;
@@ -505,87 +506,41 @@
     transition: width 0.3s ease;
     z-index: 1;
   }
-  /* Underline animation using ::before for dropdown-toggle links - centered like modern-navbar */
+  /* Underline animation using ::before for dropdown-toggle links */
   .nav-link.dropdown-toggle {
     position: relative;
     display: inline-block;
-  }
-  /* Ensure dropdown-toggle doesn't get the regular ::after underline */
-  .nav-link.dropdown-toggle::after {
-    content: "";
-    display: inline-block;
-    width: 0;
-    height: 0;
-    margin-left: 0.5rem;
-    vertical-align: 0.255em;
-    border-top: 0.3em solid;
-    border-right: 0.3em solid transparent;
-    border-bottom: 0 !important;
-    border-left: 0.3em solid transparent;
-    position: static;
-    background: none !important;
-    transition: transform 0.3s ease;
-    z-index: 2; /* Above underline */
-    /* Ensure no underline effect from the chevron */
-    box-shadow: none !important;
     text-decoration: none !important;
   }
+  /* Underline for dropdown-toggle */
   .nav-link.dropdown-toggle::before {
     content: '';
     position: absolute;
+    left: 0;
     bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%) scaleX(0);
-    transform-origin: center;
-    width: 50%;
+    width: 0;
     height: 2px;
     background: #ffd700;
-    transition: transform 0.3s ease;
-    border-radius: 50px;
+    transition: width 0.3s ease;
     z-index: 1;
-    /* Ensure it doesn't extend to the chevron area - be more conservative */
-    max-width: calc(100% - 3rem);
-    /* Ensure it stays within the link bounds */
     box-sizing: border-box;
-    /* Prevent any overflow */
-    overflow: hidden;
-  }
-  /* Stricter boundaries for Services and Support dropdowns */
-  .nav-link.dropdown-toggle#landingServicesDropdown::before,
-  .nav-link.dropdown-toggle#landingSupportDropdown::before,
-  .nav-link.dropdown-toggle.support-link::before {
-    width: 40%;
-    max-width: calc(100% - 4rem);
   }
   .nav-link.dropdown-toggle:hover::before,
   .nav-link.dropdown-toggle.show::before,
   .nav-link.dropdown-toggle[aria-expanded="true"]::before {
-    transform: translateX(-50%) scaleX(1);
-    /* Ensure it doesn't extend beyond the text when visible */
-    max-width: calc(100% - 3rem);
-    width: 50%;
+    width: 100%;
+    max-width: 100%;
   }
-  /* Stricter for Services and Support when active */
-  .nav-link.dropdown-toggle#landingServicesDropdown:hover::before,
-  .nav-link.dropdown-toggle#landingServicesDropdown.show::before,
-  .nav-link.dropdown-toggle#landingServicesDropdown[aria-expanded="true"]::before,
-  .nav-link.dropdown-toggle#landingSupportDropdown:hover::before,
-  .nav-link.dropdown-toggle#landingSupportDropdown.show::before,
-  .nav-link.dropdown-toggle#landingSupportDropdown[aria-expanded="true"]::before,
-  .nav-link.dropdown-toggle.support-link:hover::before,
-  .nav-link.dropdown-toggle.support-link.show::before,
-  .nav-link.dropdown-toggle.support-link[aria-expanded="true"]::before {
-    max-width: calc(100% - 4rem);
-    width: 40%;
+  /* Remove chevron completely */
+  .nav-link.dropdown-toggle::after {
+    display: none !important;
+    content: none !important;
   }
   .nav-link:hover {
     color: #ffd700;
   }
   .nav-link:not(.dropdown-toggle):hover::after {
     width: 100%;
-  }
-  .nav-link.dropdown-toggle[aria-expanded="true"]::after {
-    transform: rotate(180deg);
   }
   .nav-link.dropdown-toggle:hover {
     color: #ffd700;
