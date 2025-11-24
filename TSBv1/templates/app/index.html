@@ -511,6 +511,7 @@
               answer.style.padding = '12px 0px 12px 18px';
               answer.style.opacity = '1';
               answer.style.overflow = 'visible';
+              answer.style.height = 'auto';
               
               // Force a reflow to ensure styles are applied before measuring
               answer.offsetHeight;
@@ -519,20 +520,30 @@
               // Use both scrollHeight and getBoundingClientRect for accuracy
               const scrollHeight = answer.scrollHeight;
               const boundingHeight = answer.getBoundingClientRect().height;
+              const computedStyle = window.getComputedStyle(answer);
+              const lineHeight = parseFloat(computedStyle.lineHeight) || 1.5;
+              const fontSize = parseFloat(computedStyle.fontSize) || 16;
+              
+              // Calculate full height - use the maximum of all measurements
               const fullHeight = Math.max(scrollHeight, boundingHeight);
+              
+              // Add extra buffer for line-height variations, subpixel rendering, and text wrapping
+              // Buffer should account for at least one line of text (lineHeight * fontSize)
+              const buffer = Math.max(25, lineHeight * fontSize * 0.5);
+              const finalHeight = fullHeight + buffer;
               
               // Reset to 0 for animation
               answer.style.maxHeight = '0px';
               answer.style.padding = '0';
               answer.style.opacity = '0';
               answer.style.overflow = 'hidden';
+              answer.style.height = 'auto';
               
               // Force reflow to ensure the reset is applied
               answer.offsetHeight;
               
               // Now animate to full height with padding
-              // Add a buffer (15px) to ensure nothing is cut off due to rounding, line-height, or subpixel rendering
-              answer.style.maxHeight = (fullHeight + 15) + 'px';
+              answer.style.maxHeight = finalHeight + 'px';
               answer.style.padding = '12px 0px 12px 18px';
               answer.style.opacity = '1';
               faqItem.classList.add('active');
