@@ -131,17 +131,27 @@ else:
     # Parse the DATABASE_URL (Supabase PostgreSQL connection string)
     # Format: postgresql://user:password@host:port/database
     try:
+        import socket
         db_url = urlparse(DATABASE_URL)
+        # Force IPv4 by resolving hostname
+        hostname = db_url.hostname
+        try:
+            ipv4_addr = socket.getaddrinfo(hostname, None, socket.AF_INET)[0][4][0]
+            resolved_host = ipv4_addr
+        except:
+            resolved_host = hostname
+        
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
                 'NAME': db_url.path[1:],  # Remove leading '/'
                 'USER': db_url.username,
                 'PASSWORD': db_url.password,
-                'HOST': db_url.hostname,
+                'HOST': resolved_host,
                 'PORT': db_url.port or '5432',
                 'OPTIONS': {
                     'connect_timeout': 10,
+                    'sslmode': 'require',
                 },
             }
         }

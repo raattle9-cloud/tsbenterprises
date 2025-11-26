@@ -1,0 +1,22 @@
+
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DEBUG=False
+      - DJANGO_SETTINGS_MODULE=TSB.settings
+    volumes:
+      - static_volume:/app/staticfiles
+    extra_hosts:
+      - "db.wshlzeyfiwoqafaqjqpj.supabase.co:123.45.xx.xx"
+    restart: unless-stopped
+
+volumes:
+  static_volume:
+
