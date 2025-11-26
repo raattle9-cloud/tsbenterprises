@@ -83,6 +83,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Must be after SecurityMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -116,55 +117,135 @@ WSGI_APPLICATION = 'TSB.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 # Get DATABASE_URL from environment variable (REQUIRED for Supabase PostgreSQL)
+# Note: During Docker build, DATABASE_URL may not be available
+# It will be available at runtime via .env file
 DATABASE_URL = os.getenv('DATABASE_URL')
 
-# Use SQLite for local development if DATABASE_URL is not set or connection fails
 if not DATABASE_URL:
-    # Fallback to SQLite for local development
+    # During build time (collectstatic), use a dummy config
+    # At runtime, DATABASE_URL must be set in .env file
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'dummy',
+            'USER': 'dummy',
+            'PASSWORD': 'dummy',
+            'HOST': 'localhost',
+            'PORT': '5432',
         }
     }
 else:
     # Parse the DATABASE_URL (Supabase PostgreSQL connection string)
     # Format: postgresql://user:password@host:port/database
+    import socket
+    db_url = urlparse(DATABASE_URL)
+    hostname = db_url.hostname
+
+    # Force IPv4 resolution - Docker containers may not have IPv6 enabled
+    # Supabase hostnames resolve to both IPv4 and IPv6, we need IPv4 only
+    resolved_host = hostname
+    resolved_ip = None
+    
+    # Try multiple methods to resolve IPv4
     try:
-        import socket
-        db_url = urlparse(DATABASE_URL)
-        # Force IPv4 by resolving hostname
-        hostname = db_url.hostname
+        # Method 1: Use gethostbyname which only returns IPv4
+        resolved_ip = socket.gethostbyname(hostname)
+        resolved_host = resolved_ip
+        print(f"✓ Resolved {hostname} to IPv4: {resolved_ip}")
+    except socket.gaierror:
+        # Method 2: Try getaddrinfo with IPv4 only
         try:
-            ipv4_addr = socket.getaddrinfo(hostname, None, socket.AF_INET)[0][4][0]
-            resolved_host = ipv4_addr
-        except:
+            addr_info = socket.getaddrinfo(
+                hostname, 
+                None, 
+                family=socket.AF_INET,  # IPv4 only
+                type=socket.SOCK_STREAM,
+                proto=socket.IPPROTO_TCP
+            )
+            if addr_info:
+                resolved_ip = addr_info[0][4][0]
+                resolved_host = resolved_ip
+                print(f"✓ Resolved {hostname} to IPv4 (getaddrinfo): {resolved_ip}")
+            else:
+                raise ValueError(f"No IPv4 address found for {hostname}")
+        except (socket.gaierror, IndexError, OSError, ValueError) as e:
+            print(f"✗ Failed to resolve {hostname} to IPv4: {e}")
+            print(f"⚠ DNS resolution failed - this will cause connection issues")
+            # Keep hostname but this will likely fail
             resolved_host = hostname
+
+    # Build database configuration
+    # Use the connection string format that psycopg2 supports
+    # Since DNS resolution fails in Docker, we'll use the connection string directly
+    # and configure psycopg2 to handle it properly
+    
+    # Try to use subprocess to resolve IPv4 from within container
+    import subprocess
+    resolved_ip_via_dig = None
+    resolved_ipv6 = None
+    try:
+        # Try using dig to resolve IPv4 (installed in Dockerfile)
+        result = subprocess.run(
+            ['dig', '+short', hostname, 'A'],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            ip_candidates = [ip.strip() for ip in result.stdout.strip().split('\n') if ip.strip() and '.' in ip.strip()]
+            if ip_candidates:
+                resolved_ip_via_dig = ip_candidates[0]
+                print(f"✓ Resolved {hostname} to IPv4 via dig: {resolved_ip_via_dig}")
         
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': db_url.path[1:],  # Remove leading '/'
-                'USER': db_url.username,
-                'PASSWORD': db_url.password,
-                'HOST': resolved_host,
-                'PORT': db_url.port or '5432',
-                'OPTIONS': {
-                    'connect_timeout': 10,
-                    'sslmode': 'require',
-                },
-            }
-        }
-    except Exception as e:
-        # If connection fails, fallback to SQLite for local development
-        print(f"Warning: Could not connect to PostgreSQL database: {e}")
-        print("Falling back to SQLite for local development...")
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
-            }
-        }
+        # Also try to get IPv6 address
+        result6 = subprocess.run(
+            ['dig', '+short', hostname, 'AAAA'],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        if result6.returncode == 0 and result6.stdout.strip():
+            ipv6_candidates = [ip.strip() for ip in result6.stdout.strip().split('\n') if ip.strip() and ':' in ip.strip()]
+            if ipv6_candidates:
+                resolved_ipv6 = ipv6_candidates[0]
+                print(f"✓ Resolved {hostname} to IPv6 via dig: {resolved_ipv6}")
+    except (subprocess.TimeoutExpired, FileNotFoundError, Exception) as e:
+        print(f"⚠ Could not resolve via dig: {e}")
+    
+    # Use resolved IPv4 if available, otherwise try IPv6, otherwise fall back to hostname
+    # Note: psycopg2 can handle IPv6 addresses if Docker network supports it
+    if resolved_ip_via_dig:
+        final_host = resolved_ip_via_dig
+    elif resolved_ipv6:
+        # Use IPv6 address directly - psycopg2 supports IPv6 if network is configured
+        final_host = resolved_ipv6
+        print(f"⚠ Using IPv6 address {resolved_ipv6} - ensure Docker IPv6 is enabled")
+    else:
+        final_host = hostname
+    
+    db_config = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': db_url.path[1:],  # Remove leading '/'
+        'USER': db_url.username,
+        'PASSWORD': db_url.password,
+        'HOST': final_host,
+        'PORT': db_url.port or '5432',
+        'OPTIONS': {
+            'connect_timeout': 10,
+            'sslmode': 'require',
+        },
+        'CONN_MAX_AGE': 600,  # Connection pooling
+    }
+    
+    if final_host != hostname:
+        print(f"✓ Using IP address {final_host} for connection (original hostname: {hostname})")
+    else:
+        print(f"⚠ Using hostname {hostname} - connection may fail if DNS resolves to IPv6")
+        print(f"⚠ To fix: Enable IPv6 in Docker Desktop or resolve IPv4 manually")
+    
+    DATABASES = {
+        'default': db_config
+    }
 
 
 # Password validation
@@ -212,14 +293,21 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 LOGIN_REDIRECT_URL = '/profile/'
 
+# Configure storage backends using STORAGES (Django 4.2+)
+# WhiteNoise for static files, Supabase for media if configured
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
+# Override default storage with Supabase if configured
 if SUPABASE_URL and SUPABASE_SERVICE_KEY:
-    STORAGES = {
-        "default": {
-            "BACKEND": "TSB.storage_backends.SupabaseMediaStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
+    STORAGES["default"] = {
+        "BACKEND": "TSB.storage_backends.SupabaseMediaStorage",
     }
     MEDIA_ROOT = None
     if SUPABASE_MEDIA_PUBLIC_URL:

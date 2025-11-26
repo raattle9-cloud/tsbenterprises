@@ -8,10 +8,12 @@ ENV PYTHONUNBUFFERED=1
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies including DNS utilities
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
+    dnsutils \
+    iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
@@ -20,6 +22,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
 COPY . .
+
+# Force IPv4 preference over IPv6 (fixes Supabase connection issues)
+RUN echo "precedence ::ffff:0:0/96  100" >> /etc/gai.conf
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
