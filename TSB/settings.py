@@ -64,9 +64,20 @@ if SUPABASE_URL and not SUPABASE_MEDIA_PUBLIC_URL:
 SECRET_KEY = 'django-insecure-qpe%*dykwr5(whjwqero3rv)v*h7o8!_i1o=a@n3+i^j$&y0bi'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Detect if running on Vercel
+IS_VERCEL = os.getenv('VERCEL') == '1' or os.getenv('VERCEL_ENV') is not None
+DEBUG = not IS_VERCEL  # Disable debug on Vercel
 
+# Get Vercel URL if available
+VERCEL_URL = os.getenv('VERCEL_URL', '')
 ALLOWED_HOSTS = ['*']
+if VERCEL_URL:
+    ALLOWED_HOSTS.append(VERCEL_URL)
+    # Also add without protocol
+    if VERCEL_URL.startswith('https://'):
+        ALLOWED_HOSTS.append(VERCEL_URL.replace('https://', ''))
+    elif VERCEL_URL.startswith('http://'):
+        ALLOWED_HOSTS.append(VERCEL_URL.replace('http://', ''))
 #'15.206.90.130'
 
 # Application definition

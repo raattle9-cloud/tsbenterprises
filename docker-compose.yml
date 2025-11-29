@@ -1,3 +1,6 @@
+
+version: '3.8'
+
 services:
   web:
     build: .
@@ -8,25 +11,14 @@ services:
     environment:
       - DEBUG=False
       - DJANGO_SETTINGS_MODULE=TSB.settings
-    # DNS configuration to ensure proper hostname resolution
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
-      - 1.1.1.1
-    # Ensure container can resolve DNS properly
-    dns_search: []
-    # Static files are collected during build, no volume needed
-    # volumes:
-    #   - static_volume:/app/staticfiles
+    volumes:
+      - static_volume:/app/staticfiles
+    extra_hosts:
+      - "db.wshlzeyfiwoqafaqjqpj.supabase.co:123.45.xx.xx"
     restart: unless-stopped
 
-networks:
-  default:
-    enable_ipv6: true
-    ipam:
-      config:
-        - subnet: 2001:db8:1::/64
+volumes:
+  static_volume:
 
-# volumes:
-#   static_volume:
+
 
