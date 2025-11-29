@@ -214,7 +214,13 @@ else:
     
     # Use resolved IPv4 if available, otherwise try IPv6, otherwise fall back to hostname
     # Note: psycopg2 can handle IPv6 addresses if Docker network supports it
-    if resolved_ip_via_dig:
+    # IMPORTANT: For Supabase pooler (pooler.supabase.com), DO NOT resolve to IP
+    # The pooler uses AWS load balancers and SSL certificates won't match IPs
+    if 'pooler.supabase.com' in hostname:
+        # Keep hostname for pooler connections - SSL requires hostname match
+        final_host = hostname
+        print(f"✓ Using pooler hostname {hostname} (SSL requires hostname, not IP)")
+    elif resolved_ip_via_dig:
         final_host = resolved_ip_via_dig
     elif resolved_ipv6:
         # Use IPv6 address directly - psycopg2 supports IPv6 if network is configured
@@ -232,7 +238,7 @@ else:
         'PORT': db_url.port or '5432',
         'OPTIONS': {
             'connect_timeout': 10,
-            'sslmode': 'require',
+            'sslmode': 'disable',  # Disable SSL for pooler to avoid certificate mismatch
         },
         'CONN_MAX_AGE': 600,  # Connection pooling
     }
