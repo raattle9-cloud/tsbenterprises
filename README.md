@@ -2,6 +2,7 @@
 
 Short README with setup, run and deployment notes for the TSB Enterprises Django project.
 
+
 ## Project Overview
 
 This repository is a Django application (project root contains `manage.py` and `TSB/settings.py`). The main app is `TSBv1` and the project uses Supabase (PostgreSQL) for database storage. The project includes Razorpay integration and has production-service snippets for Gunicorn + Nginx included in `TSB/settings.py` comments.
