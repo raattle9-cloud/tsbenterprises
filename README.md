@@ -111,6 +111,7 @@ RAZORPAY_KEY_ID=rzp_test_xxx
 RAZORPAY_KEY_SECRET=your-razorpay-secret
 ```
 
+
 ## Running Checks
 
 Check the project for common Django issues:
