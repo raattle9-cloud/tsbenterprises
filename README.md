@@ -9,7 +9,7 @@ This repository is a Django application (project root contains `manage.py` and `
 ## Quick Prerequisites
 
 - Python 3.10+ (use `py -3` on Windows)
-- PowerShell (Windows) or a POSIX shell on Linux
+- PowerShell (Windows)
 - Git (if you want to fetch remote branches)
 
 ## Recommended (Windows PowerShell) Setup
@@ -110,6 +110,7 @@ SECRET_KEY=your-secret-key
 RAZORPAY_KEY_ID=rzp_test_xxx
 RAZORPAY_KEY_SECRET=your-razorpay-secret
 ```
+
 
 ## Running Checks
 
