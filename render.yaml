@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: tsb-enterprises
+    runtime: docker
+    plan: free  # Change to 'starter' or higher for production
+    region: singapore  # Choose closest to your Supabase region for better IPv6 connectivity
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # You'll set this in Render dashboard
+      - key: DJANGO_SETTINGS_MODULE
+        value: TSB.settings
+      - key: PYTHONUNBUFFERED
+        value: 1
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    healthCheckPath: /
+    autoDeploy: true
+    
+    # Build command (optional, Docker handles this)
+    # buildCommand: python manage.py collectstatic --noinput
+    
+    # Start command is defined in Dockerfile, but you can override here if needed
+    # startCommand: gunicorn --bind 0.0.0.0:8000 --workers 3 TSB.wsgi:application
