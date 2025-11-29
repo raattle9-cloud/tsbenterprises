@@ -125,7 +125,7 @@ DATABASES = {
         'PORT': db_url.port or '5432',
         'OPTIONS': {
             'connect_timeout': 10,
-            'sslmode': 'require',
+            'sslmode': 'prefer',  # Use SSL if available, but don't verify hostname for pooler
         },
     }
 }
