@@ -10,6 +10,7 @@ from django.contrib.auth import logout
 
 
 urlpatterns = [
+    path("health/", views.health_check, name="health_check"),
     path("", views.home, name="home"),
     path("index2/", views.index2, name="index2"),
     path("services/", views.services_page, name="services"),

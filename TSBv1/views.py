@@ -20,6 +20,18 @@ if key_id:
 
 # Create your views here.
 
+def health_check(request):
+    """
+    Health check endpoint for monitoring and keeping the app alive.
+    Returns JSON response with status and timestamp.
+    """
+    from django.utils import timezone
+    return JsonResponse({
+        'status': 'healthy',
+        'message': 'Backend is running',
+        'timestamp': timezone.now().isoformat()
+    })
+
 def home(request):
     return render(request,"app/index.html")
 
