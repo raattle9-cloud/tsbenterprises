@@ -92,7 +92,16 @@ class CategoryViewNoSlug(View):
                 'code': code,
                 'label': display_label
             })
-        return render(request, "app/category.html", locals())
+        
+        # Get wishlist items for authenticated users
+        wishlist_service_ids = set()
+        if request.user.is_authenticated:
+            wishlist_service_ids = set(Wishlist.objects.filter(user=request.user).values_list('services_id', flat=True))
+        
+        return render(request, "app/category.html", {
+            "categories": categories,
+            "wishlist_service_ids": wishlist_service_ids
+        })
 
 class CategoryView(View):
     def get(self, request, val):
@@ -105,7 +114,17 @@ class CategoryView(View):
                 'code': code,
                 'label': display_label
             })
-        return render(request, "app/category.html", locals())
+        
+        # Get wishlist items for authenticated users
+        wishlist_service_ids = set()
+        if request.user.is_authenticated:
+            wishlist_service_ids = set(Wishlist.objects.filter(user=request.user).values_list('services_id', flat=True))
+        
+        return render(request, "app/category.html", {
+            "services": services,
+            "categories": categories,
+            "wishlist_service_ids": wishlist_service_ids
+        })
     
 class CategoryTitle(View):
     def get(self, request, val):
