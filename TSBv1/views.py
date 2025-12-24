@@ -211,12 +211,35 @@ def add_to_cart(request):
     
     user = request.user
     services_id = request.GET.get('serv_id')
-    services = Services.objects.get(id = services_id)
-    # Use get_or_create to avoid creating duplicate Cart rows for the same user+service
-    cart_item, created = Cart.objects.get_or_create(user=user, services=services, defaults={'quantity': 1})
-    if not created:
-        cart_item.quantity = (cart_item.quantity or 0) + 1
-        cart_item.save()
+    
+    if not services_id:
+        messages.error(request, "Service not specified.")
+        return redirect('/services/')
+    
+    try:
+        # Use list() to force evaluation for MongoDB compatibility
+        services_list = list(Services.objects.filter(id=services_id))
+        if not services_list:
+            messages.error(request, "Service not found.")
+            return redirect('/services/')
+        services = services_list[0]
+        
+        # Check if item already exists in cart using list()
+        cart_items = list(Cart.objects.filter(user=user, services=services))
+        
+        if cart_items:
+            # Item exists - increment quantity using filter + update
+            cart_item = cart_items[0]
+            new_quantity = (cart_item.quantity or 0) + 1
+            Cart.objects.filter(id=cart_item.id).update(quantity=new_quantity)
+        else:
+            # Item doesn't exist - create new cart entry
+            Cart.objects.create(user=user, services=services, quantity=1)
+        
+    except Exception as e:
+        messages.error(request, f"Error adding to cart: {str(e)}")
+        return redirect('/services/')
+    
     return redirect("/cart")
 
 def show_cart(request):
@@ -264,96 +287,139 @@ class checkout(View):
         return render(request, 'app/checkout.html',locals())
 
 def plus_cart(request):
-    if request.method=='GET':
-        # Accept either 'serv_id' (used in some templates) or 'prod_id' (used elsewhere)
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=401)
+    
+    if request.method == 'GET':
         serv_id = request.GET.get('serv_id') or request.GET.get('prod_id')
         if not serv_id:
             return JsonResponse({'error': 'missing serv_id or prod_id'}, status=400)
-        print(serv_id)
-        # Operate on the first matching cart item; get_or_create ensures duplicates are unlikely
-        c = Cart.objects.filter(Q(services=serv_id) & Q(user=request.user)).first()
-        if not c:
-            # create a new one if missing
-            services = Services.objects.get(id=serv_id)
-            c = Cart.objects.create(user=request.user, services=services, quantity=1)
-        else:
-            c.quantity = (c.quantity or 0) + 1
-            c.save()
+        
+        try:
+            # Use list() to force evaluation for MongoDB compatibility
+            cart_items = list(Cart.objects.filter(services_id=serv_id, user=request.user))
+            
+            if not cart_items:
+                # Create new cart item
+                services_list = list(Services.objects.filter(id=serv_id))
+                if not services_list:
+                    return JsonResponse({'error': 'Service not found'}, status=404)
+                Cart.objects.create(user=request.user, services=services_list[0], quantity=1)
+                new_quantity = 1
+            else:
+                # Update quantity using filter + update for MongoDB
+                cart_item = cart_items[0]
+                new_quantity = (cart_item.quantity or 0) + 1
+                Cart.objects.filter(id=cart_item.id).update(quantity=new_quantity)
+            
+            # Calculate new totals
+            remaining_cart = list(Cart.objects.filter(user=request.user))
+            amount = sum(p.quantity * p.services.discounted_price for p in remaining_cart)
+            totalamount = amount + 40
 
-        user = request.user
-        cart = Cart.objects.filter(user=user)
-        amount =0
-        for p in cart:
-            value = p.quantity * p.services.discounted_price
-            amount = amount + value
-        totalamount = amount + 40
-
-        data = {
-            'quantity': c.quantity,
-            'amount': amount,
-            'totalamount': totalamount
-        }
-        return JsonResponse(data)
+            data = {
+                'quantity': new_quantity,
+                'amount': amount,
+                'totalamount': totalamount
+            }
+            return JsonResponse(data)
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
     
 def minus_cart(request):
-    if request.method=='GET':
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=401)
+    
+    if request.method == 'GET':
         serv_id = request.GET.get('serv_id') or request.GET.get('prod_id')
         if not serv_id:
             return JsonResponse({'error': 'missing serv_id or prod_id'}, status=400)
-        print(serv_id)
-        c = Cart.objects.filter(Q(services=serv_id) & Q(user=request.user)).first()
-        if not c:
-            return JsonResponse({'error': 'cart item not found'}, status=404)
-        c.quantity = (c.quantity or 0) - 1
-        if c.quantity <= 0:
-            c.delete()
-        else:
-            c.save()
+        
+        try:
+            # Use list() to force evaluation for MongoDB compatibility
+            cart_items = list(Cart.objects.filter(services_id=serv_id, user=request.user))
+            
+            if not cart_items:
+                return JsonResponse({'error': 'cart item not found'}, status=404)
+            
+            cart_item = cart_items[0]
+            new_quantity = (cart_item.quantity or 1) - 1
+            removed = False
+            
+            if new_quantity <= 0:
+                # Delete using filter + delete for MongoDB
+                try:
+                    Cart.objects.filter(id=cart_item.id).delete()
+                except Exception:
+                    Cart.objects.filter(services_id=serv_id, user=request.user).delete()
+                new_quantity = 0
+                removed = True
+            else:
+                # Update using filter + update for MongoDB
+                Cart.objects.filter(id=cart_item.id).update(quantity=new_quantity)
+            
+            # Calculate new totals
+            remaining_cart = list(Cart.objects.filter(user=request.user))
+            amount = sum(p.quantity * p.services.discounted_price for p in remaining_cart)
+            totalamount = amount + 40
 
-        user = request.user
-        cart = Cart.objects.filter(user=user)
-        amount =0
-        for p in cart:
-            value = p.quantity * p.services.discounted_price
-            amount = amount + value
-        totalamount = amount + 40
-
-        data = {
-            'quantity': c.quantity,
-            'amount': amount,
-            'totalamount': totalamount
-        }
-        return JsonResponse(data)
+            data = {
+                'quantity': new_quantity,
+                'amount': amount,
+                'totalamount': totalamount,
+                'removed': removed
+            }
+            return JsonResponse(data)
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
     
 def remove_cart(request):
-    if request.method=='GET':
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=401)
+    
+    if request.method == 'GET':
         serv_id = request.GET.get('serv_id') or request.GET.get('prod_id')
         if not serv_id:
             return JsonResponse({'error': 'missing serv_id or prod_id'}, status=400)
 
-        qs = Cart.objects.filter(Q(services=serv_id) & Q(user=request.user))
-        if not qs.exists():
-            return JsonResponse({'error': 'cart item not found'}, status=404)
+        try:
+            # Get cart items for this service and user
+            # Use list() to force evaluation to avoid MongoDB cursor issues
+            cart_items = list(Cart.objects.filter(services_id=serv_id, user=request.user))
+            
+            if not cart_items:
+                return JsonResponse({'error': 'cart item not found'}, status=404)
 
-        # Sum quantities across any duplicate rows to report removed quantity
-        removed_quantity = sum((item.quantity or 0) for item in qs)
-        # Delete all matching rows
-        qs.delete()
+            # Sum quantities across any duplicate rows
+            removed_quantity = sum((item.quantity or 0) for item in cart_items)
+            
+            # Delete each item individually to avoid MongoDB queryset delete issues
+            for item in cart_items:
+                try:
+                    Cart.objects.filter(id=item.id).delete()
+                except Exception:
+                    # Fallback: try deleting by user+services
+                    Cart.objects.filter(services_id=serv_id, user=request.user).delete()
+                    break
 
-        user = request.user
-        cart = Cart.objects.filter(user=user)
-        amount = 0
-        for p in cart:
-            value = p.quantity * p.services.discounted_price
-            amount = amount + value
-        totalamount = amount + 40
+            # Calculate new totals
+            user = request.user
+            remaining_cart = list(Cart.objects.filter(user=user))
+            amount = sum(p.quantity * p.services.discounted_price for p in remaining_cart)
+            totalamount = amount + 40
 
-        data = {
-            'quantity': removed_quantity,
-            'amount': amount,
-            'totalamount': totalamount
-        }
-        return JsonResponse(data)
+            data = {
+                'quantity': removed_quantity,
+                'amount': amount,
+                'totalamount': totalamount,
+                'removed': True
+            }
+            return JsonResponse(data)
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 def plus_wishlist(request):
     if not request.user.is_authenticated:

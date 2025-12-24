@@ -225,6 +225,127 @@
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="{% static 'app/js/myscript.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Plus cart - increase quantity
+  document.querySelectorAll('.plus-cart').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const servId = this.getAttribute('pid');
+      
+      fetch('/pluscart/?prod_id=' + servId)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            alert(data.error);
+            return;
+          }
+          // Update quantity display
+          const qtyEl = document.getElementById('quantity-' + servId);
+          if (qtyEl) qtyEl.textContent = data.quantity;
+          
+          // Update totals
+          updateTotals(data.amount, data.totalamount);
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Failed to update cart');
+        });
+    });
+  });
+  
+  // Minus cart - decrease quantity
+  document.querySelectorAll('.minus-cart').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const servId = this.getAttribute('pid');
+      const cartItem = this.closest('.cart-item');
+      
+      fetch('/minuscart/?prod_id=' + servId)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            alert(data.error);
+            return;
+          }
+          
+          if (data.removed) {
+            // Remove item from DOM
+            if (cartItem) cartItem.remove();
+            updateCartCount();
+            // Reload if cart is empty
+            if (document.querySelectorAll('.cart-item').length === 0) {
+              location.reload();
+            }
+          } else {
+            // Update quantity display
+            const qtyEl = document.getElementById('quantity-' + servId);
+            if (qtyEl) qtyEl.textContent = data.quantity;
+          }
+          
+          // Update totals
+          updateTotals(data.amount, data.totalamount);
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Failed to update cart');
+        });
+    });
+  });
+  
+  // Remove cart - remove entire item
+  document.querySelectorAll('.remove-cart').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const servId = this.getAttribute('pid');
+      const cartItem = this.closest('.cart-item');
+      
+      if (!confirm('Are you sure you want to remove this item?')) return;
+      
+      fetch('/removecart/?prod_id=' + servId)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            alert(data.error);
+            return;
+          }
+          
+          // Remove item from DOM
+          if (cartItem) cartItem.remove();
+          updateCartCount();
+          
+          // Update totals
+          updateTotals(data.amount, data.totalamount);
+          
+          // Reload if cart is empty
+          if (document.querySelectorAll('.cart-item').length === 0) {
+            location.reload();
+          }
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Failed to remove item');
+        });
+    });
+  });
+  
+  // Helper: Update totals display
+  function updateTotals(amount, totalamount) {
+    const subtotalEl = document.getElementById('amount');
+    const totalEl = document.getElementById('totalamount');
+    if (subtotalEl) subtotalEl.textContent = '₹' + amount;
+    if (totalEl) totalEl.textContent = '₹' + totalamount;
+  }
+  
+  // Helper: Update cart count in header
+  function updateCartCount() {
+    const countEl = document.querySelector('.card-header h5');
+    if (countEl) {
+      const remaining = document.querySelectorAll('.cart-item').length;
+      countEl.innerHTML = '<i class="fas fa-list me-2"></i>Cart Items (' + remaining + ')';
+    }
+  }
+});
+</script>
 {% endblock %}
 
