@@ -27,7 +27,7 @@
                             <div class="col-md-3 text-center mb-3 mb-md-0">
                                 {% with primary=item.services.get_primary_image %}
                                     {% if primary %}
-                                    <img src="{{ primary.image.url }}" class="img-fluid rounded-3 shadow-sm" alt="{{ item.services.title }}" style="max-height: 150px; width: auto; object-fit: cover;">
+                                    <img src="{{ primary.image_url }}" class="img-fluid rounded-3 shadow-sm" alt="{{ item.services.title }}" style="max-height: 150px; width: auto; object-fit: cover;">
                                     {% else %}
                                     <img src="{% static 'app/images/aboutus.jpg' %}" class="img-fluid rounded-3 shadow-sm" alt="{{ item.services.title }}" style="max-height: 150px; width: auto; object-fit: cover;">
                                     {% endif %}

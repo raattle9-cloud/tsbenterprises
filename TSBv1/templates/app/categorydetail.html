@@ -19,7 +19,7 @@
                                 {% for image in services.images.all %}
                                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                     <div class="gallery-frame">
-                                        <img src="{{ image.image.url }}"
+                                        <img src="{{ image.image_url }}"
                                             class="gallery-image"
                                             alt="{{ services.title }} image {{ forloop.counter }}">
                                     </div>
@@ -57,7 +57,7 @@
                     <div class="d-flex gap-2 p-3 flex-wrap">
                         {% for image in services.images.all %}
                         <button class="btn p-0 border-0 thumbnail-btn" type="button" data-bs-target="#serviceGallery" data-bs-slide-to="{{ forloop.counter0 }}">
-                            <img src="{{ image.image.url }}" alt="Thumbnail {{ forloop.counter }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md); border: 2px solid var(--gray-200);">
+                            <img src="{{ image.image_url }}" alt="Thumbnail {{ forloop.counter }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md); border: 2px solid var(--gray-200);">
                         </button>
                         {% endfor %}
                     </div>

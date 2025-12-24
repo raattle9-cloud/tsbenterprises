@@ -60,7 +60,7 @@
                                     <a href="{% url 'category-detail' serv.id %}" class="text-decoration-none">
                                         {% with primary=serv.get_primary_image %}
                                             {% if primary %}
-                                            <img src="{{ primary.image.url }}" class="card-img-top" alt="{{ serv.title }}" style="height: 100%; object-fit: cover; width: 100%;">
+                                            <img src="{{ primary.image_url }}" class="card-img-top" alt="{{ serv.title }}" style="height: 100%; object-fit: cover; width: 100%;">
                                             {% else %}
                                             <img src="{% static 'app/images/aboutus.jpg' %}" class="card-img-top" alt="{{ serv.title }}" style="height: 100%; object-fit: cover; width: 100%; background-color: #f0f0f0;">
                                             {% endif %}

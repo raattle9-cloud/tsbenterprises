@@ -90,6 +90,35 @@ class ServiceImage(models.Model):
     def __str__(self):
         return f"{self.service.title} image"
     
+    @property
+    def image_url(self):
+        """
+        Returns the correct image URL:
+        - Cloudinary URL if the image was uploaded to Cloudinary
+        - Local static URL if the image is stored locally
+        """
+        if not self.image:
+            return ''
+        
+        image_path = str(self.image)
+        
+        # If it's already a full URL (Cloudinary), return it
+        if image_path.startswith('http'):
+            return image_path
+        
+        # Check if the image exists on Cloudinary by checking if the URL is a Cloudinary URL
+        try:
+            url = self.image.url
+            if 'cloudinary.com' in url:
+                return url
+        except Exception:
+            pass
+        
+        # Fallback to local static URL for existing local images
+        # Images are stored in static/images/service/
+        from django.conf import settings
+        return f"{settings.STATIC_URL}images/{image_path}"
+    
 class Customer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=20)

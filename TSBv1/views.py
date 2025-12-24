@@ -371,15 +371,17 @@ def minus_wishlist(request):
             return JsonResponse({'error': 'missing prod_id'}, status=400)
         
         user = request.user
-        wishlist_item = Wishlist.objects.filter(user=user, services__id=serv_id).first()
+        # Use queryset.delete() instead of object.delete() to avoid MongoDB/Djongo id issue
+        wishlist_qs = Wishlist.objects.filter(user=user, services__id=serv_id)
+        deleted_count = wishlist_qs.count()
         
-        if wishlist_item:
-            wishlist_item.delete()
+        if deleted_count > 0:
+            wishlist_qs.delete()
             message = 'Item removed from wishlist'
         else:
             message = 'Item not found in wishlist'
         
-        return JsonResponse({'message': message, 'removed': wishlist_item is not None})
+        return JsonResponse({'message': message, 'removed': deleted_count > 0})
 
 def show_wishlist(request):
     if not request.user.is_authenticated:

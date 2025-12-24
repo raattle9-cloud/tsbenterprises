@@ -188,6 +188,10 @@ STORAGES = {
     },
 }
 
+# Also set DEFAULT_FILE_STORAGE for Django 4.1 compatibility
+# This ensures ImageField.url returns Cloudinary URLs
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 
 
 

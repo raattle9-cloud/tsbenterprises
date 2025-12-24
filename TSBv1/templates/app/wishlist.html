@@ -1,5 +1,8 @@
-{% extends 'app/layouts/landing_base.html' %} {% load static %} {% block title
-%}Wishlist - TSB Enterprises{% endblock title %} {% block landing_content %}
+{% extends 'app/layouts/landing_base.html' %}
+{% load static %}
+{% block title %}Wishlist - TSB Enterprises{% endblock title %}
+
+{% block landing_content %}
 <div class="section-padding" style="padding-top: 120px">
   <div class="container py-5">
     {% if wishlist %}
@@ -16,8 +19,7 @@
         <div class="card modern-card border-0">
           <div class="card-header bg-transparent border-0 py-3">
             <h5 class="mb-0">
-              <i class="fas fa-list me-2"></i>Wishlist Items ({{ wishlist|length
-              }})
+              <i class="fas fa-list me-2"></i>Wishlist Items ({{ wishlist|length }})
             </h5>
           </div>
           <div class="card-body">
@@ -26,22 +28,23 @@
               <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card h-100 shadow-sm border-0">
                   <div class="position-relative">
-                    {% with primary=item.services.get_primary_image %} {% if
-                    primary %}
+                    {% with primary=item.services.get_primary_image %}
+                      {% if primary %}
                     <img
-                      src="{{ primary.image.url }}"
+                      src="{{ primary.image_url }}"
                       class="card-img-top"
                       alt="{{ item.services.title }}"
                       style="height: 250px; object-fit: cover"
                     />
-                    {% else %}
+                      {% else %}
                     <img
                       src="{% static 'app/images/aboutus.jpg' %}"
                       class="card-img-top"
                       alt="{{ item.services.title }}"
                       style="height: 250px; object-fit: cover"
                     />
-                    {% endif %} {% endwith %}
+                      {% endif %}
+                    {% endwith %}
                     <button
                       class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 minus-wishlist"
                       pid="{{ item.services.id }}"
@@ -69,8 +72,7 @@
                         <span class="h5 text-primary mb-0"
                           >₹{{ item.services.discounted_price }}</span
                         >
-                        {% if item.services.selling_price !=
-                        item.services.discounted_price %}
+                        {% if item.services.selling_price != item.services.discounted_price %}
                         <small
                           class="text-muted text-decoration-line-through ms-2"
                           >₹{{ item.services.selling_price }}</small
@@ -117,7 +119,10 @@
     {% endif %}
   </div>
 </div>
-{% endblock landing_content %} {% block landing_scripts %}
+{% endblock landing_content %}
+
+{% block landing_scripts %}
+{{ block.super }}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     // Handle remove from wishlist
