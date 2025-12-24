@@ -16,7 +16,7 @@ This repository is a Django application (project root contains `manage.py` and `
 
 Run from the repository root (example path): `C:\Users\krish\OneDrive\Desktop\tsb-enterprises`.
 
-1) (Optional) Update from remote `zimaad` branch
+1. (Optional) Update from remote `zimaad` branch
 
 ```powershell
 git fetch origin
@@ -24,7 +24,7 @@ git checkout zimaad
 git pull origin zimaad
 ```
 
-2) Create and activate a virtual environment
+2. Create and activate a virtual environment
 
 ```powershell
 py -3 -m venv .venv
@@ -32,7 +32,7 @@ py -3 -m venv .venv
 . .\.venv\Scripts\Activate
 ```
 
-3) Create a `.env` file with your Supabase database connection string
+3. Create a `.env` file with your Supabase database connection string
 
 ```powershell
 # Copy the example file
@@ -40,32 +40,32 @@ Copy-Item .env.example .env
 # Then edit .env and add your Supabase DATABASE_URL
 ```
 
-4) Upgrade pip and install requirements
+4. Upgrade pip and install requirements
 
 ```powershell
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-5) Apply database migrations
+5. Apply database migrations
 
 ```powershell
 python manage.py migrate
 ```
 
-5) (Optional) Create a superuser
+5. (Optional) Create a superuser
 
 ```powershell
 python manage.py createsuperuser
 ```
 
-6) (Optional) Collect static files for production-like setup
+6. (Optional) Collect static files for production-like setup
 
 ```powershell
 python manage.py collectstatic --noinput
 ```
 
-7) Run the development server (bind to localhost)
+7. Run the development server (bind to localhost)
 
 ```powershell
 python manage.py runserver 127.0.0.1:8000
@@ -76,6 +76,7 @@ python manage.py runserver 0.0.0.0:8000
 Then browse to `http://127.0.0.1:8000` or `http://localhost:8000`.
 
 Notes:
+
 - `0.0.0.0` is a bind address; prefer `127.0.0.1` or `localhost` when opening in a browser.
 - If PowerShell prevents activation, run:
 
@@ -95,19 +96,23 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 Example `.env` placeholders (do NOT commit real keys):
 
 ```
-# REQUIRED: Supabase PostgreSQL Connection String
-# Get this from: Supabase Dashboard > Project Settings > Database > Connection String > URI
-DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:5432/postgres
+# REQUIRED: MongoDB Connection String
+# Get this from: MongoDB Atlas > Connect > Drivers > Copy connection string
+DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
 
-# Optional: Supabase Storage Configuration
-SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
-SUPABASE_SERVICE_KEY=your_service_role_key_here
+# REQUIRED: Cloudinary Configuration (for image storage)
+# Get this from: Cloudinary Dashboard
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
-# Optional: Django Secret Key (for production, generate a new one)
-SECRET_KEY=your-secret-key
+# PRODUCTION SETTINGS
+DEBUG=False
+SECRET_KEY=your-super-secret-key-here
+ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
 
-# Optional: Razorpay Keys
-RAZORPAY_KEY_ID=rzp_test_xxx
+# Razorpay Payment Gateway
+RAZORPAY_KEY_ID=rzp_live_xxx
 RAZORPAY_KEY_SECRET=your-razorpay-secret
 ```
 
@@ -129,6 +134,7 @@ python -W default manage.py check
 ## Debugging & Troubleshooting
 
 - If the server isn't reachable:
+
   - Ensure you used `127.0.0.1` or `localhost` in browser.
   - Use `netstat -ano | findstr ":8000"` (Windows) to see which process is listening.
   - If port is occupied, run `python manage.py runserver 127.0.0.1:8001` with a different port.

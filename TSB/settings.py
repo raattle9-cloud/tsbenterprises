@@ -36,7 +36,6 @@ WantedBy=multi-user.target
 """
 import os
 from pathlib import Path
-from urllib.parse import urlparse
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -46,28 +45,25 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'TSB.settings')
 
-SUPABASE_URL = os.getenv('SUPABASE_URL')
-SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
-SUPABASE_MEDIA_BUCKET = os.getenv('SUPABASE_MEDIA_BUCKET', 'media')
-SUPABASE_MEDIA_PUBLIC = os.getenv('SUPABASE_MEDIA_PUBLIC', 'true').lower() in {'1', 'true', 'yes', 'on'}
-SUPABASE_MEDIA_PUBLIC_URL = os.getenv('SUPABASE_MEDIA_PUBLIC_URL')
-SUPABASE_SIGNED_URL_EXPIRY = int(os.getenv('SUPABASE_SIGNED_URL_EXPIRY', '3600'))
-
-if SUPABASE_URL and not SUPABASE_MEDIA_PUBLIC_URL:
-    SUPABASE_MEDIA_PUBLIC_URL = f"{SUPABASE_URL.rstrip('/')}/storage/v1/object/public/{SUPABASE_MEDIA_BUCKET}"
+# Cloudinary Configuration
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+}
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qpe%*dykwr5(whjwqero3rv)v*h7o8!_i1o=a@n3+i^j$&y0bi'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-qpe%*dykwr5(whjwqero3rv)v*h7o8!_i1o=a@n3+i^j$&y0bi')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = ['*']
-#'15.206.90.130'
+# Allowed hosts from environment (comma-separated) or default
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 # Application definition
 
@@ -78,6 +74,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',  # Cloudinary for media storage
+    'cloudinary',
     'TSBv1',
 ]
 
@@ -116,142 +114,22 @@ WSGI_APPLICATION = 'TSB.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# Get DATABASE_URL from environment variable (REQUIRED for Supabase PostgreSQL)
-# Note: During Docker build, DATABASE_URL may not be available
-# It will be available at runtime via .env file
+# MongoDB Connection URL from environment
 DATABASE_URL = os.getenv('DATABASE_URL')
 
-if not DATABASE_URL:
-    # During build time (collectstatic), use a dummy config
-    # At runtime, DATABASE_URL must be set in .env file
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'dummy',
-            'USER': 'dummy',
-            'PASSWORD': 'dummy',
-            'HOST': 'localhost',
-            'PORT': '5432',
+# MongoDB Configuration using Djongo
+# The DATABASE_URL in .env should be a standard MongoDB Connection URI
+# e.g., mongodb+srv://user:pass@cluster.mongodb.net/dbname
+DATABASES = {
+    'default': {
+        'ENGINE': 'djongo',
+        'NAME': 'tsb_database',
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': DATABASE_URL,
         }
     }
-else:
-    # Parse the DATABASE_URL (Supabase PostgreSQL connection string)
-    # Format: postgresql://user:password@host:port/database
-    import socket
-    db_url = urlparse(DATABASE_URL)
-    hostname = db_url.hostname
-
-    # Force IPv4 resolution - Docker containers may not have IPv6 enabled
-    # Supabase hostnames resolve to both IPv4 and IPv6, we need IPv4 only
-    resolved_host = hostname
-    resolved_ip = None
-    
-    # Try multiple methods to resolve IPv4
-    try:
-        # Method 1: Use gethostbyname which only returns IPv4
-        resolved_ip = socket.gethostbyname(hostname)
-        resolved_host = resolved_ip
-        print(f"✓ Resolved {hostname} to IPv4: {resolved_ip}")
-    except socket.gaierror:
-        # Method 2: Try getaddrinfo with IPv4 only
-        try:
-            addr_info = socket.getaddrinfo(
-                hostname, 
-                None, 
-                family=socket.AF_INET,  # IPv4 only
-                type=socket.SOCK_STREAM,
-                proto=socket.IPPROTO_TCP
-            )
-            if addr_info:
-                resolved_ip = addr_info[0][4][0]
-                resolved_host = resolved_ip
-                print(f"✓ Resolved {hostname} to IPv4 (getaddrinfo): {resolved_ip}")
-            else:
-                raise ValueError(f"No IPv4 address found for {hostname}")
-        except (socket.gaierror, IndexError, OSError, ValueError) as e:
-            print(f"✗ Failed to resolve {hostname} to IPv4: {e}")
-            print(f"⚠ DNS resolution failed - this will cause connection issues")
-            # Keep hostname but this will likely fail
-            resolved_host = hostname
-
-    # Build database configuration
-    # Use the connection string format that psycopg2 supports
-    # Since DNS resolution fails in Docker, we'll use the connection string directly
-    # and configure psycopg2 to handle it properly
-    
-    # Try to use subprocess to resolve IPv4 from within container
-    import subprocess
-    resolved_ip_via_dig = None
-    resolved_ipv6 = None
-    try:
-        # Try using dig to resolve IPv4 (installed in Dockerfile)
-        result = subprocess.run(
-            ['dig', '+short', hostname, 'A'],
-            capture_output=True,
-            text=True,
-            timeout=5
-        )
-        if result.returncode == 0 and result.stdout.strip():
-            ip_candidates = [ip.strip() for ip in result.stdout.strip().split('\n') if ip.strip() and '.' in ip.strip()]
-            if ip_candidates:
-                resolved_ip_via_dig = ip_candidates[0]
-                print(f"✓ Resolved {hostname} to IPv4 via dig: {resolved_ip_via_dig}")
-        
-        # Also try to get IPv6 address
-        result6 = subprocess.run(
-            ['dig', '+short', hostname, 'AAAA'],
-            capture_output=True,
-            text=True,
-            timeout=5
-        )
-        if result6.returncode == 0 and result6.stdout.strip():
-            ipv6_candidates = [ip.strip() for ip in result6.stdout.strip().split('\n') if ip.strip() and ':' in ip.strip()]
-            if ipv6_candidates:
-                resolved_ipv6 = ipv6_candidates[0]
-                print(f"✓ Resolved {hostname} to IPv6 via dig: {resolved_ipv6}")
-    except (subprocess.TimeoutExpired, FileNotFoundError, Exception) as e:
-        print(f"⚠ Could not resolve via dig: {e}")
-    
-    # Use resolved IPv4 if available, otherwise try IPv6, otherwise fall back to hostname
-    # Note: psycopg2 can handle IPv6 addresses if Docker network supports it
-    # IMPORTANT: For Supabase pooler (pooler.supabase.com), DO NOT resolve to IP
-    # The pooler uses AWS load balancers and SSL certificates won't match IPs
-    if 'pooler.supabase.com' in hostname:
-        # Keep hostname for pooler connections - SSL requires hostname match
-        final_host = hostname
-        print(f"✓ Using pooler hostname {hostname} (SSL requires hostname, not IP)")
-    elif resolved_ip_via_dig:
-        final_host = resolved_ip_via_dig
-    elif resolved_ipv6:
-        # Use IPv6 address directly - psycopg2 supports IPv6 if network is configured
-        final_host = resolved_ipv6
-        print(f"⚠ Using IPv6 address {resolved_ipv6} - ensure Docker IPv6 is enabled")
-    else:
-        final_host = hostname
-    
-    db_config = {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': db_url.path[1:],  # Remove leading '/'
-        'USER': db_url.username,
-        'PASSWORD': db_url.password,
-        'HOST': final_host,
-        'PORT': db_url.port or '5432',
-        'OPTIONS': {
-            'connect_timeout': 10,
-            'sslmode': 'disable',  # Disable SSL for pooler to avoid certificate mismatch
-        },
-        'CONN_MAX_AGE': 600,  # Connection pooling
-    }
-    
-    if final_host != hostname:
-        print(f"✓ Using IP address {final_host} for connection (original hostname: {hostname})")
-    else:
-        print(f"⚠ Using hostname {hostname} - connection may fail if DNS resolves to IPv6")
-        print(f"⚠ To fix: Enable IPv6 in Docker Desktop or resolve IPv4 manually")
-    
-    DATABASES = {
-        'default': db_config
-    }
+}
 
 
 # Password validation
@@ -300,24 +178,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 LOGIN_REDIRECT_URL = '/profile/'
 
 # Configure storage backends using STORAGES (Django 4.2+)
-# WhiteNoise for static files, Supabase for media if configured
+# WhiteNoise for static files, Cloudinary for media
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
-# Override default storage with Supabase if configured
-if SUPABASE_URL and SUPABASE_SERVICE_KEY:
-    STORAGES["default"] = {
-        "BACKEND": "TSB.storage_backends.SupabaseMediaStorage",
-    }
-    MEDIA_ROOT = None
-    if SUPABASE_MEDIA_PUBLIC_URL:
-        MEDIA_URL = SUPABASE_MEDIA_PUBLIC_URL
+
 
 
 # Default primary key field type
@@ -326,5 +197,10 @@ if SUPABASE_URL and SUPABASE_SERVICE_KEY:
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-razor_pay_key_id = 'rzp_live_ZWQJtI7AM0kdlA'
-key_secret = 'W7MYw65yiAkUL6A2dKUtLn6R'
+# Razorpay Configuration (from environment variables)
+RAZOR_PAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', 'rzp_live_ZWQJtI7AM0kdlA')
+RAZOR_PAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', 'W7MYw65yiAkUL6A2dKUtLn6R')
+
+# Legacy aliases for backward compatibility
+razor_pay_key_id = RAZOR_PAY_KEY_ID
+key_secret = RAZOR_PAY_KEY_SECRET
