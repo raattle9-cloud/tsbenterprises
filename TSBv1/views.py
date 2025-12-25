@@ -20,6 +20,7 @@ if key_id:
 
 # Create your views here.
 
+
 def home(request):
     return render(request,"app/index.html")
 
@@ -82,10 +83,10 @@ class CategoryViewNoSlug(View):
             })
         return render(request, "app/category.html", locals())
 
+
 class CategoryView(View):
     def get(self, request, val):
         services = Services.objects.filter(category=val).prefetch_related('images')
-        # Get all categories for sidebar (not individual service titles)
         categories = []
         for code, label in CATEGORY_CHOICES:
             display_label = label.replace('_', ' ').title()
