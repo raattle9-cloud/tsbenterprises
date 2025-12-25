@@ -158,11 +158,17 @@ class CustomerRegistrationView(View):
     def post(self, request):
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Congratulations! You have successfully registered.")
-            form = CustomerRegistrationForm()
+            try:
+                form.save()
+                messages.success(request, "Congratulations! You have successfully registered.")
+                form = CustomerRegistrationForm()
+            except Exception as e:
+                import traceback
+                print(f"Registration error: {e}")
+                print(traceback.format_exc())
+                messages.error(request, f"Registration failed: {str(e)}")
         else:
-            messages.error(request, "Registration failed. Please try again.")
+            messages.error(request, "Registration failed. Please check your input and try again.")
 
         return render(request, "app/customerregistration.html",locals())
     
