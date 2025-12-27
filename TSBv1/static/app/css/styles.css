@@ -409,7 +409,17 @@
   
   /* Prevent content from going behind the header */
   body {
-    padding-top: 90px; /* adjust based on your header height */
+    padding-top: 64px; /* matches header height: 12px padding + 40px logo + 12px padding */
+  }
+  
+  /* Remove any gap between header and content */
+  main {
+    margin-top: 0;
+    padding-top: 0;
+  }
+  
+  main > *:first-child {
+    margin-top: 0;
   }
   
   body{font-family:'Lato',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;line-height:1.4;color:#222;background:#fff}
@@ -645,17 +655,33 @@
   .image-card{position:relative;width:100%;max-width:100%;margin:0;border-radius:0;overflow:hidden;background:#000;box-shadow:none}
   
   
-  .carousel{position:relative;width:100%;max-width:100%;height:85vh;margin:0 auto;overflow:hidden}
+  .carousel{position:relative;width:100%;max-width:100%;height:70vh;margin:0 auto;overflow:hidden}
   /* Make review and contact containers full width */
-  .review-container, .contact-container {
-    width: 90vw !important;
-    max-width: 90vw !important;
-    margin-left: calc(-1 * ((100vw - 100%) / 2));
-    border-radius: 24px;
-    box-shadow: 0 8px 32px rgba(72,202,228,0.08);
-    background: #fff;
-    padding: 40px 32px;
-  }
+   .review-container, .contact-container {
+     width: 94vw !important;
+     max-width: 1200px !important;
+     margin: 0 auto;
+     border-radius: 24px;
+     box-shadow: 0 8px 32px rgba(72,202,228,0.08);
+     background: #fff;
+     padding: 40px 32px;
+   }
+
+   /* Review section responsive */
+   @media (max-width: 768px) {
+     .review-container, .contact-container {
+       width: 96vw !important;
+       padding: 24px 16px;
+       border-radius: 18px;
+     }
+   }
+   @media (max-width: 480px) {
+     .review-container, .contact-container {
+       width: 100% !important;
+       padding: 20px 12px;
+       border-radius: 0;
+     }
+   }
   .slides{position:relative;height:100%;width:100%}
   .slide{position:absolute;inset:0;opacity:0;transition:opacity .7s ease;display:flex;width:100%;height:100%}
   .slide img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;opacity:0.6}

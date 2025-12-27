@@ -1,6 +1,13 @@
 .category-page-wrapper {
   background: #f5f7fb;
-  padding: 120px 0 80px;
+  padding: 20px 15px 80px;
+  min-height: calc(100vh - 64px); /* Fill viewport minus header height */
+}
+
+/* Override section-padding when combined with category-page-wrapper to avoid double whitespace */
+.section-padding.category-page-wrapper {
+  padding-top: 20px !important;
+  margin-top: 0 !important;
 }
 .category-page-wrapper .modern-card {
   border: none;
@@ -28,14 +35,20 @@
 .category-page-wrapper .empty-state {
   min-height: 120px;
 }
+
+/* Responsive styles for category pages */
 @media (max-width: 992px) {
   .category-page-wrapper {
-    padding-top: 110px;
+    padding: 16px 12px 60px;
+  }
+}
+@media (max-width: 768px) {
+  .category-page-wrapper {
+    padding: 12px 10px 50px;
   }
 }
 @media (max-width: 576px) {
   .category-page-wrapper {
-    padding-top: 90px;
+    padding: 10px 8px 40px;
   }
 }
-

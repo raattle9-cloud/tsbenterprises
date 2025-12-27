@@ -323,7 +323,7 @@ p {
    ============================================ */
 #homeHeroCarousel {
     width: 100% !important;
-    height: 100vh !important;
+    height: 100px !important; /* Fixed smaller height */
     position: relative;
     overflow: hidden;
     margin: 0 !important;
@@ -361,7 +361,7 @@ p {
 
 #homeHeroCarousel .carousel-item img {
     width: 100vw !important;
-    height: 100vh !important;
+    height: 500px !important; /* Match carousel height */
     object-fit: cover;
     object-position: center center;
     display: block;

@@ -82,6 +82,49 @@
 	object-fit: contain;
 	display: block;
 }
+
+/* Partners Section Responsive Styles */
+@media (max-width: 768px) {
+	.partners-section {
+		padding: 28px 12px;
+	}
+	.partners-heading {
+		font-size: 1.7rem;
+	}
+	.partners-description {
+		font-size: 0.95rem;
+		padding: 0 12px;
+	}
+	.partners-band {
+		height: 150px;
+	}
+	.partner-card {
+		width: 180px;
+		height: 110px;
+		margin: 0 6px;
+		border-radius: 12px;
+	}
+}
+@media (max-width: 480px) {
+	.partners-section {
+		padding: 20px 8px;
+	}
+	.partners-heading {
+		font-size: 1.4rem;
+	}
+	.partners-description {
+		font-size: 0.9rem;
+	}
+	.partners-band {
+		height: 120px;
+	}
+	.partner-card {
+		width: 140px;
+		height: 90px;
+		margin: 0 4px;
+		border-radius: 10px;
+	}
+}
 .about-us-section {
 	/* ...existing code... */
 	opacity: 0;
@@ -175,7 +218,8 @@
 	/* gap: 32px; */
 }
 .review-left {
-	min-width: 400px;
+	max-width: 400px;
+	width: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
@@ -300,9 +344,60 @@
 		padding-right: 0;
 		padding-bottom: 24px;
 		align-items: center;
+		min-width: auto;
 	}
 	.review-slider {
 		min-height: 260px;
+	}
+	.review-card {
+		min-width: 280px;
+		max-width: 100%;
+		padding: 24px 20px;
+		margin: 0 8px;
+	}
+}
+@media (max-width: 600px) {
+	.review-container {
+		padding: 24px 10px;
+	}
+	.review-left {
+		padding-bottom: 16px;
+	}
+	.review-title {
+		font-size: 1.2rem;
+		text-align: center;
+		margin-bottom: 20px;
+	}
+	.review-quote-icon {
+		font-size: 32px;
+		margin-bottom: 12px;
+	}
+	.review-arrows {
+		gap: 12px;
+	}
+	.review-arrow {
+		width: 38px;
+		height: 38px;
+		font-size: 1.1rem;
+	}
+	.review-card {
+		min-width: 100%;
+		padding: 20px 16px;
+		margin: 0;
+		border-radius: 14px;
+	}
+	.review-text {
+		font-size: 0.98rem;
+	}
+	.review-avatar {
+		width: 40px;
+		height: 40px;
+	}
+	.review-name {
+		font-size: 0.95rem;
+	}
+	.review-meta {
+		font-size: 0.88rem;
 	}
 }
 

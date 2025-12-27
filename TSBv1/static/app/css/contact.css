@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .contact-hero {
-  padding: 140px 24px 70px;
+  padding: 50px 24px 70px;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.35)), url("../../images/RESORTS AND VILLAS/8.avif") center/cover no-repeat;
   color: #fff;
   text-align: center;
@@ -23,7 +23,7 @@
   text-transform: uppercase;
 }
 .contact-hero h1 {
-  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  font-size: clamp(2rem, 4vw, 3.6rem);
   margin: 20px 0;
   font-weight: 800;
   color: #fff;
@@ -43,7 +43,7 @@
 }
 
 .contact-info-section {
-  padding: 60px 24px;
+  padding: 40px 16px;
   background: #f2f6fb;
 }
 .contact-info-grid {
@@ -89,18 +89,18 @@
 }
 
 .contact-form-section {
-  padding: 80px 24px;
+  padding: 60px 16px;
 }
 .contact-form-wrapper {
   max-width: 1180px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 32px;
   align-items: center;
 }
 .contact-form-text h2 {
-  font-size: clamp(2rem, 3vw, 2.6rem);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
   margin: 16px 0;
   color: #0096c7;
 }
@@ -127,8 +127,8 @@
 }
 .contact-form-card {
   background: #fff;
-  border-radius: 32px;
-  padding: 36px;
+  border-radius: 24px;
+  padding: 28px;
   box-shadow: 0 30px 80px rgba(15,32,39,0.12);
 }
 .contact-form-card form {
@@ -144,7 +144,7 @@
 }
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
 }
 .contact-form-card input,
@@ -176,17 +176,17 @@
 }
 
 .contact-map-section {
-  padding: 60px 24px 100px;
+  padding: 40px 16px 80px;
 }
 .contact-map-card {
   max-width: 1100px;
   margin: 0 auto;
   background: #0096c7;
   color: #fff;
-  border-radius: 32px;
-  padding: 40px;
+  border-radius: 24px;
+  padding: 32px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 24px;
   align-items: center;
   box-shadow: 0 35px 90px rgba(15,32,39,0.4);
@@ -200,27 +200,80 @@
   width: 100%;
   height: 280px;
   border: none;
-  border-radius: 24px;
+  border-radius: 16px;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+  .contact-hero {
+    padding: 40px 16px 50px;
+  }
+  .contact-info-section {
+    padding: 32px 12px;
+  }
+  .contact-form-section {
+    padding: 40px 12px;
+  }
+  .contact-map-section {
+    padding: 32px 12px 60px;
+  }
 }
 
 @media (max-width: 768px) {
   .contact-hero {
-    padding-top: 110px;
+    padding: 32px 12px 40px;
+  }
+  .contact-hero h1 {
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
   }
   .contact-form-card {
-    padding: 28px;
+    padding: 24px 16px;
   }
   .contact-map-card {
-    padding: 32px;
+    padding: 24px;
+    border-radius: 18px;
+  }
+  .contact-info-grid {
+    gap: 16px;
+  }
+  .contact-info-card {
+    padding: 24px 20px;
+    border-radius: 18px;
   }
 }
 
 @media (max-width: 480px) {
+  .contact-hero {
+    padding: 24px 10px 32px;
+  }
   .contact-hero-actions {
     flex-direction: column;
+    gap: 12px;
+  }
+  .contact-hero-actions a {
+    width: 100%;
+    text-align: center;
   }
   .contact-form-wrapper {
     grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .contact-form-card {
+    padding: 20px 14px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .contact-info-section {
+    padding: 24px 10px;
+  }
+  .contact-map-card {
+    padding: 20px;
+  }
+  .contact-map-card iframe {
+    height: 220px;
   }
 }
+
 
