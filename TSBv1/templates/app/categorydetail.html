@@ -3,7 +3,7 @@
 {% block title %}{{ services.title }} - Details{% endblock %}
 
 {% block extra_head %}
-  <link rel="stylesheet" href="{% static 'app/css/service-detail.css' %}">
+<link rel="stylesheet" href="{% static 'app/css/service-detail.css' %}">
 {% endblock %}
 
 {% block landing_content %}
@@ -19,172 +19,182 @@
                                 {% for image in services.images.all %}
                                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                     <div class="gallery-frame">
-                                        <img src="{{ image.image_url }}"
-                                            class="gallery-image"
+                                        <img src="{{ image.image_url }}" class="gallery-image"
                                             alt="{{ services.title }} image {{ forloop.counter }}">
                                     </div>
                                 </div>
                                 {% empty %}
                                 <div class="carousel-item active">
                                     <div class="gallery-frame">
-                                        <img src="{% static 'app/images/aboutus.jpg' %}"
-                                            class="gallery-image"
+                                        <img src="{% static 'app/images/aboutus.jpg' %}" class="gallery-image"
                                             alt="{{ services.title }}">
                                     </div>
                                 </div>
                                 {% endfor %}
                             </div>
                             {% if services.images.all|length > 1 %}
-                            <button class="carousel-control-prev" type="button" data-bs-target="#serviceGallery" data-bs-slide="prev">
+                            <button class="carousel-control-prev" type="button" data-bs-target="#serviceGallery"
+                                data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden">Previous</span>
                             </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#serviceGallery" data-bs-slide="next">
+                            <button class="carousel-control-next" type="button" data-bs-target="#serviceGallery"
+                                data-bs-slide="next">
                                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden">Next</span>
                             </button>
                             {% endif %}
                         </div>
-                        {% if services.discounted_price < services.selling_price %}
-                        <div class="position-absolute top-0 end-0 m-4">
+                        {% if services.discounted_price < services.selling_price %} <div
+                            class="position-absolute top-0 end-0 m-4">
                             <span class="badge bg-danger px-4 py-2 shadow-lg">
                                 <i class="fas fa-tag me-2"></i>Special Offer
                             </span>
-                        </div>
-                        {% endif %}
-                    </div>
-                    {% if services.images.all|length > 1 %}
-                    <div class="d-flex gap-2 p-3 flex-wrap">
-                        {% for image in services.images.all %}
-                        <button class="btn p-0 border-0 thumbnail-btn" type="button" data-bs-target="#serviceGallery" data-bs-slide-to="{{ forloop.counter0 }}">
-                            <img src="{{ image.image_url }}" alt="Thumbnail {{ forloop.counter }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md); border: 2px solid var(--gray-200);">
-                        </button>
-                        {% endfor %}
                     </div>
                     {% endif %}
                 </div>
+                {% if services.images.all|length > 1 %}
+                <div class="d-flex gap-2 p-3 flex-wrap">
+                    {% for image in services.images.all %}
+                    <button class="btn p-0 border-0 thumbnail-btn" type="button" data-bs-target="#serviceGallery"
+                        data-bs-slide-to="{{ forloop.counter0 }}">
+                        <img src="{{ image.image_url }}" alt="Thumbnail {{ forloop.counter }}"
+                            style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md); border: 2px solid var(--gray-200);">
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Service Details -->
+        <div class="col-lg-6">
+            <div class="slide-in-left">
+                <h1 class="display-4 fw-bold mb-4" style="color: var(--primary); font-family: var(--font-luxury);">
+                    {{ services.title }}
+                </h1>
+
+                <!-- Price Section -->
+                <div class="price-panel">
+                    <div class="d-flex align-items-baseline flex-wrap mb-2">
+                        <span class="service-price">₹{{ services.discounted_price }}/-</span>
+                        {% if services.discounted_price < services.selling_price %} <span class="service-price-old">₹{{
+                            services.selling_price }}</span>
+                            {% endif %}
+                    </div>
+                    {% if services.discounted_price < services.selling_price %} <div class="mt-2">
+                        <span class="service-discount">
+                            <i class="fas fa-percentage me-1"></i>
+                            Special Discount Available
+                        </span>
+                </div>
+                {% endif %}
+                <p class="text-muted mb-0 mt-3 small">
+                    <i class="fas fa-info-circle me-2"></i>Price includes all applicable taxes
+                </p>
             </div>
 
-            <!-- Service Details -->
-            <div class="col-lg-6">
-                <div class="slide-in-left">
-                    <h1 class="display-4 fw-bold mb-4" style="color: var(--primary); font-family: var(--font-luxury);">
-                        {{ services.title }}
-                    </h1>
-                    
-                    <!-- Price Section -->
-                    <div class="price-panel">
-                        <div class="d-flex align-items-baseline flex-wrap mb-2">
-                            <span class="service-price">₹{{ services.discounted_price }}/-</span>
-                            {% if services.discounted_price < services.selling_price %}
-                            <span class="service-price-old">₹{{ services.selling_price }}</span>
-                            {% endif %}
-                        </div>
-                        {% if services.discounted_price < services.selling_price %}
-                        <div class="mt-2">
-                            <span class="service-discount">
-                                <i class="fas fa-percentage me-1"></i>
-                                Special Discount Available
-                            </span>
-                        </div>
-                        {% endif %}
-                        <p class="text-muted mb-0 mt-3 small">
-                            <i class="fas fa-info-circle me-2"></i>Price includes all applicable taxes
-                        </p>
-                    </div>
+            <!-- Description -->
+            {% if services.description %}
+            <div class="mb-4">
+                <h5 class="fw-bold mb-3" style="color: var(--primary);">
+                    <i class="fas fa-map-marker-alt me-2"></i>Location & Details
+                </h5>
+                <p class="text-muted" style="line-height: 1.8; font-size: 1.05rem;">
+                    {{ services.description }}
+                </p>
+            </div>
+            {% endif %}
 
-                    <!-- Description -->
-                    {% if services.description %}
-                    <div class="mb-4">
-                        <h5 class="fw-bold mb-3" style="color: var(--primary);">
-                            <i class="fas fa-map-marker-alt me-2"></i>Location & Details
-                        </h5>
-                        <p class="text-muted" style="line-height: 1.8; font-size: 1.05rem;">
-                            {{ services.description }}
-                        </p>
-                    </div>
-                    {% endif %}
+            <!-- Additional Info -->
+            {% if services.composition %}
+            <div class="mb-4">
+                <h5 class="fw-bold mb-3" style="color: var(--primary);">
+                    <i class="fas fa-info-circle me-2"></i>Important Notes
+                </h5>
+                <div class="notes-panel">
+                    <p class="mb-0 text-muted">
+                        {{ services.composition }}
+                    </p>
+                </div>
+            </div>
+            {% endif %}
 
-                    <!-- Additional Info -->
-                    {% if services.composition %}
-                    <div class="mb-4">
-                        <h5 class="fw-bold mb-3" style="color: var(--primary);">
-                            <i class="fas fa-info-circle me-2"></i>Important Notes
-                        </h5>
-                        <div class="notes-panel">
-                            <p class="mb-0 text-muted">
-                                {{ services.composition }}
-                            </p>
-                        </div>
-                    </div>
-                    {% endif %}
+            <!-- Action Buttons -->
+            <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
+                {% if services.supports_advance_payment %}
+                <a href="{% url 'advance-checkout' services.id %}" class="btn btn-warning btn-lg flex-fill">
+                    <i class="fas fa-calendar-check me-2"></i>Advance Booking
+                </a>
+                {% endif %}
+                <form action="/add-to-cart" class="d-inline flex-fill">
+                    <input type="hidden" name="serv_id" value="{{services.id}}">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                    </button>
+                </form>
+                <form action="/add-to-cart" class="d-inline flex-fill">
+                    <input type="hidden" name="serv_id" value="{{services.id}}">
+                    <input type="hidden" name="buy_now" value="1">
+                    <button type="submit" class="btn btn-outline-primary btn-lg w-100">
+                        <i class="fas fa-bolt me-2"></i>Buy Now
+                    </button>
+                </form>
+                {% if request.user.is_authenticated %}
+                {% if in_wishlist %}
+                <button class="btn btn-outline-danger btn-lg minus-wishlist" pid="{{services.id}}"
+                    title="Remove from Wishlist">
+                    <i class="fas fa-heart"></i>
+                </button>
+                {% else %}
+                <button class="btn btn-outline-danger btn-lg plus-wishlist" pid="{{services.id}}"
+                    title="Add to Wishlist">
+                    <i class="far fa-heart"></i>
+                </button>
+                {% endif %}
+                {% endif %}
+            </div>
 
-                    <!-- Action Buttons -->
-                    <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
-                        <form action="/add-to-cart" class="d-inline flex-fill">
-                            <input type="hidden" name="serv_id" value="{{services.id}}">
-                            <button type="submit" class="btn btn-primary btn-lg w-100">
-                                <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                            </button>
-                        </form>
-                        <form action="/add-to-cart" class="d-inline flex-fill">
-                            <input type="hidden" name="serv_id" value="{{services.id}}">
-                            <input type="hidden" name="buy_now" value="1">
-                            <button type="submit" class="btn btn-outline-primary btn-lg w-100">
-                                <i class="fas fa-bolt me-2"></i>Buy Now
-                            </button>
-                        </form>
-                        {% if request.user.is_authenticated %}
-                        {% if in_wishlist %}
-                        <button class="btn btn-outline-danger btn-lg minus-wishlist" pid="{{services.id}}" title="Remove from Wishlist">
-                            <i class="fas fa-heart"></i>
+            <!-- Additional Details Accordion -->
+            {% if services.servapp %}
+            <div class="accordion mb-4" id="serviceAccordion">
+                <div class="accordion-item modern-card border-0">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            <i class="fas fa-file-alt me-2"></i>Additional Information
                         </button>
-                        {% else %}
-                        <button class="btn btn-outline-danger btn-lg plus-wishlist" pid="{{services.id}}" title="Add to Wishlist">
-                            <i class="far fa-heart"></i>
-                        </button>
-                        {% endif %}
-                        {% endif %}
-                    </div>
-
-                    <!-- Additional Details Accordion -->
-                    {% if services.servapp %}
-                    <div class="accordion mb-4" id="serviceAccordion">
-                        <div class="accordion-item modern-card border-0">
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                    <i class="fas fa-file-alt me-2"></i>Additional Information
-                                </button>
-                            </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#serviceAccordion">
-                                <div class="accordion-body p-4">
-                                    <div class="text-muted">
-                                        {{ services.servapp|linebreaks }}
-                                    </div>
-                                </div>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                        data-bs-parent="#serviceAccordion">
+                        <div class="accordion-body p-4">
+                            <div class="text-muted">
+                                {{ services.servapp|linebreaks }}
                             </div>
                         </div>
                     </div>
-                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
 
-                    <!-- Trust Badges -->
-                    <div class="row g-3 mt-4">
-                        <div class="col-6">
-                            <div class="info-chip text-center">
-                                <i class="fas fa-shield-alt fa-2x mb-2"></i>
-                                <p class="mb-0 small fw-bold">Secure Booking</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-chip text-center">
-                                <i class="fas fa-headset fa-2x mb-2"></i>
-                                <p class="mb-0 small fw-bold">24/7 Support</p>
-                            </div>
-                        </div>
+            <!-- Trust Badges -->
+            <div class="row g-3 mt-4">
+                <div class="col-6">
+                    <div class="info-chip text-center">
+                        <i class="fas fa-shield-alt fa-2x mb-2"></i>
+                        <p class="mb-0 small fw-bold">Secure Booking</p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="info-chip text-center">
+                        <i class="fas fa-headset fa-2x mb-2"></i>
+                        <p class="mb-0 small fw-bold">24/7 Support</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+</div>
 </div>
 {% endblock %}

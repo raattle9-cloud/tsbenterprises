@@ -61,18 +61,49 @@ class Services(models.Model):
     composition = models.TextField(default='')
     servapp = models.TextField(default='')
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=2)
+    
+    # Advance Payment Fields (for Waterparks)
+    supports_advance_payment = models.BooleanField(default=False)
+    advance_payment_type = models.CharField(
+        max_length=10,
+        choices=(('FIXED', 'Fixed Amount'), ('PERCENTAGE', 'Percentage')),
+        default='FIXED',
+        blank=True
+    )
+    advance_payment_value = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        help_text="Fixed amount in INR or percentage (0-100)"
+    )
 
     def __str__(self):
         return self.title
 
     def get_primary_image(self):
-        return self.images.first()
+        # Fetch all related images without any SQL-level ordering or limiting
+        images_qs = self.images.all()
+        # Convert to list to avoid further DB hits and take the first one in Python
+        images_list = list(images_qs)
+        return images_list[0] if images_list else None
 
     def get_primary_image_url(self):
         image = self.get_primary_image()
         if image and image.image:
             return image.image.url
         return ''
+    
+    def calculate_advance_amount(self, quantity=1):
+        """Calculate advance payment amount based on type"""
+        if not self.supports_advance_payment:
+            return 0
+        
+        total_price = self.discounted_price * quantity
+        
+        if self.advance_payment_type == 'PERCENTAGE':
+            return (total_price * self.advance_payment_value) / 100
+        else:  # FIXED
+            return self.advance_payment_value * quantity
 
 
 class ServiceImage(models.Model):
@@ -84,8 +115,6 @@ class ServiceImage(models.Model):
     image = models.ImageField(upload_to='service/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        ordering = ['id']
 
     def __str__(self):
         return f"{self.service.title} image"
@@ -164,6 +193,13 @@ STATUS_CHOICES =(
     ('PENDING', 'PENDING'),
     ('FAILED', 'FAILED'),
 )
+
+PAYMENT_TYPE_CHOICES = (
+    ('FULL', 'Full Payment'),
+    ('ADVANCE', 'Advance Payment'),
+    ('REMAINING', 'Remaining Payment'),
+)
+
 class Payment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.FloatField()
@@ -171,6 +207,8 @@ class Payment(models.Model):
     razorpay_payment_status = models.CharField(max_length=100, blank=True, null=True)
     razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
     paid = models.BooleanField(default=False)
+    payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPE_CHOICES, default='FULL')
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class OrderPlaced(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -181,8 +219,81 @@ class OrderPlaced(models.Model):
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='PENDING')
     ordered_date = models.DateTimeField(auto_now_add=True)
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE, blank=True, null=True)
+    is_advance_order = models.BooleanField(default=False)
 
     @property
     def total_cost(self):
         return self.quantity * self.services.discounted_price
+
+
+class AdvanceBooking(models.Model):
+    """Model for advance payment bookings (primarily for waterparks)"""
+    
+    BOOKING_STATUS_CHOICES = (
+        ('PENDING', 'Pending Verification'),
+        ('VERIFIED', 'Verified - Entry Allowed'),
+        ('USED', 'Already Used'),
+        ('EXPIRED', 'Booking Expired'),
+        ('CANCELLED', 'Cancelled'),
+    )
+    
+    # Identifiers
+    booking_code = models.CharField(max_length=12, unique=True, db_index=True)
+    qr_code_data = models.TextField(blank=True)  # Base64 QR code image
+    qr_hash = models.CharField(max_length=64, unique=True)  # SHA-256 hash for validation
+    
+    # Relationships
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='advance_bookings')
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    service = models.ForeignKey(Services, on_delete=models.CASCADE)
+    
+    # Booking Details
+    quantity = models.PositiveIntegerField(default=1)
+    booking_date = models.DateField(help_text="Date for which the booking is made")
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    advance_paid = models.DecimalField(max_digits=10, decimal_places=2)
+    remaining_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    valid_until = models.DateTimeField(help_text="Booking expiration time")
+    verified_at = models.DateTimeField(null=True, blank=True)
+    
+    # Status
+    status = models.CharField(max_length=20, choices=BOOKING_STATUS_CHOICES, default='PENDING')
+    
+    # Payment References
+    advance_payment = models.ForeignKey(
+        Payment, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        related_name='advance_bookings'
+    )
+    final_payment = models.ForeignKey(
+        Payment,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='final_bookings'
+    )
+    
+    # Verification Tracking
+    verified_by_staff = models.CharField(max_length=100, blank=True)
+    verification_ip = models.GenericIPAddressField(null=True, blank=True)
+    verification_attempts = models.IntegerField(default=0)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['booking_code']),
+            models.Index(fields=['status', 'valid_until']),
+            models.Index(fields=['booking_date']),
+        ]
+    
+    def __str__(self):
+        return f"{self.booking_code} - {self.customer.name} - {self.service.title}"
+    
+    def is_valid(self):
+        """Check if booking is still valid"""
+        from django.utils import timezone
+        return self.status == 'PENDING' and self.valid_until > timezone.now()
     

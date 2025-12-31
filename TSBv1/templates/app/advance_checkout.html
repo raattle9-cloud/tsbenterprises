@@ -1,0 +1,177 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Advance Booking Checkout{% endblock %}
+
+{% block main-content %}
+<div class="container mt-5 pt-5 mb-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Advance Booking Details</h3>
+                </div>
+                <div class="card-body">
+                    <form id="advanceBookingForm" method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <h5 class="mb-3">1. Selected Service</h5>
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <img src="{{ service.get_primary_image_url }}" alt="{{ service.title }}"
+                                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                <div class="ms-3">
+                                    <h4 class="mb-1">{{ service.title }}</h4>
+                                    <p class="text-muted mb-0">₹{{ service.discounted_price }} / person</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="mb-3">2. Select Date & Quantity</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="booking_date" class="form-label">Visit Date</label>
+                                    <input type="date" class="form-control" name="booking_date" id="booking_date"
+                                        required min="{{ min_date }}" value="{{ min_date }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="quantity" class="form-label">Number of Tickets</label>
+                                    <input type="number" class="form-control" name="quantity" id="quantity" value="1"
+                                        min="1" max="50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="mb-3">3. Select Customer Profile</h5>
+                            <select name="customer" class="form-select" required>
+                                {% for customer in customers %}
+                                <option value="{{ customer.id }}">{{ customer.name }} - {{ customer.mobile }}</option>
+                                {% empty %}
+                                <option value="" disabled selected>No customer profiles found.</option>
+                                {% endfor %}
+                            </select>
+                            {% if not customers %}
+                            <div class="mt-2 text-danger">
+                                <small>You need to have a customer profile to proceed. <a
+                                        href="{% url 'profile' %}">Click here</a> to add one.</small>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Policy:</strong> You will pay a portion online now to confirm your booking, and the
+                            remaining balance can be settled at the venue upon arrival.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 overflow-hidden sticky-top" style="top: 100px;">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0">Price Summary</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Total Price:</span>
+                        <span id="display_total_price" class="fw-bold">₹{{ total_price }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 text-success">
+                        <span><strong>Pay Online Now:</strong></span>
+                        <strong id="display_advance_amount" style="font-size: 1.2rem;">₹{{ advance_amount }}</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Pay at Venue:</span>
+                        <span id="display_remaining_amount" class="text-danger fw-bold">₹{{ remaining_amount }}</span>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="button" id="payButton" class="btn btn-warning btn-lg fw-bold" {% if not customers
+                            %}disabled{% endif %}>
+                            <i class="fas fa-lock me-2"></i>Pay Advance & Book
+                        </button>
+                    </div>
+
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-shield-alt me-1"></i>Secure checkout by Razorpay
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const discountedPrice = parseFloat("{{ service.discounted_price }}") || 0;
+    const advanceType = "{{ service.advance_payment_type }}";
+    const advanceValue = parseFloat("{{ service.advance_payment_value }}") || 0;
+
+    function updatePrices() {
+        const qty = parseInt(document.getElementById('quantity').value) || 1;
+        const total = discountedPrice * qty;
+        let advance = 0;
+
+        if (advanceType === 'PERCENTAGE') {
+            advance = (total * advanceValue) / 100;
+        } else {
+            advance = advanceValue * qty;
+        }
+
+        const remaining = total - advance;
+
+        document.getElementById('display_total_price').innerText = `₹${total.toFixed(2)}`;
+        document.getElementById('display_advance_amount').innerText = `₹${advance.toFixed(2)}`;
+        document.getElementById('display_remaining_amount').innerText = `₹${remaining.toFixed(2)}`;
+    }
+
+    document.getElementById('quantity').addEventListener('input', updatePrices);
+
+    document.getElementById('payButton').addEventListener('click', function () {
+        const dateInput = document.getElementById('booking_date');
+        if (!dateInput.value) {
+            alert('Please select a visit date');
+            return;
+        }
+
+        const payBtn = this;
+        payBtn.disabled = true;
+        payBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+
+        const form = document.getElementById('advanceBookingForm');
+        const formData = new FormData(form);
+
+        fetch('{% url "advance-checkout" service.id %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert(data.error || 'Something went wrong');
+                    payBtn.disabled = false;
+                    payBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Pay Advance & Book';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to process booking');
+                payBtn.disabled = false;
+                payBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Pay Advance & Book';
+            });
+    });
+
+    // Initial calculation
+    updatePrices();
+</script>
+{% endblock %}

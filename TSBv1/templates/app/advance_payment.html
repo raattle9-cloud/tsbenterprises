@@ -1,0 +1,115 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Advance Payment{% endblock %}
+
+{% block main-content %}
+<div class="container mt-5 pt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay"
+                            style="height: 40px; filter: grayscale(1) invert(0.5);">
+                        <h3 class="mt-3 fw-bold">Payment Checkout</h3>
+                        <p class="text-muted">Booking Confirmation for {{ booking.service.title }}</p>
+                    </div>
+
+                    <div class="my-4 p-4 rounded" style="background-color: #f8faff; border: 1px solid #e1e8f0;">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Booking Code</span>
+                            <span class="fw-bold">{{ booking.booking_code }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Tickets</span>
+                            <span class="fw-bold">{{ booking.quantity }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Visit Date</span>
+                            <span class="fw-bold">{{ booking.booking_date }}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">Payable Advance</span>
+                            <strong class="text-primary" style="font-size: 1.8rem;">₹{{ booking.advance_paid }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <!-- Razorpay Button -->
+                        <button id="rzp-button1" class="btn btn-primary btn-lg py-3 fw-bold">
+                            <i class="fas fa-lock me-2"></i>Pay ₹{{ booking.advance_paid }} Securely
+                        </button>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <p class="small text-muted mb-0">
+                            By clicking pay, you agree to our booking terms and conditions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "{{ razorpay_key_id }}",
+        "amount": "{{ amount }}",
+        "currency": "{{ currency }}",
+        "name": "TSB Enterprises",
+        "description": "Advance Booking for {{ booking.service.title }}",
+        "image": "https://tsb-enterprises.com/static/app/images/logo.png",
+        "order_id": "{{ razorpay_order_id }}",
+        "handler": function (response) {
+            // Create a form and submit it to the server
+            var form = document.createElement('form');
+            form.setAttribute('method', 'post');
+            form.setAttribute('action', '{% url "advance-payment" booking.id %}');
+
+            var csrf = document.createElement('input');
+            csrf.setAttribute('type', 'hidden');
+            csrf.setAttribute('name', 'csrfmiddlewaretoken');
+            csrf.setAttribute('value', '{{ csrf_token }}');
+            form.appendChild(csrf);
+
+            var orderId = document.createElement('input');
+            orderId.setAttribute('type', 'hidden');
+            orderId.setAttribute('name', 'razorpay_order_id');
+            orderId.setAttribute('value', response.razorpay_order_id);
+            form.appendChild(orderId);
+
+            var paymentId = document.createElement('input');
+            paymentId.setAttribute('type', 'hidden');
+            paymentId.setAttribute('name', 'razorpay_payment_id');
+            paymentId.setAttribute('value', response.razorpay_payment_id);
+            form.appendChild(paymentId);
+
+            var signature = document.createElement('input');
+            signature.setAttribute('type', 'hidden');
+            signature.setAttribute('name', 'razorpay_signature');
+            signature.setAttribute('value', response.razorpay_signature);
+            form.appendChild(signature);
+
+            document.body.appendChild(form);
+            form.submit();
+        },
+        "prefill": {
+            "name": "{{ booking.user.first_name }} {{ booking.user.last_name }}",
+            "email": "{{ booking.user.email }}",
+            "contact": "{{ booking.customer.mobile }}"
+        },
+        "theme": {
+            "color": "#0d6efd"
+        }
+    };
+    var rzp1 = new Razorpay(options);
+    document.getElementById('rzp-button1').onclick = function (e) {
+        rzp1.open();
+        e.preventDefault();
+    }
+</script>
+{% endblock %}

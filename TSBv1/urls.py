@@ -1,6 +1,7 @@
 
 from django.urls import path
 from . import views
+from .import advance_booking_views
 from django.contrib.auth import views as auth_view
 from .forms import LoginForm, MyPasswordResetForm, MyPasswordChangeForm, MyPasswordResetForm, MySetPasswordForm
 
@@ -63,6 +64,20 @@ urlpatterns = [
     path('password-reset-confirm/<uidb64>/<token>/',auth_view.PasswordResetConfirmView.as_view(template_name='app/password_reset_confirm.html',form_class=MySetPasswordForm),name='password_reset_confirm'),
     path('password-reset-complete/',auth_view.PasswordResetCompleteView.as_view(template_name='app/password_reset_complete.html'),name='password_reset_complete'),
     ##################
-        
+    
+    # Advance Booking URLs
+    path('checkout/advance/<int:service_id>/', advance_booking_views.advance_booking_checkout, name='advance-checkout'),
+    path('checkout/advance-payment/<int:booking_id>/', advance_booking_views.advance_payment_process, name='advance-payment'),
+    path('booking/confirmation/<int:booking_id>/', advance_booking_views.advance_booking_confirmation, name='advance-booking-confirmation'),
+    path('my-bookings/', advance_booking_views.my_advance_bookings, name='my-bookings'),
+    
+    # Staff Verification URLs
+    path('staff/login/', advance_booking_views.staff_login, name='staff-login'),
+    path('staff/verify/', advance_booking_views.staff_verify, name='staff-verify'),
+    path('staff/logout/', advance_booking_views.staff_logout, name='staff-logout'),
+    
+    # Staff API endpoints
+    path('api/verify-booking/', advance_booking_views.verify_booking_api, name='verify-booking-api'),
+    path('api/mark-verified/', advance_booking_views.mark_booking_verified, name='mark-verified-api'),
 
 ]

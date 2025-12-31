@@ -1,0 +1,113 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Advance Booking Confirmed!{% endblock %}
+
+{% block main-content %}
+<div class="container mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <h2><i class="fas fa-check-circle fa-3x mb-3"></i></h2>
+                    <h3>Booking Confirmed!</h3>
+                    <p class="mb-0">Your advance payment has been received</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- QR Code Display -->
+                    <div class="text-center mb-4">
+                        <h4>Your Entry QR Code</h4>
+                        <p class="text-muted">Show this QR code at the waterpark entrance</p>
+                        {% if booking.qr_code_data %}
+                        <div class="qr-code-container"
+                            style="background: white; padding: 20px; border: 2px dashed #ddd; display: inline-block;">
+                            <img src="{{ booking.qr_code_data }}" alt="Booking QR Code"
+                                style="width: 300px; height: 300px;">
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Booking Code -->
+                    <div class="text-center mb-4 p-3" style="background: #f8f9fa; border-radius: 8px;">
+                        <small class="text-muted d-block">Booking Code</small>
+                        <h2 style="letter-spacing: 4px; font-family: monospace;">{{ booking.booking_code }}</h2>
+                        <small class="text-muted">Use this code if QR scanner is unavailable</small>
+                    </div>
+
+                    <!-- Booking Details -->
+                    <h5 class="border-bottom pb-2 mb-3">Booking Details</h5>
+                    <div class="row mb-2">
+                        <div class="col-6"><strong>Service:</strong></div>
+                        <div class="col-6">{{ booking.service.title }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><strong>Booking Date:</strong></div>
+                        <div class="col-6">{{ booking.booking_date|date:"F d, Y" }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><strong>Quantity:</strong></div>
+                        <div class="col-6">{{ booking.quantity }} ticket(s)</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6"><strong>Valid Until:</strong></div>
+                        <div class="col-6">{{ booking.valid_until|date:"F d, Y g:i A" }}</div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Payment Summary -->
+                    <h5 class="border-bottom pb-2 mb-3">Payment Summary</h5>
+                    <div class="row mb-2">
+                        <div class="col-6">Total Amount:</div>
+                        <div class="col-6">₹{{ booking.total_amount }}</div>
+                    </div>
+                    <div class="row mb-2 text-success">
+                        <div class="col-6"><strong>Paid Online:</strong></div>
+                        <div class="col-6"><strong>₹{{ booking.advance_paid }}</strong></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6" style="font-size: 1.2em;"><strong>Pay at Venue:</strong></div>
+                        <div class="col-6 text-danger" style="font-size: 1.2em;"><strong>₹{{ booking.remaining_amount
+                                }}</strong></div>
+                    </div>
+
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle"></i> <strong>Important:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Show this QR code or booking code at the waterpark entrance</li>
+                            <li>Pay the remaining amount (₹{{ booking.remaining_amount }}) at the venue</li>
+                            <li>This booking is valid until {{ booking.valid_until|date:"F d, Y" }}</li>
+                            <li>Take a screenshot of this page for easy access</li>
+                        </ul>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-grid gap-2 mt-4">
+                        <button onclick="window.print()" class="btn btn-outline-primary">
+                            <i class="fas fa-print"></i> Print Confirmation
+                        </button>
+                        <a href="{% url 'my-bookings' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-list"></i> View All Bookings
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+
+        .btn,
+        nav,
+        footer {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
