@@ -16,6 +16,26 @@ from .booking_utils import (generate_booking_code, generate_qr_code,
                             validate_qr_data, get_client_ip)
 
 
+def convert_decimal128_to_float(value):
+    """
+    Convert Decimal128 (MongoDB), Decimal, or other numeric types to float.
+    Handles all MongoDB DecimalField types safely.
+    """
+    if value is None:
+        return 0.0
+    
+    # Try direct conversion first for standard types
+    if isinstance(value, (int, float)):
+        return float(value)
+    
+    # For Decimal128, Decimal, or any other type, convert via string
+    try:
+        return float(str(value))
+    except (ValueError, TypeError):
+        # Ultimate fallback: default to 0 if conversion fails
+        return 0.0
+
+
 @login_required
 def advance_booking_checkout(request, service_id):
     """
@@ -54,9 +74,12 @@ def advance_booking_checkout(request, service_id):
         advance_amount = Decimal(str(service.calculate_advance_amount(quantity)))
         remaining_amount = total_amount - advance_amount
         
-        # Create booking
+        # Generate booking code first
+        booking_code = generate_booking_code()
+        
+        # Create booking (qr_hash will be generated when QR code is created)
         booking = AdvanceBooking.objects.create(
-            booking_code=generate_booking_code(),
+            booking_code=booking_code,
             user=request.user,
             customer=customer,
             service=service,
@@ -66,7 +89,8 @@ def advance_booking_checkout(request, service_id):
             advance_paid=advance_amount,
             remaining_amount=remaining_amount,
             valid_until=timezone.make_aware(datetime.combine(booking_date, datetime.max.time())),
-            status='PENDING'
+            status='PENDING',
+            qr_hash='',  # Will be set when QR code is generated
         )
         
         # Store booking ID in session for payment processing
@@ -118,7 +142,7 @@ def advance_payment_process(request, booking_id):
         # Create payment record
         payment = Payment.objects.create(
             user=request.user,
-            amount=float(booking.advance_paid),
+            amount=convert_decimal128_to_float(booking.advance_paid),
             razorpay_order_id=razorpay_order_id,
             razorpay_payment_id=razorpay_payment_id,
             razorpay_payment_status='SUCCESS',
@@ -142,10 +166,12 @@ def advance_payment_process(request, booking_id):
     import razorpay
     from django.conf import settings
     
-    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_KEY_SECRET))
     
     # Create Razorpay order
-    order_amount = int(booking.advance_paid * 100)  # Convert to paise
+    # Convert Decimal128 to float first, then to paise (multiply by 100)
+    advance_paid_float = convert_decimal128_to_float(booking.advance_paid)
+    order_amount = int(advance_paid_float * 100)  # Convert to paise
     order_currency = 'INR'
     order_receipt = f'booking_{booking.booking_code}'
     
@@ -159,7 +185,7 @@ def advance_payment_process(request, booking_id):
     context = {
         'booking': booking,
         'razorpay_order_id': razorpay_order['id'],
-        'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+        'razorpay_key_id': settings.RAZOR_PAY_KEY_ID,
         'amount': order_amount,
         'currency': order_currency,
     }
@@ -307,9 +333,9 @@ def verify_booking_api(request):
                 'service_name': booking.service.title,
                 'quantity': booking.quantity,
                 'booking_date': booking.booking_date.isoformat(),
-                'total_amount': float(booking.total_amount),
-                'advance_paid': float(booking.advance_paid),
-                'remaining_amount': float(booking.remaining_amount),
+                'total_amount': convert_decimal128_to_float(booking.total_amount),
+                'advance_paid': convert_decimal128_to_float(booking.advance_paid),
+                'remaining_amount': convert_decimal128_to_float(booking.remaining_amount),
                 'created_at': booking.created_at.isoformat(),
             }
         })
@@ -350,7 +376,7 @@ def mark_booking_verified(request):
         if payment_collected:
             final_payment = Payment.objects.create(
                 user=booking.user,
-                amount=float(booking.remaining_amount),
+                amount=convert_decimal128_to_float(booking.remaining_amount),
                 paid=True,
                 payment_type='REMAINING',
                 razorpay_payment_status='CASH'

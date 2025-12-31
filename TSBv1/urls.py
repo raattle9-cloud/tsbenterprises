@@ -1,7 +1,7 @@
 
 from django.urls import path
 from . import views
-from .import advance_booking_views
+from . import advance_booking_views
 from django.contrib.auth import views as auth_view
 from .forms import LoginForm, MyPasswordResetForm, MyPasswordChangeForm, MyPasswordResetForm, MySetPasswordForm
 
@@ -16,7 +16,6 @@ urlpatterns = [
     path("termsandconditions/", views.termsandconditions, name="termsandconditions"),
     path("privacypolicy/", views.privacypolicy, name="privacypolicy"),
     path("refundpolicy/", views.refundpolicy, name="refundpolicy"),
-    path("shippingpolicy/", views.shippingpolicy, name="shippingpolicy"),
 
 
     path("profile/", views.ProfileView.as_view(), name="profile"),

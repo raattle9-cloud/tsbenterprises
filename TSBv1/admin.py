@@ -1,5 +1,9 @@
 from django.contrib import admin
 from django.utils.html import mark_safe
+from django.urls import reverse
+from django.http import HttpResponseRedirect, Http404
+from django.contrib.admin.utils import unquote
+from django.core.exceptions import PermissionDenied, ValidationError
 from .models import Customer, Services, Cart, Payment, OrderPlaced, ServiceImage, AdvanceBooking
 
 # Register your models here.
@@ -22,13 +26,37 @@ class ServiceImageInline(admin.TabularInline):
 
 @admin.register(Services)
 class ServicesModelAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'discounted_price', 'selling_price', 'category', 'supports_advance_payment', 'primary_image_preview']
+    list_display = ['id', 'title', 'discounted_price', 'selling_price', 'category', 'supports_advance_payment', 'primary_image_preview', 'delete_button']
     list_filter = ['category', 'supports_advance_payment']
     search_fields = ['title', 'description']
     list_editable = ['discounted_price', 'selling_price', 'category']
-    readonly_fields = ['id']
+    readonly_fields = ['id', 'delete_button']
     ordering = ()
     inlines = [ServiceImageInline]
+    actions = ['delete_selected_services']
+    
+    def delete_button(self, obj):
+        """Add a delete button for each service"""
+        if obj.pk:
+            delete_url = reverse('admin:TSBv1_services_delete', args=[obj.pk])
+            return mark_safe(
+                f'<a href="{delete_url}" class="button" style="background-color: #dc3545; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; display: inline-block;">'
+                f'<i class="fas fa-trash"></i> Delete'
+                f'</a>'
+            )
+        return "-"
+    delete_button.short_description = 'Actions'
+    delete_button.allow_tags = True
+    
+    def delete_selected_services(self, request, queryset):
+        """Custom delete action with confirmation"""
+        count = queryset.count()
+        for service in queryset:
+            # Delete associated images first
+            service.images.all().delete()
+            service.delete()
+        self.message_user(request, f'Successfully deleted {count} service(s) and their associated images.')
+    delete_selected_services.short_description = 'Delete selected services'
 
     def get_ordering(self, request):
         return [] # No ordering to avoid Djongo errors
@@ -61,6 +89,105 @@ class ServicesModelAdmin(admin.ModelAdmin):
         return "-"
 
     primary_image_preview.short_description = 'Primary Image'
+    
+    def delete_model(self, request, obj):
+        """Override delete_model to handle MongoDB/Djongo hashing issues"""
+        try:
+            # Delete associated images first
+            obj.images.all().delete()
+            # Delete the service
+            obj.delete()
+        except Exception as e:
+            from django.contrib import messages
+            messages.error(request, f'Error deleting service: {str(e)}')
+    
+    def delete_queryset(self, request, queryset):
+        """Override delete_queryset for bulk delete operations"""
+        count = queryset.count()
+        for service in queryset:
+            try:
+                # Delete associated images first
+                service.images.all().delete()
+                # Delete the service
+                service.delete()
+            except Exception as e:
+                from django.contrib import messages
+                messages.error(request, f'Error deleting service {service.id}: {str(e)}')
+        from django.contrib import messages
+        messages.success(request, f'Successfully deleted {count} service(s) and their associated images.')
+    
+    def get_object(self, request, object_id, from_field=None):
+        """Override get_object to avoid hashing issues with MongoDB"""
+        queryset = self.get_queryset(request)
+        model = queryset.model
+        field = model._meta.pk if from_field is None else model._meta.get_field(from_field)
+        try:
+            object_id = field.to_python(object_id)
+            obj = queryset.get(pk=object_id)
+        except (model.DoesNotExist, ValidationError, ValueError):
+            return None
+        return obj
+    
+    def delete_view(self, request, object_id, extra_context=None):
+        """Override delete_view to handle MongoDB/Djongo hashing issues"""
+        from django.contrib.admin.options import IS_POPUP_VAR
+        from django.contrib import messages
+        from django.template.response import TemplateResponse
+        
+        # Get the object
+        obj = self.get_object(request, unquote(object_id))
+        if obj is None:
+            raise Http404('%(name)s object with primary key %(key)r does not exist.' % {
+                'name': self.model._meta.verbose_name,
+                'key': unquote(object_id),
+            })
+        
+        if not self.has_delete_permission(request, obj):
+            raise PermissionDenied
+        
+        if request.method == 'POST':
+            # Handle the actual deletion
+            try:
+                # Store title before deletion
+                service_title = str(obj)
+                # Delete associated images first
+                obj.images.all().delete()
+                # Delete the service
+                obj.delete()
+                messages.success(request, f'Service "{service_title}" was deleted successfully.')
+            except Exception as e:
+                messages.error(request, f'Error deleting service: {str(e)}')
+            
+            # Redirect after deletion
+            if IS_POPUP_VAR in request.POST:
+                return HttpResponseRedirect(request.POST.get('next', '/admin/'))
+            return HttpResponseRedirect(reverse('admin:TSBv1_services_changelist'))
+        
+        # Show confirmation page
+        opts = self.model._meta
+        app_label = opts.app_label
+        
+        context = {
+            **self.admin_site.each_context(request),
+            'title': f'Delete {opts.verbose_name}',
+            'object_name': str(opts.verbose_name),
+            'object': obj,
+            'opts': opts,
+            'app_label': app_label,
+            'has_delete_permission': self.has_delete_permission(request, obj),
+            'original': obj,
+            **(extra_context or {}),
+        }
+        
+        return TemplateResponse(
+            request,
+            self.delete_confirmation_template or [
+                "admin/%s/%s/delete_confirmation.html" % (app_label, opts.model_name),
+                "admin/%s/delete_confirmation.html" % app_label,
+                "admin/delete_confirmation.html"
+            ],
+            context,
+        )
 
 @admin.register(Customer)
 class CustomerModelAdmin(admin.ModelAdmin):

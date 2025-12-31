@@ -77,18 +77,19 @@
                 <!-- Price Section -->
                 <div class="price-panel">
                     <div class="d-flex align-items-baseline flex-wrap mb-2">
-                        <span class="service-price">₹{{ services.discounted_price }}/-</span>
-                        {% if services.discounted_price < services.selling_price %} <span class="service-price-old">₹{{
-                            services.selling_price }}</span>
-                            {% endif %}
+                        <span class="service-price">₹{{ services.discounted_price|floatformat:0 }}/-</span>
+                        {% if services.discounted_price < services.selling_price %}
+                        <span class="service-price-old">₹{{ services.selling_price|floatformat:0 }}/-</span>
+                        {% endif %}
                     </div>
-                    {% if services.discounted_price < services.selling_price %} <div class="mt-2">
+                    {% if services.discounted_price < services.selling_price %}
+                    <div class="mt-2">
                         <span class="service-discount">
                             <i class="fas fa-percentage me-1"></i>
                             Special Discount Available
                         </span>
-                </div>
-                {% endif %}
+                    </div>
+                    {% endif %}
                 <p class="text-muted mb-0 mt-3 small">
                     <i class="fas fa-info-circle me-2"></i>Price includes all applicable taxes
                 </p>
@@ -124,20 +125,13 @@
             <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
                 {% if services.supports_advance_payment %}
                 <a href="{% url 'advance-checkout' services.id %}" class="btn btn-warning btn-lg flex-fill">
-                    <i class="fas fa-calendar-check me-2"></i>Advance Booking
+                    <i class="fas fa-shopping-bag me-2"></i>Book Now
                 </a>
                 {% endif %}
                 <form action="/add-to-cart" class="d-inline flex-fill">
                     <input type="hidden" name="serv_id" value="{{services.id}}">
                     <button type="submit" class="btn btn-primary btn-lg w-100">
                         <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                    </button>
-                </form>
-                <form action="/add-to-cart" class="d-inline flex-fill">
-                    <input type="hidden" name="serv_id" value="{{services.id}}">
-                    <input type="hidden" name="buy_now" value="1">
-                    <button type="submit" class="btn btn-outline-primary btn-lg w-100">
-                        <i class="fas fa-bolt me-2"></i>Buy Now
                     </button>
                 </form>
                 {% if request.user.is_authenticated %}

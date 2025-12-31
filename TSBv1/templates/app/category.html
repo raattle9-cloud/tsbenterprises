@@ -90,7 +90,7 @@
                                         <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.7) 100%);">
                                             <div class="text-white">
                                                 <small class="opacity-75">Starting from</small>
-                                                <div class="h5 mb-0 fw-bold">₹{{ serv.discounted_price }}/-</div>
+                                                <div class="h5 mb-0 fw-bold">₹{{ serv.discounted_price|floatformat:0 }}/-</div>
                                             </div>
                                         </div>
                                     </a>
@@ -103,9 +103,9 @@
                                     </h5>
                                     <div class="mb-3">
                                         <div class="d-flex align-items-baseline flex-wrap">
-                                            <span class="service-price">₹{{ serv.discounted_price }}/-</span>
+                                            <span class="service-price">₹{{ serv.discounted_price|floatformat:0 }}/-</span>
                                             {% if serv.discounted_price < serv.selling_price %}
-                                            <span class="service-price-old">₹{{ serv.selling_price }}</span>
+                                            <span class="service-price-old">₹{{ serv.selling_price|floatformat:0 }}/-</span>
                                             {% endif %}
                                         </div>
                                         {% if serv.discounted_price < serv.selling_price %}

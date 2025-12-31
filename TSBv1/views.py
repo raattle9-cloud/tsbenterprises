@@ -50,8 +50,6 @@ def privacypolicy(request):
     return render(request,"app/privacypolicy.html")
 def refundpolicy(request):
     return render(request,"app/refundpolicy.html")
-def shippingpolicy(request):
-    return render(request,"app/shippingpolicy.html")
 
 
 def services_page(request):
@@ -259,7 +257,7 @@ def show_cart(request):
     for p in cart:
         value = p.quantity * p.services.discounted_price
         amount = amount + value
-    totalamount= amount + 40
+    totalamount = amount
     razoramount= int(totalamount * 100)
 
     #client = razorpay.Client(auth = (settings.razor_pay_key_id, settings.key_secret))
@@ -321,7 +319,7 @@ def plus_cart(request):
             # Calculate new totals
             remaining_cart = list(Cart.objects.filter(user=request.user))
             amount = sum(p.quantity * p.services.discounted_price for p in remaining_cart)
-            totalamount = amount + 40
+            totalamount = amount
 
             data = {
                 'quantity': new_quantity,
@@ -368,7 +366,7 @@ def minus_cart(request):
             # Calculate new totals
             remaining_cart = list(Cart.objects.filter(user=request.user))
             amount = sum(p.quantity * p.services.discounted_price for p in remaining_cart)
-            totalamount = amount + 40
+            totalamount = amount
 
             data = {
                 'quantity': new_quantity,
@@ -414,7 +412,7 @@ def remove_cart(request):
             user = request.user
             remaining_cart = list(Cart.objects.filter(user=user))
             amount = sum(p.quantity * p.services.discounted_price for p in remaining_cart)
-            totalamount = amount + 40
+            totalamount = amount
 
             data = {
                 'quantity': removed_quantity,

@@ -8,8 +8,8 @@
     <div class="row">
         <div class="col-md-8">
             <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">Advance Booking Details</h3>
+                <div class="card-header bg-primary text-white" style="background-color: #0d6efd !important;">
+                    <h3 class="mb-0 text-white" style="color: #ffffff !important; font-weight: 600;">Advance Booking Details</h3>
                 </div>
                 <div class="card-body">
                     <form id="advanceBookingForm" method="post">
@@ -71,8 +71,8 @@
 
         <div class="col-md-4">
             <div class="card shadow border-0 overflow-hidden sticky-top" style="top: 100px;">
-                <div class="card-header bg-dark text-white py-3">
-                    <h5 class="mb-0">Price Summary</h5>
+                <div class="card-header bg-dark text-white py-3" style="background-color: #212529 !important;">
+                    <h5 class="mb-0 text-white" style="color: #ffffff !important; font-weight: 600;">Price Summary</h5>
                 </div>
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between mb-2">
@@ -90,8 +90,7 @@
                     </div>
 
                     <div class="d-grid gap-2 mt-4">
-                        <button type="button" id="payButton" class="btn btn-warning btn-lg fw-bold" {% if not customers
-                            %}disabled{% endif %}>
+                        <button type="button" id="payButton" class="btn btn-warning btn-lg fw-bold" {% if not customers %}disabled{% endif %}>
                             <i class="fas fa-lock me-2"></i>Pay Advance & Book
                         </button>
                     </div>
