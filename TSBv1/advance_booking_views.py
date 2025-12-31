@@ -77,7 +77,11 @@ def advance_booking_checkout(request, service_id):
         # Generate booking code first
         booking_code = generate_booking_code()
         
-        # Create booking (qr_hash will be generated when QR code is created)
+        # Generate a temporary unique qr_hash (will be replaced with proper hash when QR is generated)
+        import uuid
+        temp_qr_hash = f"temp_{uuid.uuid4().hex}"
+        
+        # Create booking (qr_hash will be replaced when QR code is created)
         booking = AdvanceBooking.objects.create(
             booking_code=booking_code,
             user=request.user,
@@ -90,7 +94,7 @@ def advance_booking_checkout(request, service_id):
             remaining_amount=remaining_amount,
             valid_until=timezone.make_aware(datetime.combine(booking_date, datetime.max.time())),
             status='PENDING',
-            qr_hash='',  # Will be set when QR code is generated
+            qr_hash=temp_qr_hash,  # Temporary unique hash to avoid duplicate key errors
         )
         
         # Store booking ID in session for payment processing
