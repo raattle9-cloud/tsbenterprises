@@ -52,6 +52,51 @@ def refundpolicy(request):
     return render(request,"app/refundpolicy.html")
 
 
+def portal_hub(request):
+    """
+    Unified portal hub for all user types - provides quick access to all portals
+    """
+    context = {
+        'is_admin': request.user.is_superuser if request.user.is_authenticated else False,
+        'is_staff': request.user.is_staff if request.user.is_authenticated else False,
+    }
+    
+    # Add quick stats for staff/admin users
+    if request.user.is_authenticated and request.user.is_staff:
+        from django.utils import timezone
+        from .models import AdvanceBooking
+        from django.db.models import Sum
+        
+        today = timezone.now().date()
+        
+        # Get all bookings and filter in Python to avoid MongoDB date issues
+        all_bookings = list(AdvanceBooking.objects.all())
+        
+        pending_today = 0
+        verified_today = 0
+        revenue_today = 0.0
+        
+        for booking in all_bookings:
+            if str(booking.booking_date) == str(today):
+                if booking.status == 'PENDING':
+                    pending_today += 1
+                elif booking.status in ['VERIFIED', 'USED']:
+                    verified_today += 1
+                    try:
+                        revenue_today += float(str(booking.total_amount))
+                    except:
+                        pass
+        
+        context['stats'] = {
+            'pending_today': pending_today,
+            'verified_today': verified_today,
+            'revenue_today': revenue_today,
+            'total_bookings': len(all_bookings),
+        }
+    
+    return render(request, 'app/portal_hub.html', context)
+
+
 def services_page(request):
     # Get all services with images
     services = Services.objects.all().prefetch_related('images')
@@ -180,9 +225,35 @@ class CustomerLoginview(View):
     
 class ProfileView(View):
     def get(self, request):
-        form = CustomerProfileForm()
-        return render(request, "app/profile.html",locals())
-    def post(Self, request):
+        if not request.user.is_authenticated:
+            return redirect('customerlogin')
+        
+        # Try to get existing customer data for this user
+        existing_customers = list(Customer.objects.filter(user=request.user))
+        
+        if existing_customers:
+            # Pre-populate form with existing data
+            customer = existing_customers[0]
+            initial_data = {
+                'name': customer.name,
+                'locality': customer.locality,
+                'city': customer.city,
+                'mobile': customer.mobile,
+                'state': customer.state,
+                'zipcode': customer.zipcode,
+            }
+            form = CustomerProfileForm(initial=initial_data)
+            has_profile = True
+        else:
+            form = CustomerProfileForm()
+            has_profile = False
+        
+        return render(request, "app/profile.html", {'form': form, 'has_profile': has_profile})
+    
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return redirect('customerlogin')
+        
         form = CustomerProfileForm(request.POST)
         if form.is_valid():
             user = request.user
@@ -192,13 +263,33 @@ class ProfileView(View):
             mobile = form.cleaned_data['mobile']
             state = form.cleaned_data['state']
             zipcode = form.cleaned_data['zipcode']
-
-            reg = Customer(user=user, name=name, locality=locality, city=city, mobile=mobile, state=state,zipcode=zipcode)
-            reg.save()
-            messages.success(request,"Congratulations! Profile Saved Successfully")
+            
+            # Check if customer already exists for this user
+            existing_customers = list(Customer.objects.filter(user=user))
+            
+            if existing_customers:
+                # Update existing customer using filter().update() for MongoDB compatibility
+                Customer.objects.filter(user=user).update(
+                    name=name,
+                    locality=locality,
+                    city=city,
+                    mobile=mobile,
+                    state=state,
+                    zipcode=zipcode
+                )
+                messages.success(request, "Profile Updated Successfully!")
+            else:
+                # Create new customer
+                reg = Customer(user=user, name=name, locality=locality, city=city, mobile=mobile, state=state, zipcode=zipcode)
+                reg.save()
+                messages.success(request, "Profile Saved Successfully!")
+            
+            has_profile = True
         else:
-            messages.warning(request,"Invalid Input Data!")
-        return render(request, "app/profile.html",locals())
+            messages.warning(request, "Invalid Input Data!")
+            has_profile = len(list(Customer.objects.filter(user=request.user))) > 0
+        
+        return render(request, "app/profile.html", {'form': form, 'has_profile': has_profile})
 
 def payments(request):
     return render(request, 'app/payments.html',locals())

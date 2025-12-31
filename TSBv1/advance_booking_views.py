@@ -200,6 +200,14 @@ def advance_booking_confirmation(request, booking_id):
     """
     booking = get_object_or_404(AdvanceBooking, id=booking_id, user=request.user)
     
+    # Generate QR code if not already generated
+    if not booking.qr_code_data:
+        qr_data = generate_qr_code(booking)
+        # Save QR code data using update to avoid MongoDB issues
+        AdvanceBooking.objects.filter(id=booking_id).update(qr_code_data=qr_data)
+        # Refresh the booking object to get the updated data
+        booking = AdvanceBooking.objects.get(id=booking_id)
+    
     context = {
         'booking': booking,
     }
@@ -249,7 +257,44 @@ def staff_verify(request):
     if not request.session.get('staff_authenticated'):
         return redirect('staff-login')
     
-    return render(request, 'app/staff_verify.html')
+    # Get today's date for reference
+    today = timezone.now().date()
+    
+    # Get ALL pending bookings (not just today's) to avoid MongoDB date comparison issues
+    # Filter in Python to separate today's vs other dates
+    all_pending = list(AdvanceBooking.objects.filter(
+        status='PENDING'
+    ).select_related('customer', 'service').order_by('-booking_date', '-created_at')[:50])
+    
+    # Convert Decimal128 to float for template display and separate by date
+    todays_bookings = []
+    other_bookings = []
+    
+    for booking in all_pending:
+        booking_data = {
+            'booking_code': booking.booking_code,
+            'customer_name': booking.customer.name,
+            'service_name': booking.service.title,
+            'quantity': booking.quantity,
+            'booking_date': booking.booking_date,
+            'advance_paid': convert_decimal128_to_float(booking.advance_paid),
+            'remaining_amount': convert_decimal128_to_float(booking.remaining_amount),
+            'created_at': booking.created_at,
+        }
+        # Compare dates as strings to avoid MongoDB date comparison issues
+        if str(booking.booking_date) == str(today):
+            todays_bookings.append(booking_data)
+        else:
+            other_bookings.append(booking_data)
+    
+    context = {
+        'todays_bookings': todays_bookings,
+        'other_bookings': other_bookings,
+        'pending_bookings': todays_bookings + other_bookings,  # Combined for backward compatibility
+        'today': today
+    }
+    
+    return render(request, 'app/staff_verify.html', context)
 
 
 @csrf_exempt
@@ -365,15 +410,17 @@ def mark_booking_verified(request):
         
         booking = get_object_or_404(AdvanceBooking, booking_code=booking_code)
         
-        # Update booking status
+        # Update booking status - only update specific fields to avoid Decimal128 validation issues
         booking.status = 'VERIFIED'
         booking.verified_at = timezone.now()
         booking.verified_by_staff = staff_name
         booking.verification_ip = get_client_ip(request)
-        booking.save()
+        # Use update_fields to only save the fields we're changing
+        booking.save(update_fields=['status', 'verified_at', 'verified_by_staff', 'verification_ip'])
         
         # If payment collected, create payment record
         if payment_collected:
+            # Create payment record
             final_payment = Payment.objects.create(
                 user=booking.user,
                 amount=convert_decimal128_to_float(booking.remaining_amount),
@@ -381,9 +428,11 @@ def mark_booking_verified(request):
                 payment_type='REMAINING',
                 razorpay_payment_status='CASH'
             )
-            booking.final_payment = final_payment
+            # Update status to USED
             booking.status = 'USED'
-            booking.save()
+            # Skip final_payment assignment due to Djongo ObjectId ForeignKey limitation
+            # The payment is created but not linked via ForeignKey
+            booking.save(update_fields=['status'])
         
         return JsonResponse({
             'success': True,

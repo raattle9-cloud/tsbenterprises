@@ -89,8 +89,16 @@
               </a>
               <ul class="dropdown-menu dropdown-menu-end modern-dropdown" aria-labelledby="profileDropdown">
                 <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'my-bookings' %}"><i class="fas fa-ticket-alt me-2"></i>My Bookings</a></li>
                 <li><a class="dropdown-item" href="#"><i class="fas fa-shopping-bag me-2"></i>Orders</a></li>
                 <li><a class="dropdown-item" href="{% url 'passwordchange' %}"><i class="fas fa-key me-2"></i>Change Password</a></li>
+                {% if request.user.is_staff %}
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-warning" href="{% url 'staff-login' %}"><i class="fas fa-user-shield me-2"></i>Staff Portal</a></li>
+                {% endif %}
+                {% if request.user.is_superuser %}
+                <li><a class="dropdown-item text-info" href="/admin/"><i class="fas fa-cog me-2"></i>Admin Dashboard</a></li>
+                {% endif %}
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
               </ul>

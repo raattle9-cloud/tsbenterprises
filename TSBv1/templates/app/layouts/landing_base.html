@@ -46,7 +46,7 @@
       </nav>
       <div class="nav-right">
         {% if request.user.is_authenticated %}
-          <a href="{% url 'showcart' %}" class="header-btn cart-btn position-relative">
+          <a href="{% url 'showcart' %}" class="header-btn cart-btn position-relative" title="Cart">
             <i class="fas fa-shopping-cart"></i>
             {% with cart_count=request.user.cart_set.all|length %}
               {% if cart_count > 0 %}
@@ -54,7 +54,7 @@
               {% endif %}
             {% endwith %}
           </a>
-          <a href="{% url 'showwishlist' %}" class="header-btn wishlist-btn position-relative">
+          <a href="{% url 'showwishlist' %}" class="header-btn wishlist-btn position-relative" title="Wishlist">
             <i class="fas fa-heart"></i>
             {% with wishlist_count=request.user.wishlist_set.all|length %}
               {% if wishlist_count > 0 %}
@@ -62,12 +62,18 @@
               {% endif %}
             {% endwith %}
           </a>
-          <div class="user-chip">
-            <i class="fas fa-user-circle"></i>
-            <span>{{ request.user.username }}</span>
-          </div>
-          <a href="{% url 'profile' %}" class="header-btn secondary-btn">Profile</a>
-          <a href="{% url 'logout' %}" class="header-btn logout-btn">Logout</a>
+          <a href="{% url 'my-bookings' %}" class="header-btn" title="My Bookings">
+            <i class="fas fa-ticket-alt"></i>
+          </a>
+          {% if request.user.is_staff %}
+          <a href="{% url 'staff-login' %}" class="header-btn" style="background: linear-gradient(90deg, #f59e0b, #d97706); color: white;" title="Staff Portal">
+            <i class="fas fa-user-shield"></i>
+          </a>
+          {% endif %}
+          <a href="{% url 'profile' %}" class="header-btn secondary-btn">{{ request.user.username|truncatechars:10 }}</a>
+          <a href="{% url 'logout' %}" class="header-btn logout-btn" title="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+          </a>
         {% else %}
           <a href="{% url 'customerlogin' %}" class="header-btn login-btn">Login</a>
           <a href="{% url 'customerregistration' %}" class="header-btn register-btn">Register</a>
@@ -115,7 +121,13 @@
               <i class="fas fa-user-circle"></i>
               <span>{{ request.user.username }}</span>
             </div>
+            <a href="{% url 'my-bookings' %}" class="header-btn secondary-btn">My Bookings</a>
             <a href="{% url 'profile' %}" class="header-btn secondary-btn">Profile</a>
+            {% if request.user.is_staff %}
+            <a href="{% url 'staff-login' %}" class="header-btn" style="background: linear-gradient(90deg, #f59e0b, #d97706); color: white;">
+              <i class="fas fa-user-shield me-1"></i>Staff Portal
+            </a>
+            {% endif %}
             <a href="{% url 'logout' %}" class="header-btn logout-btn">Logout</a>
           {% else %}
             <a href="{% url 'customerlogin' %}" class="header-btn login-btn">Login</a>

@@ -1,9 +1,9 @@
-{% extends 'app/base.html' %}
+{% extends 'app/layouts/landing_base.html' %}
 {% load static %}
 
 {% block title %}Advance Booking Confirmed!{% endblock %}
 
-{% block main-content %}
+{% block landing_content %}
 <div class="container mt-5 pt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -68,8 +68,7 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-6" style="font-size: 1.2em;"><strong>Pay at Venue:</strong></div>
-                        <div class="col-6 text-danger" style="font-size: 1.2em;"><strong>₹{{ booking.remaining_amount
-                                }}</strong></div>
+                        <div class="col-6 text-danger" style="font-size: 1.2em;"><strong>₹{{ booking.remaining_amount }}</strong></div>
                     </div>
 
                     <div class="alert alert-info mt-4">
