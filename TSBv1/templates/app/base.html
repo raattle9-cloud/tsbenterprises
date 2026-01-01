@@ -1,252 +1,427 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Bootstrap 5.3.3 - Single version only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Bootstrap 5.3.3 - Single version only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Google Fonts - Modern typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'app/css/owl.carousel.min.css' %}"/>
-    <link rel="stylesheet" href="{% static 'app/css/style.css' %}"/>
-    <link rel="stylesheet" href="{% static 'app/css/styles.css' %}"/>
-    <link rel="stylesheet" href="{% static 'app/css/styles-1.css' %}"/>
-    {% block extra_head %}{% endblock extra_head %}
-    
-    <title>{% block title %}TSB Enterprises{% endblock title %}</title>
-    <link rel="icon" href="{% static 'app/images/product/tsb_logo.png' %}" type="image/x-icon">
+  <!-- Google Fonts - Modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap"
+    rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'app/css/owl.carousel.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'app/css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'app/css/styles.css' %}" />
+  <link rel="stylesheet" href="{% static 'app/css/styles-1.css' %}" />
+  {% block extra_head %}{% endblock extra_head %}
+
+  <title>{% block title %}TSB Enterprises{% endblock title %}</title>
+  <link rel="icon" href="{% static 'app/images/product/tsb_logo.png' %}" type="image/x-icon">
 </head>
+
 <body>
-    <!-- Premium Navbar Start -->
-    <nav class="navbar navbar-expand-lg fixed-top modern-navbar">
-      <div class="container-fluid px-4">
-        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-          <img src="{% static 'app/images/product/tsb_logo.png' %}" width="100" height="60" alt="TSB Logo" class="brand-logo"/>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            {% if request.user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
-                <i class="fas fa-home me-1"></i>Home
-              </a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name == 'services' %}active{% endif %}" href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-th-large me-1"></i>Services
-              </a>
-              <ul class="dropdown-menu modern-dropdown" aria-labelledby="servicesDropdown">
-                <li><a class="dropdown-item" href="{% url 'mainCategory' 'RE' %}"><i class="fas fa-hotel me-2"></i>Resort</a></li>
-                <li><a class="dropdown-item" href="{% url 'mainCategory' 'WP' %}"><i class="fas fa-swimming-pool me-2"></i>Waterparks</a></li>
-                <li><a class="dropdown-item" href="{% url 'mainCategory' 'DP' %}"><i class="fas fa-map-marked-alt me-2"></i>Destination Packages</a></li>
-                <li><a class="dropdown-item" href="{% url 'mainCategory' 'DB' %}"><i class="fas fa-utensils me-2"></i>Dhaba</a></li>
-                <li><a class="dropdown-item" href="{% url 'mainCategory' 'VI' %}"><i class="fas fa-home me-2"></i>Villas</a></li>
-                <li><a class="dropdown-item" href="{% url 'mainCategory' 'GO' %}"><i class="fas fa-gamepad me-2"></i>Game On</a></li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}#about">
-                <i class="fas fa-info-circle me-1"></i>About Us
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">
-                <i class="fas fa-envelope me-1"></i>Contact Us
-              </a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name in 'refundpolicy,contact' %}active{% endif %}" href="#" id="supportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-headset me-1"></i>Support
-              </a>
-              <ul class="dropdown-menu modern-dropdown" aria-labelledby="supportDropdown">
-                <li><a class="dropdown-item" href="{% url 'refundpolicy' %}"><i class="fas fa-undo me-2"></i>Refund Policy</a></li>
-                <li><a class="dropdown-item" href="{% url 'contact' %}"><i class="fas fa-life-ring me-2"></i>Help Center</a></li>
-                <li><a class="dropdown-item" href="{% url 'home' %}#faqs"><i class="fas fa-question-circle me-2"></i>FAQs</a></li>
-                <li><a class="dropdown-item" href="{% url 'contact' %}#contact-form"><i class="fas fa-headset me-2"></i>Customer Care</a></li>
-              </ul>
-            </li>
-          </ul>
-          {% endif %}
-          
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-            {% if request.user.is_authenticated %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle user-menu {% if request.resolver_match.url_name in 'profile,passwordchange' %}active{% endif %}" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user-circle me-1"></i>{{user.username}}
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end modern-dropdown" aria-labelledby="profileDropdown">
-                <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
-                <li><a class="dropdown-item" href="{% url 'my-bookings' %}"><i class="fas fa-ticket-alt me-2"></i>My Bookings</a></li>
-                <li><a class="dropdown-item" href="#"><i class="fas fa-shopping-bag me-2"></i>Orders</a></li>
-                <li><a class="dropdown-item" href="{% url 'passwordchange' %}"><i class="fas fa-key me-2"></i>Change Password</a></li>
-                {% if request.user.is_staff %}
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-warning" href="{% url 'staff-login' %}"><i class="fas fa-user-shield me-2"></i>Staff Portal</a></li>
-                {% endif %}
-                {% if request.user.is_superuser %}
-                <li><a class="dropdown-item text-info" href="/admin/"><i class="fas fa-cog me-2"></i>Admin Dashboard</a></li>
-                {% endif %}
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link position-relative {% if request.resolver_match.url_name == 'showcart' %}active{% endif %}" href="{% url 'showcart' %}">
-                <i class="fas fa-shopping-cart me-1"></i>Cart
-                <span class="badge bg-primary rounded-pill cart-badge">0</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% if request.resolver_match.url_name == 'showwishlist' %}active{% endif %}" href="{% url 'showwishlist' %}">
-                <i class="fas fa-heart me-1"></i>Wishlist
-              </a>
-            </li>
-            {% else %}
-            <li class="nav-item">
-              <a class="nav-link btn btn-outline-light btn-sm me-2" href="{% url 'customerlogin' %}">
-                <i class="fas fa-sign-in-alt me-1"></i>Login
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link btn btn-light btn-sm" href="{% url 'customerregistration' %}">
-                <i class="fas fa-user-plus me-1"></i>Register
-              </a>
-            </li>
-            {% endif %}
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <!-- Navbar End -->
-
-    {% block banner-slider %} {% endblock banner-slider %}
-    {% block information %} {% endblock information %}
-    {% block main-content %} {% endblock main-content %}
-    {% block payment-gateway %} {% endblock payment-gateway %}
-
-    
-    <!-- Premium Footer Start -->
-    <footer class="modern-footer">
-      <div class="container py-5">
-        <div class="row g-4">
-          <div class="col-lg-4 col-md-6">
-            <h5 class="footer-title mb-4">
-              <i class="fas fa-map-marker-alt me-2"></i>Get In Touch
-            </h5>
-            <div class="footer-contact">
-              <p class="mb-3">
-                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
-                <span>TSB, Thane Station</span>
-              </p>
-              <p class="mb-3">
-                <i class="fas fa-phone-alt me-2 text-primary"></i>
-                <a href="tel:+01234567890" class="text-decoration-none">+012 345 67890</a>
-              </p>
-              <p class="mb-3">
-                <i class="fas fa-envelope me-2 text-primary"></i>
-                <a href="mailto:TSB@example.com" class="text-decoration-none">TSB@example.com</a>
-              </p>
-              <div class="social-links mt-4">
-                <a href="#" class="social-icon" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="social-icon" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="social-icon" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                <a href="#" class="social-icon" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#" class="social-icon" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6">
-            <h5 class="footer-title mb-4">Support</h5>
-            <ul class="footer-links">
-              <li><a href="{% url 'refundpolicy' %}"><i class="fas fa-chevron-right me-2"></i>Refund Policy</a></li>
-              <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Help Center</a></li>
-              <li><a href="#"><i class="fas fa-chevron-right me-2"></i>FAQs</a></li>
-              <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Customer Care</a></li>
+  <!-- Premium Navbar Start -->
+  <nav class="navbar navbar-expand-lg fixed-top modern-navbar">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+        <img src="{% static 'app/images/product/tsb_logo.png' %}" width="100" height="60" alt="TSB Logo"
+          class="brand-logo" />
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+              href="{% url 'home' %}">
+              <i class="fas fa-home me-1"></i>Home
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name == 'services' %}active{% endif %}"
+              href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-th-large me-1"></i>Services
+            </a>
+            <ul class="dropdown-menu modern-dropdown" aria-labelledby="servicesDropdown">
+              <li><a class="dropdown-item" href="{% url 'mainCategory' 'RE' %}"><i
+                    class="fas fa-hotel me-2"></i>Resort</a></li>
+              <li><a class="dropdown-item" href="{% url 'mainCategory' 'WP' %}"><i
+                    class="fas fa-swimming-pool me-2"></i>Waterparks</a></li>
+              <li><a class="dropdown-item" href="{% url 'mainCategory' 'DP' %}"><i
+                    class="fas fa-map-marked-alt me-2"></i>Destination Packages</a></li>
+              <li><a class="dropdown-item" href="{% url 'mainCategory' 'DB' %}"><i
+                    class="fas fa-utensils me-2"></i>Dhaba</a></li>
+              <li><a class="dropdown-item" href="{% url 'mainCategory' 'VI' %}"><i
+                    class="fas fa-home me-2"></i>Villas</a></li>
+              <li><a class="dropdown-item" href="{% url 'mainCategory' 'GO' %}"><i class="fas fa-gamepad me-2"></i>Game
+                  On</a></li>
             </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+              href="{% url 'home' %}#about">
+              <i class="fas fa-info-circle me-1"></i>About Us
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}"
+              href="{% url 'contact' %}">
+              <i class="fas fa-envelope me-1"></i>Contact Us
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name in 'refundpolicy,contact' %}active{% endif %}"
+              href="#" id="supportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-headset me-1"></i>Support
+            </a>
+            <ul class="dropdown-menu modern-dropdown" aria-labelledby="supportDropdown">
+              <li><a class="dropdown-item" href="{% url 'refundpolicy' %}"><i class="fas fa-undo me-2"></i>Refund
+                  Policy</a></li>
+              <li><a class="dropdown-item" href="{% url 'contact' %}"><i class="fas fa-life-ring me-2"></i>Help
+                  Center</a></li>
+              <li><a class="dropdown-item" href="{% url 'privacypolicy' %}"><i
+                    class="fas fa-user-shield me-2"></i>Privacy Policy</a></li>
+              <li><a class="dropdown-item" href="{% url 'termsandconditions' %}"><i
+                    class="fas fa-file-contract me-2"></i>Terms and Conditions</a></li>
+              <li><a class="dropdown-item" href="{% url 'shippingpolicy' %}"><i
+                    class="fas fa-shipping-fast me-2"></i>Shipping Policy</a></li>
+              <li><a class="dropdown-item" href="{% url 'home' %}#faqs"><i
+                    class="fas fa-question-circle me-2"></i>FAQs</a></li>
+              <li><a class="dropdown-item" href="{% url 'contact' %}#contact-form"><i
+                    class="fas fa-headset me-2"></i>Customer Care</a></li>
+            </ul>
+          </li>
+        </ul>
+        {% endif %}
+
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          {% if request.user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle user-menu {% if request.resolver_match.url_name in 'profile,passwordchange' %}active{% endif %}"
+              href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle me-1"></i>{{user.username}}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end modern-dropdown" aria-labelledby="profileDropdown">
+              <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
+              <li><a class="dropdown-item" href="{% url 'my-bookings' %}"><i class="fas fa-ticket-alt me-2"></i>My
+                  Bookings</a></li>
+              <li><a class="dropdown-item" href="#"><i class="fas fa-shopping-bag me-2"></i>Orders</a></li>
+              <li><a class="dropdown-item" href="{% url 'passwordchange' %}"><i class="fas fa-key me-2"></i>Change
+                  Password</a></li>
+              {% if request.user.is_staff %}
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item text-warning" href="{% url 'staff-login' %}"><i
+                    class="fas fa-user-shield me-2"></i>Staff Portal</a></li>
+              {% endif %}
+              {% if request.user.is_superuser %}
+              <li><a class="dropdown-item text-info" href="/admin/"><i class="fas fa-cog me-2"></i>Admin Dashboard</a>
+              </li>
+              {% endif %}
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i
+                    class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link position-relative {% if request.resolver_match.url_name == 'showcart' %}active{% endif %}"
+              href="{% url 'showcart' %}">
+              <i class="fas fa-shopping-cart me-1"></i>Cart
+              <span class="badge bg-primary rounded-pill cart-badge">0</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'showwishlist' %}active{% endif %}"
+              href="{% url 'showwishlist' %}">
+              <i class="fas fa-heart me-1"></i>Wishlist
+            </a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link btn btn-outline-light btn-sm me-2" href="{% url 'customerlogin' %}">
+              <i class="fas fa-sign-in-alt me-1"></i>Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link btn btn-light btn-sm" href="{% url 'customerregistration' %}">
+              <i class="fas fa-user-plus me-1"></i>Register
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Navbar End -->
+
+  {% block banner-slider %} {% endblock banner-slider %}
+  {% block information %} {% endblock information %}
+  {% block main-content %} {% endblock main-content %}
+  {% block payment-gateway %} {% endblock payment-gateway %}
+
+
+  <!-- Premium Footer Start -->
+  <footer class="modern-footer">
+    <div class="container py-5">
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+          <h5 class="footer-title mb-4">
+            <i class="fas fa-map-marker-alt me-2"></i>Get In Touch
+          </h5>
+          <div class="footer-contact">
+            <p class="mb-3">
+              <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+              <span>TSB, Thane Station</span>
+            </p>
+            <p class="mb-3">
+              <i class="fas fa-phone-alt me-2 text-primary"></i>
+              <a href="tel:+01234567890" class="text-decoration-none">+012 345 67890</a>
+            </p>
+            <p class="mb-3">
+              <i class="fas fa-envelope me-2 text-primary"></i>
+              <a href="mailto:TSB@example.com" class="text-decoration-none">TSB@example.com</a>
+            </p>
+            <div class="social-links mt-4">
+              <a href="#" class="social-icon" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+              <a href="#" class="social-icon" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="social-icon" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+              <a href="#" class="social-icon" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#" class="social-icon" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
           </div>
-          <div class="col-lg-3 col-md-6">
-            <h5 class="footer-title mb-4">Newsletter</h5>
-            <p class="mb-3">Subscribe to our newsletter to get updates on our latest offers and deals.</p>
-            <form class="newsletter-form">
-              <div class="input-group">
-                <input type="email" class="form-control" placeholder="Your email" aria-label="Your email">
-                <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane"></i></button>
-              </div>
-            </form>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h5 class="footer-title mb-4">Support</h5>
+          <ul class="footer-links">
+            <li><a href="{% url 'refundpolicy' %}"><i class="fas fa-chevron-right me-2"></i>Refund Policy</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Help Center</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right me-2"></i>FAQs</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Customer Care</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h5 class="footer-title mb-4">Newsletter</h5>
+          <p class="mb-3">Subscribe to our newsletter to get updates on our latest offers and deals.</p>
+          <form class="newsletter-form">
+            <div class="input-group">
+              <input type="email" class="form-control" placeholder="Your email" aria-label="Your email">
+              <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane"></i></button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+            <p class="mb-0">
+              &copy; 2024 <strong>TSB Enterprises INC</strong>, All Rights Reserved.
+              Designed By <a href="https://www.linkedin.com/in/zimaad/" target="_blank"
+                class="text-decoration-none">Zimaad Azhari</a>
+            </p>
+          </div>
+          <div class="col-md-6 text-center text-md-end">
+            <a href="#" class="back-to-top" id="backToTop" aria-label="Back to top">
+              <i class="fas fa-arrow-up"></i>
+            </a>
           </div>
         </div>
       </div>
-      <div class="footer-bottom">
-        <div class="container">
-          <div class="row align-items-center">
-            <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-              <p class="mb-0">
-                &copy; 2024 <strong>TSB Enterprises INC</strong>, All Rights Reserved. 
-                Designed By <a href="https://www.linkedin.com/in/zimaad/" target="_blank" class="text-decoration-none">Zimaad Azhari</a>
-              </p>
-            </div>
-            <div class="col-md-6 text-center text-md-end">
-              <a href="#" class="back-to-top" id="backToTop" aria-label="Back to top">
-                <i class="fas fa-arrow-up"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-    <!-- Footer End -->
+    </div>
+  </footer>
+  <!-- Footer End -->
 
-  
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="{% static 'app/js/myscript.js' %}"></script>
-    <script src="{% static 'app/js/owl.carousel.min.js' %}"></script>
 
-    <!-- Back to Top Button Script -->
-    <script>
-      // Back to top button
-      window.addEventListener('scroll', function() {
-        const backToTop = document.getElementById('backToTop');
-        if (window.pageYOffset > 300) {
-          backToTop.classList.add('show');
-        } else {
-          backToTop.classList.remove('show');
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src="{% static 'app/js/myscript.js' %}"></script>
+  <script src="{% static 'app/js/owl.carousel.min.js' %}"></script>
+
+  <!-- Back to Top Button Script -->
+  <script>
+    // Back to top button
+    window.addEventListener('scroll', function () {
+      const backToTop = document.getElementById('backToTop');
+      if (window.pageYOffset > 300) {
+        backToTop.classList.add('show');
+      } else {
+        backToTop.classList.remove('show');
+      }
+    });
+
+    document.getElementById('backToTop')?.addEventListener('click', function (e) {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', function () {
+      const navbar = document.querySelector('.modern-navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href !== '#' && href.length > 1) {
+          const target = document.querySelector(href);
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
         }
       });
+    });
 
-      document.getElementById('backToTop')?.addEventListener('click', function(e) {
-        e.preventDefault();
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
+    // Initialize carousel with auto-play
+    document.addEventListener('DOMContentLoaded', function () {
+      const carouselElement = document.querySelector('#homeHeroCarousel');
+      if (carouselElement) {
+        const carousel = new bootstrap.Carousel(carouselElement, {
+          interval: 2000,
+          ride: 'carousel',
+          wrap: true,
+          pause: false
+        });
+      }
+
+      // Quick Filter Chips Interaction
+      const filterChips = document.querySelectorAll('.quick-filter-chip');
+      filterChips.forEach(chip => {
+        chip.addEventListener('click', function () {
+          filterChips.forEach(c => c.classList.remove('active'));
+          this.classList.add('active');
         });
       });
 
-      // Navbar scroll effect
-      window.addEventListener('scroll', function() {
-        const navbar = document.querySelector('.modern-navbar');
-        if (window.scrollY > 50) {
-          navbar.classList.add('scrolled');
-        } else {
-          navbar.classList.remove('scrolled');
-        }
+      // Search Form Functionality
+      const searchBtn = document.querySelector('.search-btn');
+      if (searchBtn) {
+        searchBtn.addEventListener('click', function (e) {
+          const destination = document.getElementById('destination')?.value;
+          if (destination) {
+            window.location.href = '/category/' + destination;
+          }
+        });
+      }
+
+      // Parallax Effect on Scroll
+      window.addEventListener('scroll', function () {
+        const scrolled = window.pageYOffset;
+        const parallaxElements = document.querySelectorAll('.parallax-layer');
+
+        parallaxElements.forEach(el => {
+          const speed = el.dataset.speed || 0.5;
+          el.style.transform = `translateY(${scrolled * speed}px)`;
+        });
       });
 
-      // Smooth scroll for anchor links
+      // Intersection Observer for Scroll Animations
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+          }
+        });
+      }, observerOptions);
+
+      // Observe elements
+      document.querySelectorAll('.fade-in, .slide-in-up, .slide-in-left').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+      });
+
+      // Counter Animation
+      const animateCounter = (element) => {
+        const target = parseInt(element.textContent.replace(/\D/g, ''));
+        const duration = 2000;
+        const increment = target / (duration / 16);
+        let current = 0;
+        const suffix = element.textContent.replace(/[0-9]/g, '');
+
+        const updateCounter = () => {
+          current += increment;
+          if (current < target) {
+            element.textContent = Math.floor(current) + suffix;
+            requestAnimationFrame(updateCounter);
+          } else {
+            element.textContent = target + suffix;
+          }
+        };
+
+        updateCounter();
+      };
+
+      // Animate counters when visible
+      const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !entry.target.dataset.animated) {
+            animateCounter(entry.target);
+            entry.target.dataset.animated = 'true';
+          }
+        });
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll('.stats-number').forEach(counter => {
+        counterObserver.observe(counter);
+      });
+
+      // Ensure cards maintain border-radius on all interactions
+      const categoryCards = document.querySelectorAll('.category-card');
+      categoryCards.forEach(card => {
+        card.addEventListener('mousedown', () => {
+          card.style.borderRadius = 'var(--radius-xl)';
+        });
+
+        card.addEventListener('mouseup', () => {
+          card.style.borderRadius = 'var(--radius-xl)';
+        });
+      });
+
+      // Add smooth scrolling with offset for fixed navbar
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
           const href = this.getAttribute('href');
@@ -254,149 +429,20 @@
             const target = document.querySelector(href);
             if (target) {
               e.preventDefault();
-              target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
+              const navbarHeight = document.querySelector('.modern-navbar')?.offsetHeight || 0;
+              const targetPosition = target.offsetTop - navbarHeight - 20;
+              window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
               });
             }
           }
         });
       });
 
-      // Initialize carousel with auto-play
-      document.addEventListener('DOMContentLoaded', function() {
-        const carouselElement = document.querySelector('#homeHeroCarousel');
-        if (carouselElement) {
-          const carousel = new bootstrap.Carousel(carouselElement, {
-            interval: 2000,
-            ride: 'carousel',
-            wrap: true,
-            pause: false
-          });
-        }
+    });
+  </script>
 
-        // Quick Filter Chips Interaction
-        const filterChips = document.querySelectorAll('.quick-filter-chip');
-        filterChips.forEach(chip => {
-          chip.addEventListener('click', function() {
-            filterChips.forEach(c => c.classList.remove('active'));
-            this.classList.add('active');
-          });
-        });
-
-        // Search Form Functionality
-        const searchBtn = document.querySelector('.search-btn');
-        if (searchBtn) {
-          searchBtn.addEventListener('click', function(e) {
-            const destination = document.getElementById('destination')?.value;
-            if (destination) {
-              window.location.href = '/category/' + destination;
-            }
-          });
-        }
-
-        // Parallax Effect on Scroll
-        window.addEventListener('scroll', function() {
-          const scrolled = window.pageYOffset;
-          const parallaxElements = document.querySelectorAll('.parallax-layer');
-          
-          parallaxElements.forEach(el => {
-            const speed = el.dataset.speed || 0.5;
-            el.style.transform = `translateY(${scrolled * speed}px)`;
-          });
-        });
-
-        // Intersection Observer for Scroll Animations
-        const observerOptions = {
-          threshold: 0.1,
-          rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.style.opacity = '1';
-              entry.target.style.transform = 'translateY(0)';
-            }
-          });
-        }, observerOptions);
-
-        // Observe elements
-        document.querySelectorAll('.fade-in, .slide-in-up, .slide-in-left').forEach(el => {
-          el.style.opacity = '0';
-          el.style.transform = 'translateY(30px)';
-          el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-          observer.observe(el);
-        });
-
-        // Counter Animation
-        const animateCounter = (element) => {
-          const target = parseInt(element.textContent.replace(/\D/g, ''));
-          const duration = 2000;
-          const increment = target / (duration / 16);
-          let current = 0;
-          const suffix = element.textContent.replace(/[0-9]/g, '');
-
-          const updateCounter = () => {
-            current += increment;
-            if (current < target) {
-              element.textContent = Math.floor(current) + suffix;
-              requestAnimationFrame(updateCounter);
-            } else {
-              element.textContent = target + suffix;
-            }
-          };
-
-          updateCounter();
-        };
-
-        // Animate counters when visible
-        const counterObserver = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting && !entry.target.dataset.animated) {
-              animateCounter(entry.target);
-              entry.target.dataset.animated = 'true';
-            }
-          });
-        }, { threshold: 0.5 });
-
-        document.querySelectorAll('.stats-number').forEach(counter => {
-          counterObserver.observe(counter);
-        });
-
-        // Ensure cards maintain border-radius on all interactions
-        const categoryCards = document.querySelectorAll('.category-card');
-        categoryCards.forEach(card => {
-          card.addEventListener('mousedown', () => {
-            card.style.borderRadius = 'var(--radius-xl)';
-          });
-          
-          card.addEventListener('mouseup', () => {
-            card.style.borderRadius = 'var(--radius-xl)';
-          });
-        });
-
-        // Add smooth scrolling with offset for fixed navbar
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-          anchor.addEventListener('click', function(e) {
-            const href = this.getAttribute('href');
-            if (href !== '#' && href.length > 1) {
-              const target = document.querySelector(href);
-              if (target) {
-                e.preventDefault();
-                const navbarHeight = document.querySelector('.modern-navbar')?.offsetHeight || 0;
-                const targetPosition = target.offsetTop - navbarHeight - 20;
-                window.scrollTo({
-                  top: targetPosition,
-                  behavior: 'smooth'
-                });
-              }
-            }
-          });
-        });
-
-      });
-    </script>
-    
 </body>
+
 </html>

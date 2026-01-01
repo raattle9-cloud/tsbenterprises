@@ -16,6 +16,7 @@ urlpatterns = [
     path("termsandconditions/", views.termsandconditions, name="termsandconditions"),
     path("privacypolicy/", views.privacypolicy, name="privacypolicy"),
     path("refundpolicy/", views.refundpolicy, name="refundpolicy"),
+    path("shippingpolicy/", views.shippingpolicy, name="shippingpolicy"),
     
     # Portal Hub - unified access to all portals
     path("hub/", views.portal_hub, name="portal-hub"),
