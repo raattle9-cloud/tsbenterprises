@@ -189,5 +189,6 @@ python manage.py runserver 127.0.0.1:8000
 - Fork, create a feature branch, run tests (if any), open a PR. Keep secrets out of commits.
 
 ## License & Contact
+(navbar need to be updated)
 
 This README is informational — confirm license with the repository owner. For questions, contact the project maintainer.
