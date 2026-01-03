@@ -186,6 +186,9 @@ def advance_payment_process(request, booking_id):
                 status='PENDING'  # PENDING means paid but waiting for venue verification
             )
             
+            # Refetch booking to ensure we have the latest data (including updated payment and status)
+            booking.refresh_from_db()
+            
             # Generate QR code only after successful payment
             qr_data = generate_qr_code(booking)
             AdvanceBooking.objects.filter(id=booking_id).update(qr_code_data=qr_data)

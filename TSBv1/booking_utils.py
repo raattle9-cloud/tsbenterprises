@@ -52,8 +52,8 @@ def generate_qr_code(booking):
     Returns:
         str: Base64 encoded QR code image (data URL format)
     """
-    # Generate hash if not already generated
-    if not booking.qr_hash:
+    # Generate hash if not already generated or if it's a temporary hash
+    if not booking.qr_hash or str(booking.qr_hash).startswith('temp_'):
         booking.qr_hash = generate_qr_hash(booking.booking_code, booking.id)
         booking.save(update_fields=['qr_hash'])
     
