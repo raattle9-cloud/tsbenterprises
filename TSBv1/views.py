@@ -51,6 +51,8 @@ def privacypolicy(request):
     return render(request,"app/privacypolicy.html")
 def refundpolicy(request):
     return render(request,"app/refundpolicy.html")
+def shippingpolicy(request):
+    return render(request,"app/shippingpolicy.html")
 
 
 def portal_hub(request):
