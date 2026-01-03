@@ -255,7 +255,8 @@ class AdvanceBooking(models.Model):
     """Model for advance payment bookings (primarily for waterparks)"""
 
     BOOKING_STATUS_CHOICES = (
-        ("PENDING", "Pending Verification"),
+        ("AWAITING_PAYMENT", "Awaiting Payment"),
+        ("PENDING", "Paid - Pending Verification"),
         ("VERIFIED", "Verified - Entry Allowed"),
         ("USED", "Already Used"),
         ("EXPIRED", "Booking Expired"),

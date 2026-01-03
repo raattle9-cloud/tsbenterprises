@@ -93,7 +93,7 @@ def advance_booking_checkout(request, service_id):
             advance_paid=advance_amount,
             remaining_amount=remaining_amount,
             valid_until=timezone.make_aware(datetime.combine(booking_date, datetime.max.time())),
-            status='PENDING',
+            status='AWAITING_PAYMENT',  # Will be updated to PENDING after successful payment
             qr_hash=temp_qr_hash,  # Temporary unique hash to avoid duplicate key errors
         )
         
@@ -143,28 +143,76 @@ def advance_payment_process(request, booking_id):
         razorpay_payment_id = request.POST.get('razorpay_payment_id')
         razorpay_signature = request.POST.get('razorpay_signature')
         
-        # Create payment record
-        payment = Payment.objects.create(
-            user=request.user,
-            amount=convert_decimal128_to_float(booking.advance_paid),
-            razorpay_order_id=razorpay_order_id,
-            razorpay_payment_id=razorpay_payment_id,
-            razorpay_payment_status='SUCCESS',
-            paid=True,
-            payment_type='ADVANCE'
-        )
+        # Verify Razorpay signature before confirming payment
+        import razorpay
+        import hmac
+        import hashlib
+        from django.conf import settings
+        from django.contrib import messages
         
-        # Link payment to booking
-        booking.advance_payment = payment
-        booking.save()
+        # All three values are required for verification
+        if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature]):
+            messages.error(request, "Payment verification failed: Missing payment details.")
+            return redirect('advance-payment', booking_id)
         
-        # Generate QR code
-        qr_data = generate_qr_code(booking)
-        booking.qr_code_data = qr_data
-        booking.save()
-        
-        # Redirect to confirmation page
-        return redirect('advance-booking-confirmation', booking.id)
+        # Verify the signature
+        try:
+            client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_KEY_SECRET))
+            
+            # Razorpay signature verification
+            params_dict = {
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature
+            }
+            
+            # This will raise an exception if signature is invalid
+            client.utility.verify_payment_signature(params_dict)
+            
+            # Signature verified - Create payment record with SUCCESS status
+            payment = Payment.objects.create(
+                user=request.user,
+                amount=convert_decimal128_to_float(booking.advance_paid),
+                razorpay_order_id=razorpay_order_id,
+                razorpay_payment_id=razorpay_payment_id,
+                razorpay_payment_status='SUCCESS',
+                paid=True,
+                payment_type='ADVANCE'
+            )
+            
+            # Link payment to booking and update status to confirm it's paid
+            AdvanceBooking.objects.filter(id=booking_id).update(
+                advance_payment=payment,
+                status='PENDING'  # PENDING means paid but waiting for venue verification
+            )
+            
+            # Generate QR code only after successful payment
+            qr_data = generate_qr_code(booking)
+            AdvanceBooking.objects.filter(id=booking_id).update(qr_code_data=qr_data)
+            
+            # Redirect to confirmation page
+            return redirect('advance-booking-confirmation', booking.id)
+            
+        except razorpay.errors.SignatureVerificationError:
+            # Payment signature verification failed
+            # Create a failed payment record for tracking
+            Payment.objects.create(
+                user=request.user,
+                amount=convert_decimal128_to_float(booking.advance_paid),
+                razorpay_order_id=razorpay_order_id,
+                razorpay_payment_id=razorpay_payment_id,
+                razorpay_payment_status='FAILED',
+                paid=False,
+                payment_type='ADVANCE'
+            )
+            messages.error(request, "Payment verification failed. Please try again or contact support.")
+            return redirect('advance-payment', booking_id)
+            
+        except Exception as e:
+            # Other errors during verification
+            print(f"Payment verification error: {e}")
+            messages.error(request, f"Payment processing error. Please try again.")
+            return redirect('advance-payment', booking_id)
     
     # GET - show payment page
     import razorpay
@@ -200,9 +248,16 @@ def advance_payment_process(request, booking_id):
 @login_required
 def advance_booking_confirmation(request, booking_id):
     """
-    Show booking confirmation with QR code
+    Show booking confirmation with QR code - only for paid bookings
     """
+    from django.contrib import messages
+    
     booking = get_object_or_404(AdvanceBooking, id=booking_id, user=request.user)
+    
+    # Only show confirmation if payment is complete (not AWAITING_PAYMENT)
+    if booking.status == 'AWAITING_PAYMENT':
+        messages.warning(request, "Please complete your payment first.")
+        return redirect('advance-payment', booking_id)
     
     # Generate QR code if not already generated
     if not booking.qr_code_data:
@@ -222,9 +277,14 @@ def advance_booking_confirmation(request, booking_id):
 @login_required
 def my_advance_bookings(request):
     """
-    Show user's advance bookings
+    Show user's advance bookings - only those with completed payment
     """
-    bookings = AdvanceBooking.objects.filter(user=request.user).order_by('-created_at')
+    # Only show bookings that have completed payment (exclude AWAITING_PAYMENT)
+    bookings = AdvanceBooking.objects.filter(
+        user=request.user
+    ).exclude(
+        status='AWAITING_PAYMENT'
+    ).order_by('-created_at')
     
     context = {
         'bookings': bookings,

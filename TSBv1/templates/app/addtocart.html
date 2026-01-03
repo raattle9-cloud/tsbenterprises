@@ -1,343 +1,430 @@
-{% extends 'app/layouts/landing_base.html' %}
-{% load static %}
-{% block title %}Cart - TSB Enterprises{% endblock title %}
-
-{% block landing_content %}
-<div class="section-padding" style="padding-top: 120px;">
-<div class="container py-5">
+{% extends 'app/layouts/landing_base.html' %} {% load static %} {% block title
+%}Cart - TSB Enterprises{% endblock title %} {% block landing_content %}
+<div class="section-padding" style="padding-top: 120px">
+  <div class="container py-5">
     {% if cart %}
     <div class="row">
-        <div class="col-12 mb-4">
-            <h1 class="display-5 fw-bold mb-2">
-                <i class="fas fa-shopping-cart me-2 text-primary"></i>Your Cart
-            </h1>
-            <p class="text-muted">Review your items before checkout</p>
-        </div>
-        
-        <!-- Cart Items -->
-        <div class="col-lg-8 mb-4">
-            <div class="card modern-card border-0">
-                <div class="card-header bg-transparent border-0 py-3">
-                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Cart Items ({{ cart|length }})</h5>
-                </div>
-                <div class="card-body">
-                    {% for item in cart %}
-                    <div class="cart-item mb-4 pb-4 {% if not forloop.last %}border-bottom{% endif %}">
-                        <div class="row align-items-center">
-                            <div class="col-md-3 text-center mb-3 mb-md-0">
-                                {% with primary=item.services.get_primary_image %}
-                                    {% if primary %}
-                                    <img src="{{ primary.image_url }}" class="img-fluid rounded-3 shadow-sm" alt="{{ item.services.title }}" style="max-height: 150px; width: auto; object-fit: cover;">
-                                    {% else %}
-                                    <img src="{% static 'app/images/aboutus.jpg' %}" class="img-fluid rounded-3 shadow-sm" alt="{{ item.services.title }}" style="max-height: 150px; width: auto; object-fit: cover;">
-                                    {% endif %}
-                                {% endwith %}
-                            </div>
-                            <div class="col-md-6 mb-3 mb-md-0">
-                                <h5 class="fw-bold mb-2">{{ item.services.title }}</h5>
-                                <p class="text-muted small mb-3">{{ item.services.description|truncatewords:15 }}</p>
-                                <div class="d-flex align-items-center mb-3">
-                                    <label class="me-3 fw-semibold">Quantity:</label>
-                                    <div class="btn-group cart-quantity-group" role="group">
-                                        <a class="btn btn-outline-danger btn-sm minus-cart" pid="{{ item.services.id }}">
-                                            <i class="fas fa-minus"></i>
-                                        </a>
-                                        <span class="btn btn-outline-secondary btn-sm disabled cart-quantity-display" id="quantity-{{ item.services.id }}">{{ item.quantity }}</span>
-                                        <a class="btn btn-outline-success btn-sm plus-cart" pid="{{ item.services.id }}">
-                                            <i class="fas fa-plus"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <span class="h5 text-primary mb-0 me-3">₹{{ item.services.discounted_price }}</span>
-                                    <span class="text-muted">per item</span>
-                                </div>
-                            </div>
-                            <div class="col-md-3 text-center text-md-end">
-                                <div class="mb-3">
-                                    <h5 class="text-primary fw-bold">₹{{ item.total_cost|floatformat:0 }}</h5>
-                                    <small class="text-muted">Total</small>
-                                </div>
-                                <a href="#" class="btn btn-outline-danger btn-sm remove-cart" pid="{{ item.services.id }}">
-                                    <i class="fas fa-trash me-1"></i>Remove
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
+      <div class="col-12 mb-4">
+        <h1 class="display-5 fw-bold mb-2">
+          <i class="fas fa-shopping-cart me-2 text-primary"></i>Your Cart
+        </h1>
+        <p class="text-muted">Review your items before checkout</p>
+      </div>
 
-        <!-- Order Summary -->
-        <div class="col-lg-4">
-            <div class="card modern-card border-0 sticky-top" style="top: 100px;">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Order Summary</h5>
+      <!-- Cart Items -->
+      <div class="col-lg-8 mb-4">
+        <div class="card modern-card border-0">
+          <div class="card-header bg-transparent border-0 py-3">
+            <h5 class="mb-0">
+              <i class="fas fa-list me-2"></i>Cart Items ({{ cart|length }})
+            </h5>
+          </div>
+          <div class="card-body">
+            {% for item in cart %}
+            <div
+              class="cart-item mb-4 pb-4 {% if not forloop.last %}border-bottom{% endif %}"
+            >
+              <div class="row align-items-center">
+                <div class="col-md-3 text-center mb-3 mb-md-0">
+                  {% with primary=item.services.get_primary_image %} {% if
+                  primary %}
+                  <img
+                    src="{{ primary.image_url }}"
+                    class="img-fluid rounded-3 shadow-sm"
+                    alt="{{ item.services.title }}"
+                    style="max-height: 150px; width: auto; object-fit: cover"
+                  />
+                  {% else %}
+                  <img
+                    src="{% static 'app/images/aboutus.jpg' %}"
+                    class="img-fluid rounded-3 shadow-sm"
+                    alt="{{ item.services.title }}"
+                    style="max-height: 150px; width: auto; object-fit: cover"
+                  />
+                  {% endif %} {% endwith %}
                 </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-                        <div>
-                            <strong class="d-block">Total</strong>
-                            <small class="text-muted">(including GST)</small>
-                        </div>
-                        <h4 class="text-primary mb-0" id="totalamount">₹{{ totalamount }}</h4>
+                <div class="col-md-6 mb-3 mb-md-0">
+                  <h5 class="fw-bold mb-2">{{ item.services.title }}</h5>
+                  <p class="text-muted small mb-3">
+                    {{ item.services.description|truncatewords:15 }}
+                  </p>
+                  <div class="d-flex align-items-center mb-3">
+                    <label class="me-3 fw-semibold">Quantity:</label>
+                    <div class="btn-group cart-quantity-group" role="group">
+                      <a
+                        class="btn btn-outline-danger btn-sm minus-cart"
+                        pid="{{ item.services.id }}"
+                      >
+                        <i class="fas fa-minus"></i>
+                      </a>
+                      <span
+                        class="btn btn-outline-secondary btn-sm disabled cart-quantity-display"
+                        id="quantity-{{ item.services.id }}"
+                        >{{ item.quantity }}</span
+                      >
+                      <a
+                        class="btn btn-outline-success btn-sm plus-cart"
+                        pid="{{ item.services.id }}"
+                      >
+                        <i class="fas fa-plus"></i>
+                      </a>
                     </div>
-                    <form action="myform" method="post" class="mt-3">
-                        {% csrf_token %}
-                        <button type="submit" name='custid' value="{{ customer_id }}" id="rzp-button1" class="btn btn-primary btn-lg w-100 buttonshadow">
-                            <i class="fas fa-lock me-2"></i>Proceed to Payment
-                        </button>
-                    </form>
-                    <a href="{% url 'home' %}" class="btn btn-outline-secondary w-100 mt-2">
-                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
-                    </a>
+                  </div>
+                  <div class="d-flex align-items-center">
+                    <span class="h5 text-primary mb-0 me-3"
+                      >₹{{ item.services.discounted_price }}</span
+                    >
+                    <span class="text-muted">per item</span>
+                  </div>
                 </div>
+                <div class="col-md-3 text-center text-md-end">
+                  <div class="mb-3">
+                    <h5 class="text-primary fw-bold">
+                      ₹{{ item.total_cost|floatformat:0 }}
+                    </h5>
+                    <small class="text-muted">Total</small>
+                  </div>
+                  <a
+                    href="#"
+                    class="btn btn-outline-danger btn-sm remove-cart"
+                    pid="{{ item.services.id }}"
+                  >
+                    <i class="fas fa-trash me-1"></i>Remove
+                  </a>
+                </div>
+              </div>
             </div>
+            {% endfor %}
+          </div>
         </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="col-lg-4">
+        <div class="card modern-card border-0 sticky-top" style="top: 100px">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-receipt me-2"></i>Order Summary
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div>
+                <span class="text-muted">Total Price:</span>
+              </div>
+              <span class="fw-bold" id="totalamount">₹{{ totalamount }}</span>
+            </div>
+            <div
+              class="d-flex justify-content-between align-items-center mb-2 text-success"
+            >
+              <div>
+                <strong
+                  ><i class="fas fa-credit-card me-1"></i>Pay Online Now (Advance):</strong
+                >
+              </div>
+              <strong id="advance_amount" style="font-size: 1.2rem"
+                >₹{{ advance_amount }}</strong
+              >
+            </div>
+            <hr />
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="text-muted">Pay at Venue:</span>
+              <span class="text-danger fw-bold" id="remaining_amount"
+                >₹{{ remaining_amount }}</span
+              >
+            </div>
+
+            <div class="alert alert-info py-2 mb-3">
+              <small
+                ><i class="fas fa-info-circle me-1"></i>Pay advance now, remaining at the venue.</small
+              >
+            </div>
+
+            {% if razorpay_order_id %}
+            <button
+              type="button"
+              id="rzp-button1"
+              class="btn btn-primary btn-lg w-100 buttonshadow"
+            >
+              <i class="fas fa-lock me-2"></i>Pay ₹{{ advance_amount }} Now
+            </button>
+            {% else %}
+            <button
+              type="button"
+              class="btn btn-secondary btn-lg w-100"
+              disabled
+            >
+              <i class="fas fa-exclamation-circle me-2"></i>Payment Unavailable
+            </button>
+            {% endif %}
+
+            <a
+              href="{% url 'home' %}"
+              class="btn btn-outline-secondary w-100 mt-2"
+            >
+              <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+            </a>
+
+            <div class="mt-3 text-center">
+              <small class="text-muted">
+                <i class="fas fa-shield-alt me-1"></i>Secure checkout by
+                Razorpay
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     {% else %}
     <div class="text-center py-5 my-5">
-        <div class="mb-4">
-            <i class="fas fa-shopping-cart fa-5x text-muted mb-4"></i>
-        </div>
-        <h1 class="display-5 fw-bold mb-3">Your Cart is Empty</h1>
-        <p class="lead text-muted mb-4">Looks like you haven't added anything to your cart yet.</p>
-        <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-arrow-left me-2"></i>Start Shopping
-        </a>
+      <div class="mb-4">
+        <i class="fas fa-shopping-cart fa-5x text-muted mb-4"></i>
+      </div>
+      <h1 class="display-5 fw-bold mb-3">Your Cart is Empty</h1>
+      <p class="lead text-muted mb-4">
+        Looks like you haven't added anything to your cart yet.
+      </p>
+      <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+        <i class="fas fa-arrow-left me-2"></i>Start Shopping
+      </a>
     </div>
     {% endif %}
+  </div>
 </div>
-</div>
+{% if razorpay_order_id %}
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script>
-        var options = {
-            "key": "rzp_live_ZWQJtI7AM0kdlA", // Enter the Key ID generated from the Dashboard
-            "amount": "{{razoramount}}",
-            "currency": "INR",
-            "name": "TSB Enterprises INC",
-            "description": "Test Transaction",
-            "image": "{% static 'app/images/product/tsb_logo.png' %}",
-            "order_id": "{{order_id}}", 
-
-            "handler": function (response){
-                try {
-                    console.log("Razorpay Payment Successful:", response);
-                    let custId = document.getElementById("custid").value;
-                    let redirectURL = "`/home/";
-                    console.log("Redirecting to:", redirectURL);
-                    window.location.href = redirectURL;
-                } catch (error) {
-                    console.error("Error in handler:", error);
-                }
-            },
-
-            "theme": {
-                "color": "#25d366"
-            }
-        };
-        var rzp1 = new Razorpay(options);
-        rzp1.on('payment.failed', function (response){ 
-            alert(response.error.description);      
-        });
-        document.getElementById('rzp-button1').onclick = function(e){
-            rzp1.open();
-            e.preventDefault();
-        }
-    </script>
-{% endblock landing_content %}
-{% block landing_scripts %}
-{{ block.super }}
+<script>
+  var options = {
+    key: "{{ razorpay_key_id }}",
+    amount: "{{ razoramount }}",
+    currency: "{{ currency }}",
+    name: "TSB Enterprises",
+    description: "Advance Payment for Cart Items",
+    image: "{% static 'app/images/product/tsb_logo.png' %}",
+    order_id: "{{ razorpay_order_id }}",
+    handler: function (response) {
+      // Payment successful - redirect to success page
+      console.log("Razorpay Payment Successful:", response);
+      alert("Payment successful! Order ID: " + response.razorpay_order_id);
+      window.location.href = "{% url 'home' %}";
+    },
+    prefill: {
+      name: "{{ request.user.first_name }} {{ request.user.last_name }}",
+      email: "{{ request.user.email }}",
+    },
+    theme: {
+      color: "#0d6efd",
+    },
+  };
+  var rzp1 = new Razorpay(options);
+  rzp1.on("payment.failed", function (response) {
+    alert("Payment failed: " + response.error.description);
+  });
+  document.getElementById("rzp-button1").onclick = function (e) {
+    e.preventDefault();
+    rzp1.open();
+  };
+</script>
+{% endif %} {% endblock landing_content %} {% block landing_scripts %} {{
+block.super }}
 <style>
-    /* Fix quantity display overlapping buttons */
-    .cart-quantity-group {
-        display: inline-flex;
-        vertical-align: middle;
-    }
-    
-    .cart-quantity-group .btn {
-        position: relative;
-        border-radius: 0;
-        flex-shrink: 0;
-    }
-    
-    .cart-quantity-group .minus-cart {
-        border-top-left-radius: 0.25rem;
-        border-bottom-left-radius: 0.25rem;
-    }
-    
-    .cart-quantity-group .plus-cart {
-        border-top-right-radius: 0.25rem;
-        border-bottom-right-radius: 0.25rem;
-    }
-    
-    .cart-quantity-display {
-        min-width: 50px !important;
-        max-width: 60px !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        pointer-events: none !important;
-        user-select: none !important;
-        text-align: center !important;
-        overflow: hidden !important;
-        white-space: nowrap !important;
-        padding: 0.25rem 0.5rem !important;
-        font-weight: 500 !important;
-        background-color: #e9ecef !important;
-        border-left: 1px solid #dee2e6 !important;
-        border-right: 1px solid #dee2e6 !important;
-        position: relative !important;
-        z-index: 1 !important;
-    }
-    
-    .cart-quantity-group .minus-cart,
-    .cart-quantity-group .plus-cart {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        position: relative !important;
-        z-index: 2 !important;
-        min-width: 38px !important;
-    }
-    
-    .cart-quantity-group .minus-cart i,
-    .cart-quantity-group .plus-cart i {
-        display: inline-block !important;
-        position: relative !important;
-        z-index: 3 !important;
-        pointer-events: none !important;
-        line-height: 1 !important;
-    }
-    
-    .cart-quantity-group .minus-cart:focus,
-    .cart-quantity-group .plus-cart:focus {
-        z-index: 4 !important;
-    }
+  /* Fix quantity display overlapping buttons */
+  .cart-quantity-group {
+    display: inline-flex;
+    vertical-align: middle;
+  }
+
+  .cart-quantity-group .btn {
+    position: relative;
+    border-radius: 0;
+    flex-shrink: 0;
+  }
+
+  .cart-quantity-group .minus-cart {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+  }
+
+  .cart-quantity-group .plus-cart {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+  }
+
+  .cart-quantity-display {
+    min-width: 50px !important;
+    max-width: 60px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    pointer-events: none !important;
+    user-select: none !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    padding: 0.25rem 0.5rem !important;
+    font-weight: 500 !important;
+    background-color: #e9ecef !important;
+    border-left: 1px solid #dee2e6 !important;
+    border-right: 1px solid #dee2e6 !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+
+  .cart-quantity-group .minus-cart,
+  .cart-quantity-group .plus-cart {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    z-index: 2 !important;
+    min-width: 38px !important;
+  }
+
+  .cart-quantity-group .minus-cart i,
+  .cart-quantity-group .plus-cart i {
+    display: inline-block !important;
+    position: relative !important;
+    z-index: 3 !important;
+    pointer-events: none !important;
+    line-height: 1 !important;
+  }
+
+  .cart-quantity-group .minus-cart:focus,
+  .cart-quantity-group .plus-cart:focus {
+    z-index: 4 !important;
+  }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Plus cart - increase quantity
-  document.querySelectorAll('.plus-cart').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const servId = this.getAttribute('pid');
-      
-      fetch('/pluscart/?prod_id=' + servId)
-        .then(response => response.json())
-        .then(data => {
-          if (data.error) {
-            alert(data.error);
-            return;
-          }
-          // Update quantity display
-          const qtyEl = document.getElementById('quantity-' + servId);
-          if (qtyEl) qtyEl.textContent = data.quantity;
-          
-          // Update totals
-          updateTotals(data.amount, data.totalamount);
-        })
-        .catch(err => {
-          console.error('Error:', err);
-          alert('Failed to update cart');
-        });
+  document.addEventListener("DOMContentLoaded", function () {
+    // Plus cart - increase quantity
+    document.querySelectorAll(".plus-cart").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const servId = this.getAttribute("pid");
+
+        fetch("/pluscart/?prod_id=" + servId)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.error) {
+              alert(data.error);
+              return;
+            }
+            // Update quantity display
+            const qtyEl = document.getElementById("quantity-" + servId);
+            if (qtyEl) qtyEl.textContent = data.quantity;
+
+            // Update totals
+            updateTotals(data.amount, data.totalamount);
+          })
+          .catch((err) => {
+            console.error("Error:", err);
+            alert("Failed to update cart");
+          });
+      });
     });
-  });
-  
-  // Minus cart - decrease quantity
-  document.querySelectorAll('.minus-cart').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const servId = this.getAttribute('pid');
-      const cartItem = this.closest('.cart-item');
-      
-      fetch('/minuscart/?prod_id=' + servId)
-        .then(response => response.json())
-        .then(data => {
-          if (data.error) {
-            alert(data.error);
-            return;
-          }
-          
-          if (data.removed) {
+
+    // Minus cart - decrease quantity
+    document.querySelectorAll(".minus-cart").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const servId = this.getAttribute("pid");
+        const cartItem = this.closest(".cart-item");
+
+        fetch("/minuscart/?prod_id=" + servId)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.error) {
+              alert(data.error);
+              return;
+            }
+
+            if (data.removed) {
+              // Remove item from DOM
+              if (cartItem) cartItem.remove();
+              updateCartCount();
+              // Reload if cart is empty
+              if (document.querySelectorAll(".cart-item").length === 0) {
+                location.reload();
+              }
+            } else {
+              // Update quantity display
+              const qtyEl = document.getElementById("quantity-" + servId);
+              if (qtyEl) qtyEl.textContent = data.quantity;
+            }
+
+            // Update totals
+            updateTotals(data.amount, data.totalamount);
+          })
+          .catch((err) => {
+            console.error("Error:", err);
+            alert("Failed to update cart");
+          });
+      });
+    });
+
+    // Remove cart - remove entire item
+    document.querySelectorAll(".remove-cart").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const servId = this.getAttribute("pid");
+        const cartItem = this.closest(".cart-item");
+
+        if (!confirm("Are you sure you want to remove this item?")) return;
+
+        fetch("/removecart/?prod_id=" + servId)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.error) {
+              alert(data.error);
+              return;
+            }
+
             // Remove item from DOM
             if (cartItem) cartItem.remove();
             updateCartCount();
+
+            // Update totals
+            updateTotals(data.amount, data.totalamount);
+
             // Reload if cart is empty
-            if (document.querySelectorAll('.cart-item').length === 0) {
+            if (document.querySelectorAll(".cart-item").length === 0) {
               location.reload();
             }
-          } else {
-            // Update quantity display
-            const qtyEl = document.getElementById('quantity-' + servId);
-            if (qtyEl) qtyEl.textContent = data.quantity;
-          }
-          
-          // Update totals
-          updateTotals(data.amount, data.totalamount);
-        })
-        .catch(err => {
-          console.error('Error:', err);
-          alert('Failed to update cart');
-        });
+          })
+          .catch((err) => {
+            console.error("Error:", err);
+            alert("Failed to remove item");
+          });
+      });
     });
-  });
-  
-  // Remove cart - remove entire item
-  document.querySelectorAll('.remove-cart').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const servId = this.getAttribute('pid');
-      const cartItem = this.closest('.cart-item');
+
+    // Helper: Update totals display
+    // Since advance amounts now depend on per-service settings, we reload the page
+    // after cart changes to ensure accurate server-side calculation
+    function updateTotals(amount, totalamount) {
+      const subtotalEl = document.getElementById("amount");
+      const totalEl = document.getElementById("totalamount");
       
-      if (!confirm('Are you sure you want to remove this item?')) return;
+      if (subtotalEl) subtotalEl.textContent = "₹" + amount;
+      if (totalEl) totalEl.textContent = "₹" + totalamount;
       
-      fetch('/removecart/?prod_id=' + servId)
-        .then(response => response.json())
-        .then(data => {
-          if (data.error) {
-            alert(data.error);
-            return;
-          }
-          
-          // Remove item from DOM
-          if (cartItem) cartItem.remove();
-          updateCartCount();
-          
-          // Update totals
-          updateTotals(data.amount, data.totalamount);
-          
-          // Reload if cart is empty
-          if (document.querySelectorAll('.cart-item').length === 0) {
-            location.reload();
-          }
-        })
-        .catch(err => {
-          console.error('Error:', err);
-          alert('Failed to remove item');
-        });
-    });
-  });
-  
-  // Helper: Update totals display
-  function updateTotals(amount, totalamount) {
-    const subtotalEl = document.getElementById('amount');
-    const totalEl = document.getElementById('totalamount');
-    if (subtotalEl) subtotalEl.textContent = '₹' + amount;
-    if (totalEl) totalEl.textContent = '₹' + totalamount;
-  }
-  
-  // Helper: Update cart count in header
-  function updateCartCount() {
-    const countEl = document.querySelector('.card-header h5');
-    if (countEl) {
-      const remaining = document.querySelectorAll('.cart-item').length;
-      countEl.innerHTML = '<i class="fas fa-list me-2"></i>Cart Items (' + remaining + ')';
+      // Reload page to recalculate advance amounts based on service settings
+      // This is needed because each service can have different advance payment configs
+      setTimeout(function() {
+        location.reload();
+      }, 500);
     }
-  }
-});
+
+    // Helper: Update cart count in header
+    function updateCartCount() {
+      const countEl = document.querySelector(".card-header h5");
+      if (countEl) {
+        const remaining = document.querySelectorAll(".cart-item").length;
+        countEl.innerHTML =
+          '<i class="fas fa-list me-2"></i>Cart Items (' + remaining + ")";
+      }
+    }
+  });
 </script>
 {% endblock %}
-

@@ -12,6 +12,7 @@ from django.shortcuts import redirect
 from django.db.models import Q
 from django.http import HttpResponse
 import razorpay
+from django.utils import timezone
 
 
 key_id = getattr(settings, 'razor_pay_key_id', None)
@@ -344,26 +345,62 @@ def show_cart(request):
     
     user = request.user
     cart = Cart.objects.filter(user=user).select_related('services').prefetch_related('services__images')
-    amount = 0
+    
+    totalamount = 0
+    advance_amount = 0
+    
+    # Calculate totals and advance amounts for each cart item
     for p in cart:
-        value = p.quantity * p.services.discounted_price
-        amount = amount + value
-    totalamount = amount
-    razoramount= int(totalamount * 100)
-
-    #client = razorpay.Client(auth = (settings.razor_pay_key_id, settings.key_secret))
-    #payment = client.order.create({'amount': razoramount, 'currency': 'INR', 'payment_capture': '1'})
-
-    print("###############")
-    print('AAA')
-    print("###############")
-
-    data = {
-        'amount': razoramount,
+        item_total = p.quantity * p.services.discounted_price
+        totalamount += item_total
+        
+        # Use the service's configured advance payment settings
+        if p.services.supports_advance_payment:
+            item_advance = p.services.calculate_advance_amount(p.quantity)
+        else:
+            # For services without advance payment config, use 10% as default
+            item_advance = item_total * 0.10
+        
+        advance_amount += item_advance
+    
+    # Convert to integers for display
+    totalamount = int(totalamount)
+    advance_amount = int(advance_amount)
+    remaining_amount = totalamount - advance_amount
+    
+    # Convert advance amount to paise for Razorpay
+    razoramount = int(advance_amount * 100)
+    
+    # Create Razorpay order for the advance amount only
+    razorpay_order_id = None
+    razorpay_key_id = None
+    
+    if cart and advance_amount > 0:
+        try:
+            client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_KEY_SECRET))
+            razorpay_order = client.order.create({
+                'amount': razoramount,
+                'currency': 'INR',
+                'receipt': f'cart_{user.id}_{int(timezone.now().timestamp())}',
+                'payment_capture': 1
+            })
+            razorpay_order_id = razorpay_order['id']
+            razorpay_key_id = settings.RAZOR_PAY_KEY_ID
+        except Exception as e:
+            print(f"Razorpay order creation failed: {e}")
+    
+    context = {
+        'cart': cart,
+        'amount': totalamount,
+        'totalamount': totalamount,
+        'advance_amount': advance_amount,
+        'remaining_amount': remaining_amount,
+        'razoramount': razoramount,
+        'razorpay_order_id': razorpay_order_id,
+        'razorpay_key_id': razorpay_key_id,
         'currency': 'INR',
-        'receipt': 'order_rcptid_12'
-        }
-    return render(request, 'app/addtocart.html',locals())
+    }
+    return render(request, 'app/addtocart.html', context)
 
 def payment_done(request):
     order_id = request.GET.get('order_id')
