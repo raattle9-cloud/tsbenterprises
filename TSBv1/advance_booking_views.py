@@ -181,17 +181,16 @@ def advance_payment_process(request, booking_id):
             )
             
             # Link payment to booking and update status to confirm it's paid
-            AdvanceBooking.objects.filter(id=booking_id).update(
-                advance_payment=payment,
-                status='PENDING'  # PENDING means paid but waiting for venue verification
-            )
-            
-            # Refetch booking to ensure we have the latest data (including updated payment and status)
-            booking.refresh_from_db()
+            # NOTE: Using instance save instead of .update() because Djongo has issues
+            # with ForeignKey updates via QuerySet.update()
+            booking.advance_payment = payment
+            booking.status = 'PENDING'  # PENDING means paid but waiting for venue verification
+            booking.save(update_fields=['advance_payment', 'status'])
             
             # Generate QR code only after successful payment
             qr_data = generate_qr_code(booking)
-            AdvanceBooking.objects.filter(id=booking_id).update(qr_code_data=qr_data)
+            booking.qr_code_data = qr_data
+            booking.save(update_fields=['qr_code_data'])
             
             # Redirect to confirmation page
             return redirect('advance-booking-confirmation', booking.id)

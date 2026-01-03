@@ -52,10 +52,20 @@ def generate_qr_code(booking):
     Returns:
         str: Base64 encoded QR code image (data URL format)
     """
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    logger.info(f"[QR CODE] Generating QR for booking {booking.booking_code}")
+    logger.info(f"[QR CODE] Current qr_hash: {booking.qr_hash[:30] if booking.qr_hash else 'None'}...")
+    
     # Generate hash if not already generated or if it's a temporary hash
     if not booking.qr_hash or str(booking.qr_hash).startswith('temp_'):
+        logger.info(f"[QR CODE] Replacing temporary hash with proper hash")
         booking.qr_hash = generate_qr_hash(booking.booking_code, booking.id)
         booking.save(update_fields=['qr_hash'])
+        logger.info(f"[QR CODE] New qr_hash saved: {booking.qr_hash[:30]}...")
+    else:
+        logger.info(f"[QR CODE] Using existing hash (not temporary)")
     
     # QR data format: BOOKING_CODE|HASH_FRAGMENT|BOOKING_ID
     # We only include first 16 chars of hash to keep QR compact
