@@ -229,94 +229,25 @@
     </div>
 
     <div class="premium-card-body">
-      <!-- Pending Bookings -->
-      {% if pending_bookings %}
-      <div
-        class="mb-4 p-3 bg-light rounded-3"
-        style="border: 2px solid #e9ecef"
-      >
-        <h5 class="fw-bold mb-3 text-primary">
-          <i class="fas fa-clipboard-list me-2"></i>Pending Bookings ({{ pending_bookings|length }})
-        </h5>
-        <div
-          class="table-responsive"
-          style="max-height: 350px; overflow-y: auto"
-        >
-          <table class="table table-sm table-hover mb-0">
-            <thead class="table-light sticky-top">
-              <tr>
-                <th>Code</th>
-                <th>Customer</th>
-                <th>Service</th>
-                <th>Date</th>
-                <th>Qty</th>
-                <th>Remaining</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for booking in pending_bookings %}
-              <tr
-                style="cursor: pointer"
-                onclick="document.getElementById('booking-code-input').value='{{ booking.booking_code }}'; document.getElementById('manual-verify-form').dispatchEvent(new Event('submit'));"
-              >
-                <td>
-                  <strong class="text-primary"
-                    >{{ booking.booking_code }}</strong
-                  >
-                </td>
-                <td>{{ booking.customer_name }}</td>
-                <td>
-                  <small>{{ booking.service_name|truncatewords:3 }}</small>
-                </td>
-                <td>
-                  {% if booking.booking_date == today %}
-                  <span class="badge bg-success">Today</span>
-                  {% else %}
-                  <small>{{ booking.booking_date|date:"M d" }}</small>
-                  {% endif %}
-                </td>
-                <td>{{ booking.quantity }}</td>
-                <td>
-                  <strong class="text-danger"
-                    >₹{{ booking.remaining_amount|floatformat:0 }}</strong
-                  >
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        <small class="text-muted d-block mt-2">
-          <i class="fas fa-info-circle me-1"></i>Click on any row to verify that
-          booking
-        </small>
-      </div>
-      {% else %}
-      <div class="mb-4 p-3 bg-light rounded-3 text-center">
-        <i class="fas fa-calendar-check fa-2x text-muted mb-2"></i>
-        <p class="text-muted mb-0">No pending bookings</p>
-      </div>
-      {% endif %}
-
       <div id="manual-verify-section">
         <form id="manual-verify-form">
           <div class="code-input-group">
             <label for="booking-code-input"
-              >Enter Booking Code (12 characters)</label
+              >Enter 6-Digit Booking Code</label
             >
             <input
               type="text"
               class="premium-input"
               id="booking-code-input"
-              placeholder="ABC234DEF567"
-              maxlength="12"
+              placeholder="ABC123"
+              maxlength="6"
               autocomplete="off"
               required
-              style="letter-spacing: 1px"
+              style="letter-spacing: 8px"
             />
           </div>
           <button type="submit" class="premium-btn">
-            <i class="fas fa-search me-2"></i>Verify Now
+            <i class="fas fa-search me-2"></i>Verify Booking
           </button>
         </form>
       </div>
@@ -326,15 +257,9 @@
 
     <div class="premium-footer">
       <div class="staff-badge">
-        <i class="fas fa-shield-alt me-1"></i> Authorized Staff Only
+        <i class="fas fa-shield-alt me-1"></i> Staff Portal
       </div>
       <div class="d-flex gap-2 align-items-center">
-        <a href="/admin/TSBv1/advancebooking/" class="btn btn-sm btn-outline-primary" title="View All Bookings">
-          <i class="fas fa-list me-1"></i> All Bookings
-        </a>
-        <a href="/admin/" class="btn btn-sm btn-outline-info" title="Admin Dashboard">
-          <i class="fas fa-cog me-1"></i> Admin
-        </a>
         <button onclick="location.reload()" class="btn btn-sm btn-outline-success" title="Refresh Page">
           <i class="fas fa-sync-alt"></i>
         </button>

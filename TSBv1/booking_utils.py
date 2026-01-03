@@ -13,7 +13,7 @@ from .models import AdvanceBooking
 
 def generate_booking_code():
     """
-    Generate a unique 12-character booking code.
+    Generate a unique 6-character booking code.
     Excludes confusing characters (0, O, 1, I, L) for clarity.
     """
     # Remove confusing characters
@@ -21,15 +21,15 @@ def generate_booking_code():
     
     max_attempts = 100
     for _ in range(max_attempts):
-        code = ''.join(random.choices(chars, k=12))
+        code = ''.join(random.choices(chars, k=6))
         # Check if code is unique
         if not AdvanceBooking.objects.filter(booking_code=code).exists():
             return code
     
     # If still no unique code after max attempts, append timestamp
     import time
-    timestamp = str(int(time.time()))[-4:]
-    code = ''.join(random.choices(chars, k=8)) + timestamp
+    timestamp = str(int(time.time()))[-2:]
+    code = ''.join(random.choices(chars, k=4)) + timestamp
     return code
 
 

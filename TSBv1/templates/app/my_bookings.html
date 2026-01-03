@@ -13,14 +13,33 @@
     <div class="row">
         {% for booking in bookings %}
         <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm h-100 border-0 overflow-hidden">
+            <div class="card shadow-sm h-100 overflow-hidden {% if booking.status == 'PENDING' %}border-warning{% elif booking.status == 'VERIFIED' %}border-info{% elif booking.status == 'USED' %}border-success{% elif booking.status == 'EXPIRED' %}border-secondary{% else %}border-danger{% endif %}" style="border-width: 2px;">
                 <div
-                    class="card-header {% if booking.status == 'PENDING' %}bg-warning{% elif booking.status == 'VERIFIED' %}bg-info{% elif booking.status == 'USED' %}bg-success text-white{% else %}bg-secondary text-white{% endif %} py-2">
-                    <small class="fw-bold">{{ booking.status }}</small>
+                    class="card-header py-2 d-flex align-items-center {% if booking.status == 'PENDING' %}bg-warning text-dark{% elif booking.status == 'VERIFIED' %}bg-info text-white{% elif booking.status == 'USED' %}bg-success text-white{% elif booking.status == 'EXPIRED' %}bg-secondary text-white{% else %}bg-danger text-white{% endif %}">
+                    {% if booking.status == 'PENDING' %}
+                    <i class="fas fa-clock me-2"></i>
+                    {% elif booking.status == 'VERIFIED' %}
+                    <i class="fas fa-check-circle me-2"></i>
+                    {% elif booking.status == 'USED' %}
+                    <i class="fas fa-check-double me-2"></i>
+                    {% elif booking.status == 'EXPIRED' %}
+                    <i class="fas fa-hourglass-end me-2"></i>
+                    {% else %}
+                    <i class="fas fa-times-circle me-2"></i>
+                    {% endif %}
+                    <small class="fw-bold">
+                        {% if booking.status == 'PENDING' %}Paid - Awaiting Entry
+                        {% elif booking.status == 'VERIFIED' %}Verified - Entry Allowed
+                        {% elif booking.status == 'USED' %}Completed
+                        {% elif booking.status == 'EXPIRED' %}Expired
+                        {% elif booking.status == 'CANCELLED' %}Cancelled
+                        {% else %}{{ booking.status }}
+                        {% endif %}
+                    </small>
                 </div>
                 <div class="card-body">
                     <h5 class="card-title fw-bold mb-1">{{ booking.service.title }}</h5>
-                    <p class="text-muted small mb-3">Booking Code: <span class="fw-bold">{{ booking.booking_code }}</span></p>
+                    <p class="text-muted small mb-3">Booking Code: <span class="fw-bold font-monospace">{{ booking.booking_code }}</span></p>
 
                     <div class="p-3 bg-light rounded mb-3">
                         <div class="row g-2">
@@ -44,16 +63,28 @@
                     </div>
 
                     <div class="d-grid gap-2">
+                        {% if booking.status == 'PENDING' or booking.status == 'VERIFIED' %}
                         <a href="{% url 'advance-booking-confirmation' booking.id %}" class="btn btn-primary">
                             <i class="fas fa-qrcode me-2"></i>View Entry Pass
                         </a>
-                        {% if booking.status == 'PENDING' %}
                         <small class="text-center text-muted">Please show QR at entrance</small>
+                        {% elif booking.status == 'USED' %}
+                        <button class="btn btn-success" disabled>
+                            <i class="fas fa-check me-2"></i>Entry Complete
+                        </button>
+                        {% elif booking.status == 'EXPIRED' %}
+                        <button class="btn btn-secondary" disabled>
+                            <i class="fas fa-hourglass-end me-2"></i>Booking Expired
+                        </button>
+                        {% else %}
+                        <button class="btn btn-danger" disabled>
+                            <i class="fas fa-times me-2"></i>Booking Cancelled
+                        </button>
                         {% endif %}
                     </div>
                 </div>
                 <div class="card-footer bg-white text-muted small py-2">
-                    Booked on: {{ booking.created_at|date:"M d, Y" }}
+                    <i class="fas fa-calendar-plus me-1"></i>Booked on: {{ booking.created_at|date:"M d, Y" }}
                 </div>
             </div>
         </div>

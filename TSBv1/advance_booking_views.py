@@ -315,47 +315,14 @@ def staff_login(request):
 
 def staff_verify(request):
     """
-    Staff verification portal - QR scanner and manual entry
+    Staff verification portal - manual code entry only
     """
     # Check staff authentication
     if not request.session.get('staff_authenticated'):
         return redirect('staff-login')
     
-    # Get today's date for reference
-    today = timezone.now().date()
-    
-    # Get ALL pending bookings (not just today's) to avoid MongoDB date comparison issues
-    # Filter in Python to separate today's vs other dates
-    all_pending = list(AdvanceBooking.objects.filter(
-        status='PENDING'
-    ).select_related('customer', 'service').order_by('-booking_date', '-created_at')[:50])
-    
-    # Convert Decimal128 to float for template display and separate by date
-    todays_bookings = []
-    other_bookings = []
-    
-    for booking in all_pending:
-        booking_data = {
-            'booking_code': booking.booking_code,
-            'customer_name': booking.customer.name,
-            'service_name': booking.service.title,
-            'quantity': booking.quantity,
-            'booking_date': booking.booking_date,
-            'advance_paid': convert_decimal128_to_float(booking.advance_paid),
-            'remaining_amount': convert_decimal128_to_float(booking.remaining_amount),
-            'created_at': booking.created_at,
-        }
-        # Compare dates as strings to avoid MongoDB date comparison issues
-        if str(booking.booking_date) == str(today):
-            todays_bookings.append(booking_data)
-        else:
-            other_bookings.append(booking_data)
-    
     context = {
-        'todays_bookings': todays_bookings,
-        'other_bookings': other_bookings,
-        'pending_bookings': todays_bookings + other_bookings,  # Combined for backward compatibility
-        'today': today
+        'today': timezone.now().date()
     }
     
     return render(request, 'app/staff_verify.html', context)

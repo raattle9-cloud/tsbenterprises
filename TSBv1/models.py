@@ -264,7 +264,7 @@ class AdvanceBooking(models.Model):
     )
 
     # Identifiers
-    booking_code = models.CharField(max_length=12, unique=True, db_index=True)
+    booking_code = models.CharField(max_length=6, unique=True, db_index=True)
     qr_code_data = models.TextField(blank=True)  # Base64 QR code image
     qr_hash = models.CharField(
         max_length=64, unique=True, blank=True, null=True
