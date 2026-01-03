@@ -82,17 +82,19 @@
         <a href="{% url 'my-bookings' %}" class="header-btn" title="My Bookings">
           <i class="fas fa-ticket-alt"></i>
         </a>
-        {% if request.user.is_staff %}
         <a href="{% url 'staff-login' %}" class="header-btn"
-          style="background: linear-gradient(90deg, #f59e0b, #d97706); color: white;" title="Staff Portal">
+          style="background: linear-gradient(90deg, #f59e0b, #d97706); color: white;" title="Staff Login">
           <i class="fas fa-user-shield"></i>
         </a>
-        {% endif %}
         <a href="{% url 'profile' %}" class="header-btn secondary-btn">{{ request.user.username|truncatechars:10 }}</a>
         <a href="{% url 'logout' %}" class="header-btn logout-btn" title="Logout">
           <i class="fas fa-sign-out-alt"></i>
         </a>
         {% else %}
+        <a href="{% url 'staff-login' %}" class="header-btn"
+          style="background: linear-gradient(90deg, #f59e0b, #d97706); color: white;" title="Staff Login">
+          <i class="fas fa-user-shield"></i>
+        </a>
         <a href="{% url 'customerlogin' %}" class="header-btn login-btn">Login</a>
         <a href="{% url 'customerregistration' %}" class="header-btn register-btn">Register</a>
         {% endif %}
@@ -151,15 +153,17 @@
             <span>{{ request.user.username }}</span>
           </div>
           <a href="{% url 'my-bookings' %}" class="header-btn secondary-btn">My Bookings</a>
-          <a href="{% url 'profile' %}" class="header-btn secondary-btn">Profile</a>
-          {% if request.user.is_staff %}
           <a href="{% url 'staff-login' %}" class="header-btn"
             style="background: linear-gradient(90deg, #f59e0b, #d97706); color: white;">
-            <i class="fas fa-user-shield me-1"></i>Staff Portal
+            <i class="fas fa-user-shield me-1"></i>Staff Login
           </a>
-          {% endif %}
+          <a href="{% url 'profile' %}" class="header-btn secondary-btn">Profile</a>
           <a href="{% url 'logout' %}" class="header-btn logout-btn">Logout</a>
           {% else %}
+          <a href="{% url 'staff-login' %}" class="header-btn"
+            style="background: linear-gradient(90deg, #f59e0b, #d97706); color: white;">
+            <i class="fas fa-user-shield me-1"></i>Staff Login
+          </a>
           <a href="{% url 'customerlogin' %}" class="header-btn login-btn">Login</a>
           <a href="{% url 'customerregistration' %}" class="header-btn register-btn">Register</a>
           {% endif %}
