@@ -418,7 +418,20 @@ def payment_done(request):
 
 class checkout(View):
     def get(self, request):
-        return render(request, 'app/checkout.html',locals())
+        # Handle "Buy Now" - automatically add item to cart if buy_now parameter is present
+        buy_now_id = request.GET.get('buy_now')
+        if buy_now_id and request.user.is_authenticated:
+            try:
+                service = Services.objects.get(id=buy_now_id)
+                # Check if already in cart
+                existing_cart = Cart.objects.filter(user=request.user, service=service)
+                if not existing_cart.exists():
+                    # Add to cart with quantity 1
+                    Cart.objects.create(user=request.user, service=service, quantity=1)
+            except Services.DoesNotExist:
+                pass  # Service not found, just continue to checkout
+        
+        return render(request, 'app/checkout.html', locals())
 
 def plus_cart(request):
     if not request.user.is_authenticated:

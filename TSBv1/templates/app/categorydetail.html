@@ -78,18 +78,17 @@
                 <div class="price-panel">
                     <div class="d-flex align-items-baseline flex-wrap mb-2">
                         <span class="service-price">₹{{ services.discounted_price|floatformat:0 }}/-</span>
-                        {% if services.discounted_price < services.selling_price %}
-                        <span class="service-price-old">₹{{ services.selling_price|floatformat:0 }}/-</span>
-                        {% endif %}
+                        {% if services.discounted_price < services.selling_price %} <span class="service-price-old">₹{{
+                            services.selling_price|floatformat:0 }}/-</span>
+                            {% endif %}
                     </div>
-                    {% if services.discounted_price < services.selling_price %}
-                    <div class="mt-2">
+                    {% if services.discounted_price < services.selling_price %} <div class="mt-2">
                         <span class="service-discount">
                             <i class="fas fa-percentage me-1"></i>
                             Special Discount Available
                         </span>
-                    </div>
-                    {% endif %}
+                </div>
+                {% endif %}
                 <p class="text-muted mb-0 mt-3 small">
                     <i class="fas fa-info-circle me-2"></i>Price includes all applicable taxes
                 </p>
@@ -126,6 +125,10 @@
                 {% if services.supports_advance_payment %}
                 <a href="{% url 'advance-checkout' services.id %}" class="btn btn-warning btn-lg flex-fill">
                     <i class="fas fa-shopping-bag me-2"></i>Book Now
+                </a>
+                {% else %}
+                <a href="{% url 'checkout' %}?buy_now={{services.id}}" class="btn btn-success btn-lg flex-fill">
+                    <i class="fas fa-bolt me-2"></i>Buy Now
                 </a>
                 {% endif %}
                 <form action="/add-to-cart" class="d-inline flex-fill">

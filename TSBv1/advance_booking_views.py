@@ -180,17 +180,32 @@ def advance_payment_process(request, booking_id):
                 payment_type='ADVANCE'
             )
             
-            # Link payment to booking and update status to confirm it's paid
-            # NOTE: Using instance save instead of .update() because Djongo has issues
-            # with ForeignKey updates via QuerySet.update()
-            booking.advance_payment = payment
-            booking.status = 'PENDING'  # PENDING means paid but waiting for venue verification
-            booking.save(update_fields=['advance_payment', 'status'])
+            # Update booking status to PENDING (paid but waiting for venue verification)
+            # NOTE: NOT linking payment via ForeignKey due to Djongo bugs
+            # Payment record is created above and exists in DB, just not linked
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info(f"[PAYMENT] Processing payment for booking {booking.booking_code}")
+            logger.info(f"[PAYMENT] Current status: {booking.status}")
+            logger.info(f"[PAYMENT] Payment created: {payment.id}")
+            
+            # Just update the status - this is all that's needed for tickets to show in profile
+            try:
+                booking.status = 'PENDING'
+                booking.save(update_fields=['status'])
+                logger.info(f"[PAYMENT] Status updated to PENDING")
+            except Exception as save_error:
+                logger.error(f"[PAYMENT] Error saving status: {save_error}", exc_info=True)
+                # If even this fails, raise it
+                raise
             
             # Generate QR code only after successful payment
             qr_data = generate_qr_code(booking)
             booking.qr_code_data = qr_data
             booking.save(update_fields=['qr_code_data'])
+            
+            logger.info(f"[PAYMENT] QR code generated and saved")
+            logger.info(f"[PAYMENT] Final booking status: {booking.status}")
             
             # Redirect to confirmation page
             return redirect('advance-booking-confirmation', booking.id)
@@ -212,6 +227,9 @@ def advance_payment_process(request, booking_id):
             
         except Exception as e:
             # Other errors during verification
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"[PAYMENT] Payment verification error: {e}", exc_info=True)
             print(f"Payment verification error: {e}")
             messages.error(request, f"Payment processing error. Please try again.")
             return redirect('advance-payment', booking_id)
