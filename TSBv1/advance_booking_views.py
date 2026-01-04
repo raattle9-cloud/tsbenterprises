@@ -340,7 +340,7 @@ def staff_verify(request):
     Requires Django authentication and Staff group membership
     """
     # Check if user is in Staff group
-    if not request.user.groups.filter(name='Staff').exists():
+    if not request.user.groups.filter(name='StaffMembers').exists():
         messages.error(request, "Access denied. Staff credentials required.")
         return redirect('home')
     
@@ -360,7 +360,7 @@ def verify_booking_api(request):
     Accepts booking_code or qr_data
     """
     # Check if user is in Staff group
-    if not request.user.groups.filter(name='Staff').exists():
+    if not request.user.groups.filter(name='StaffMembers').exists():
         return JsonResponse({'error': 'Unauthorized'}, status=401)
     
     if request.method != 'POST':
@@ -455,7 +455,7 @@ def mark_booking_verified(request):
     Mark booking as verified and optionally collect remaining payment
     """
     # Check if user is in Staff group
-    if not request.user.groups.filter(name='Staff').exists():
+    if not request.user.groups.filter(name='StaffMembers').exists():
         return JsonResponse({'error': 'Unauthorized'}, status=401)
     
     if request.method != 'POST':

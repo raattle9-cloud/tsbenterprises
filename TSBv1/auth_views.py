@@ -16,9 +16,9 @@ class StaffAwareLoginView(auth_views.LoginView):
         # Perform the standard login
         response = super().form_valid(form)
         
-        # Check if user is in the Staff group
+        # Check if user is in the StaffMembers group
         user = self.request.user
-        if user.groups.filter(name='Staff').exists():
+        if user.groups.filter(name='StaffMembers').exists():
             # Redirect staff users to the verification portal
             return redirect('staff-verify')
         
