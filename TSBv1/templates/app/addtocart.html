@@ -362,8 +362,6 @@ block.super }}
     });
 
     // Helper: Update totals display
-    // Since advance amounts now depend on per-service settings, we reload the page
-    // after cart changes to ensure accurate server-side calculation
     function updateTotals(amount, totalamount) {
       const subtotalEl = document.getElementById("amount");
       const totalEl = document.getElementById("totalamount");
@@ -371,12 +369,30 @@ block.super }}
       if (subtotalEl) subtotalEl.textContent = "₹" + amount;
       if (totalEl) totalEl.textContent = "₹" + totalamount;
 
-      // Reload page to recalculate advance amounts based on service settings
-      // This is needed because each service can have different advance payment configs
-      setTimeout(function () {
-        location.reload();
-      }, 500);
+      // Reload page to recalculate advance amounts accurately on server-side
+      // We check if there's any pending advance logic needed
+      location.reload();
     }
+
+    // Disable buttons during fetch to prevent race conditions
+    function setLoading(isLoading) {
+      document.querySelectorAll(".plus-cart, .minus-cart, .remove-cart").forEach(btn => {
+        if (isLoading) {
+          btn.style.pointerEvents = 'none';
+          btn.style.opacity = '0.5';
+        } else {
+          btn.style.pointerEvents = 'auto';
+          btn.style.opacity = '1';
+        }
+      });
+    }
+
+    // Wrap fetch calls with setLoading
+    const originalFetch = window.fetch;
+    window.fetch = function (...args) {
+      setLoading(true);
+      return originalFetch.apply(this, args).finally(() => setLoading(false));
+    };
 
     // Helper: Update cart count in header
     function updateCartCount() {

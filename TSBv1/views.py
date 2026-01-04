@@ -443,15 +443,18 @@ def plus_cart(request):
             return JsonResponse({'error': 'missing serv_id or prod_id'}, status=400)
         
         try:
-            # Use list() to force evaluation for MongoDB compatibility
-            cart_items = list(Cart.objects.filter(services_id=serv_id, user=request.user))
+            # Get the service object first for safe filtering
+            services_list = list(Services.objects.filter(id=serv_id))
+            if not services_list:
+                return JsonResponse({'error': 'Service not found'}, status=404)
+            service_obj = services_list[0]
+
+            # Use the object for filtering
+            cart_items = list(Cart.objects.filter(services=service_obj, user=request.user))
             
             if not cart_items:
                 # Create new cart item
-                services_list = list(Services.objects.filter(id=serv_id))
-                if not services_list:
-                    return JsonResponse({'error': 'Service not found'}, status=404)
-                Cart.objects.create(user=request.user, services=services_list[0], quantity=1)
+                Cart.objects.create(user=request.user, services=service_obj, quantity=1)
                 new_quantity = 1
             else:
                 # Update quantity using filter + update for MongoDB
@@ -484,8 +487,14 @@ def minus_cart(request):
             return JsonResponse({'error': 'missing serv_id or prod_id'}, status=400)
         
         try:
-            # Use list() to force evaluation for MongoDB compatibility
-            cart_items = list(Cart.objects.filter(services_id=serv_id, user=request.user))
+            # Get the service object first
+            services_list = list(Services.objects.filter(id=serv_id))
+            if not services_list:
+                return JsonResponse({'error': 'Service not found'}, status=404)
+            service_obj = services_list[0]
+
+            # Use the object for filtering
+            cart_items = list(Cart.objects.filter(services=service_obj, user=request.user))
             
             if not cart_items:
                 return JsonResponse({'error': 'cart item not found'}, status=404)
@@ -495,11 +504,10 @@ def minus_cart(request):
             removed = False
             
             if new_quantity <= 0:
-                # Delete using filter + delete for MongoDB
                 try:
-                    Cart.objects.filter(id=cart_item.id).delete()
+                    cart_item.delete()
                 except Exception:
-                    Cart.objects.filter(services_id=serv_id, user=request.user).delete()
+                    Cart.objects.filter(id=cart_item.id).delete()
                 new_quantity = 0
                 removed = True
             else:
@@ -532,9 +540,14 @@ def remove_cart(request):
             return JsonResponse({'error': 'missing serv_id or prod_id'}, status=400)
 
         try:
-            # Get cart items for this service and user
-            # Use list() to force evaluation to avoid MongoDB cursor issues
-            cart_items = list(Cart.objects.filter(services_id=serv_id, user=request.user))
+            # Get the service object first
+            services_list = list(Services.objects.filter(id=serv_id))
+            if not services_list:
+                return JsonResponse({'error': 'Service not found'}, status=404)
+            service_obj = services_list[0]
+
+            # Get cart items for this service and user using object filter
+            cart_items = list(Cart.objects.filter(services=service_obj, user=request.user))
             
             if not cart_items:
                 return JsonResponse({'error': 'cart item not found'}, status=404)
@@ -542,14 +555,14 @@ def remove_cart(request):
             # Sum quantities across any duplicate rows
             removed_quantity = sum((item.quantity or 0) for item in cart_items)
             
-            # Delete each item individually to avoid MongoDB queryset delete issues
+            # Delete each item individually
+            # Direct object deletion is more reliable in Djongo/MongoDB
             for item in cart_items:
                 try:
-                    Cart.objects.filter(id=item.id).delete()
+                    item.delete()
                 except Exception:
-                    # Fallback: try deleting by user+services
-                    Cart.objects.filter(services_id=serv_id, user=request.user).delete()
-                    break
+                    # Final fallback using filter
+                    Cart.objects.filter(id=item.id).delete()
 
             # Calculate new totals
             user = request.user
