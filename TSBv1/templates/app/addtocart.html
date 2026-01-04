@@ -346,12 +346,14 @@ block.super }}
             if (cartItem) cartItem.remove();
             updateCartCount();
 
-            // Update totals
-            updateTotals(data.amount, data.totalamount);
-
-            // Reload if cart is empty
+            // Check if cart is empty and reload
             if (document.querySelectorAll(".cart-item").length === 0) {
               location.reload();
+            } else {
+              // Delay reload slightly to ensure backend has processed
+              setTimeout(() => {
+                location.reload();
+              }, 300);
             }
           })
           .catch((err) => {
@@ -365,13 +367,14 @@ block.super }}
     function updateTotals(amount, totalamount) {
       const subtotalEl = document.getElementById("amount");
       const totalEl = document.getElementById("totalamount");
+      const advanceEl = document.getElementById("advance_amount");
+      const remainingEl = document.getElementById("remaining_amount");
 
       if (subtotalEl) subtotalEl.textContent = "₹" + amount;
       if (totalEl) totalEl.textContent = "₹" + totalamount;
 
-      // Reload page to recalculate advance amounts accurately on server-side
-      // We check if there's any pending advance logic needed
-      location.reload();
+      // Note: Advance amounts are complex (may need server-side recalculation)
+      // If advance payment logic changes are needed, consider reloading selectively
     }
 
     // Disable buttons during fetch to prevent race conditions

@@ -324,6 +324,14 @@ def my_advance_bookings(request):
         status='AWAITING_PAYMENT'
     ).order_by('-created_at')
     
+    # Check and mark expired bookings based on visit date
+    today = timezone.now().date()
+    for booking in bookings:
+        # If booking_date (visit date) has passed and status is still PENDING or VERIFIED, mark as expired
+        if booking.booking_date < today and booking.status in ['PENDING', 'VERIFIED']:
+            booking.status = 'EXPIRED'
+            booking.save(update_fields=['status'])
+    
     context = {
         'bookings': bookings,
     }
@@ -400,6 +408,7 @@ def verify_booking_api(request):
                 'verified_by': booking.verified_by_staff
             })
         
+        
         # Check if used
         if booking.status == 'USED':
             return JsonResponse({
@@ -408,14 +417,16 @@ def verify_booking_api(request):
                 'error': 'Booking already used'
             }, status=400)
         
-        # Check if expired
-        if not booking.is_valid():
+        # Check if expired - either by valid_until time or if visit date has passed
+        today = timezone.now().date()
+        if not booking.is_valid() or booking.booking_date < today:
             booking.status = 'EXPIRED'
-            booking.save()
+            booking.save(update_fields=['status'])
             return JsonResponse({
                 'status': 'expired',
                 'error': 'Booking has expired',
-                'valid_until': booking.valid_until.isoformat()
+                'valid_until': booking.valid_until.isoformat(),
+                'booking_date': booking.booking_date.isoformat()
             }, status=400)
         
         # Check if cancelled
