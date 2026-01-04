@@ -26,14 +26,15 @@
             <div class="cart-item mb-4 pb-4 {% if not forloop.last %}border-bottom{% endif %}">
               <div class="row align-items-center">
                 <div class="col-md-3 text-center mb-3 mb-md-0">
-                  {% with primary=item.services.get_primary_image %} {% if
-                  primary %}
+                  {% with primary=item.services.get_primary_image %}
+                  {% if primary %}
                   <img src="{{ primary.image_url }}" class="img-fluid rounded-3 shadow-sm"
                     alt="{{ item.services.title }}" style="max-height: 150px; width: auto; object-fit: cover" />
                   {% else %}
                   <img src="{% static 'app/images/aboutus.jpg' %}" class="img-fluid rounded-3 shadow-sm"
                     alt="{{ item.services.title }}" style="max-height: 150px; width: auto; object-fit: cover" />
-                  {% endif %} {% endwith %}
+                  {% endif %}
+                  {% endwith %}
                 </div>
                 <div class="col-md-6 mb-3 mb-md-0">
                   <h5 class="fw-bold mb-2">{{ item.services.title }}</h5>

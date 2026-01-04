@@ -350,23 +350,49 @@
 
   // Process scanned QR code
   function processQrCode(qrData) {
+    if (!qrData) {
+      switchToScannerMode();
+      return;
+    }
+
+    qrData = qrData.trim();
+    console.log("Processing Scanned Data:", qrData);
+
+    // 1. Check for pipe-delimited format (booking_code|hash|id)
+    if (qrData.includes('|')) {
+      const parts = qrData.split('|');
+      if (parts.length === 3) {
+        verifyBooking(parts[0], qrData);
+        return;
+      }
+    }
+
+    // 2. Try JSON format
     try {
-      // Parse QR data - assuming it's JSON with booking_code
       const data = JSON.parse(qrData);
       if (data.booking_code) {
         verifyBooking(data.booking_code, qrData);
       } else {
-        showError("Invalid QR code format");
-        setTimeout(() => switchToScannerMode(), 2000);
+        // Pass entire JSON as QR data
+        verifyBooking(null, qrData);
       }
+      return;
     } catch (e) {
-      // If not JSON, try to use as booking code directly
-      if (qrData.length === 6) {
-        verifyBooking(qrData, null);
-      } else {
-        showError("Invalid QR code format");
-        setTimeout(() => switchToScannerMode(), 2000);
-      }
+      // Not JSON, continue to other checks
+    }
+
+    // 3. Check for standard 6-character code
+    if (qrData.length === 6 && /^[A-Z0-9]+$/i.test(qrData)) {
+      verifyBooking(qrData.toUpperCase(), null);
+      return;
+    }
+
+    // 4. Fallback: just try to verify whatever it is as QR data
+    if (qrData.length > 10) {
+      verifyBooking(null, qrData);
+    } else {
+      showError("Invalid QR code format or code length");
+      setTimeout(() => switchToScannerMode(), 3000);
     }
   }
 
@@ -384,9 +410,18 @@
 
   // Verify Booking Function
   function verifyBooking(bookingCode, qrData) {
+    // Hide input sections
+    document.getElementById('manual-verify-section').style.display = 'none';
+    document.getElementById('scanner-verify-section').style.display = 'none';
+
+    // Stop scanner if running
+    if (html5QrCode && html5QrCode.getState() === 2) {
+      html5QrCode.stop();
+    }
+
     const resultDiv = document.getElementById("booking-result");
     resultDiv.innerHTML =
-      '<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Verifying booking...</p></div>';
+      '<div class="text-center p-5"><i class="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i><p class="h5">Verifying booking...</p></div>';
     resultDiv.style.display = "block";
 
     const csrftoken = "{{ csrf_token }}";
@@ -583,6 +618,15 @@
   function resetForm() {
     document.getElementById("booking-result").style.display = "none";
     document.getElementById("booking-code-input").value = "";
+    document.getElementById('manual-verify-section').style.display = 'block';
+    document.getElementById('scanner-verify-section').style.display = 'none';
+
+    // Toggle buttons
+    document.getElementById('manualModeBtn').classList.add('btn-primary');
+    document.getElementById('manualModeBtn').classList.remove('btn-outline-primary');
+    document.getElementById('scannerModeBtn').classList.remove('btn-primary');
+    document.getElementById('scannerModeBtn').classList.add('btn-outline-primary');
+
     setTimeout(() => {
       document.getElementById("booking-code-input").focus();
     }, 100);
