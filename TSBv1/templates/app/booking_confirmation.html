@@ -66,9 +66,12 @@
                         <div class="col-6"><strong>Paid Online:</strong></div>
                         <div class="col-6"><strong>₹{{ booking.advance_paid }}</strong></div>
                     </div>
+
+                    {% if booking.remaining_amount > 0 %}
                     <div class="row mb-2">
                         <div class="col-6" style="font-size: 1.2em;"><strong>Pay at Venue:</strong></div>
-                        <div class="col-6 text-danger" style="font-size: 1.2em;"><strong>₹{{ booking.remaining_amount }}</strong></div>
+                        <div class="col-6 text-danger" style="font-size: 1.2em;"><strong>₹{{ booking.remaining_amount
+                                }}</strong></div>
                     </div>
 
                     <div class="alert alert-info mt-4">
@@ -80,6 +83,13 @@
                             <li>Take a screenshot of this page for easy access</li>
                         </ul>
                     </div>
+                    {% else %}
+                    <div class="alert alert-success mt-4">
+                        <i class="fas fa-check-circle"></i> <strong>Booking Full Paid:</strong>
+                        <p class="mb-0 mt-2">Your booking is fully paid. Show this QR code at the entrance for access.
+                        </p>
+                    </div>
+                    {% endif %}
 
                     <!-- Actions -->
                     <div class="d-grid gap-2 mt-4">

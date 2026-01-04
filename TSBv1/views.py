@@ -360,8 +360,8 @@ def show_cart(request):
         if p.services.supports_advance_payment:
             item_advance = p.services.calculate_advance_amount(p.quantity)
         else:
-            # For services without advance payment config, use 10% as default
-            item_advance = item_total * 0.10
+            # For services without advance payment config, require full payment
+            item_advance = item_total
         
         advance_amount += item_advance
     

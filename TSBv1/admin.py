@@ -35,6 +35,9 @@ class ServicesModelAdmin(admin.ModelAdmin):
     inlines = [ServiceImageInline]
     actions = ['delete_selected_services']
     
+    class Media:
+        js = ('app/js/admin_service.js',)
+    
     def delete_button(self, obj):
         """Add a delete button for each service"""
         if obj.pk:
