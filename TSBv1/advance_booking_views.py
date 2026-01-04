@@ -135,14 +135,22 @@ def advance_payment_process(request, booking_id):
     """
     Process Razorpay payment for advance booking
     """
+    print(f"========== ADVANCE PAYMENT PROCESS CALLED ==========")
+    print(f"Booking ID: {booking_id}")
+    print(f"Request method: {request.method}")
+    
     booking = get_object_or_404(AdvanceBooking, id=booking_id, user=request.user)
     
+    print(f"Booking found: {booking.booking_code}, Status: {booking.status}")
+    
     if request.method == 'POST':
+        print("POST request received - processing payment callback")
         # Handle Razorpay payment callback
         razorpay_order_id = request.POST.get('razorpay_order_id')
         razorpay_payment_id = request.POST.get('razorpay_payment_id')
         razorpay_signature = request.POST.get('razorpay_signature')
         
+        print(f"Payment IDs received: order={razorpay_order_id}, payment={razorpay_payment_id}")
         # Verify Razorpay signature before confirming payment
         import razorpay
         import hmac
@@ -185,16 +193,24 @@ def advance_payment_process(request, booking_id):
             # Payment record is created above and exists in DB, just not linked
             import logging
             logger = logging.getLogger(__name__)
+            
+            print(f"[PAYMENT] About to update status for booking {booking.booking_code}")
+            print(f"[PAYMENT] Current status: {booking.status}")
+            print(f"[PAYMENT] Payment created with ID: {payment.id}")
+            
             logger.info(f"[PAYMENT] Processing payment for booking {booking.booking_code}")
             logger.info(f"[PAYMENT] Current status: {booking.status}")
             logger.info(f"[PAYMENT] Payment created: {payment.id}")
             
             # Just update the status - this is all that's needed for tickets to show in profile
             try:
+                print("[PAYMENT] Calling booking.save() to update status...")
                 booking.status = 'PENDING'
                 booking.save(update_fields=['status'])
+                print(f"[PAYMENT] SUCCESS! Status updated to: {booking.status}")
                 logger.info(f"[PAYMENT] Status updated to PENDING")
             except Exception as save_error:
+                print(f"[PAYMENT] ERROR saving status: {save_error}")
                 logger.error(f"[PAYMENT] Error saving status: {save_error}", exc_info=True)
                 # If even this fails, raise it
                 raise
