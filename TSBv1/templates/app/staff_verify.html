@@ -12,16 +12,12 @@
 
   body {
     background-color: #f8fafd;
-    background-image: radial-gradient(
-        circle at 10% 20%,
+    background-image: radial-gradient(circle at 10% 20%,
         rgba(72, 202, 228, 0.05) 0%,
-        transparent 40%
-      ),
-      radial-gradient(
-        circle at 90% 80%,
+        transparent 40%),
+      radial-gradient(circle at 90% 80%,
         rgba(0, 150, 199, 0.05) 0%,
-        transparent 40%
-      );
+        transparent 40%);
     min-height: 100vh;
   }
 
@@ -225,26 +221,27 @@
   <div class="premium-card">
     <div class="premium-card-header">
       <h3>Staff Portal</h3>
-      <div class="subtitle">Secure Booking Verification System</div>
+      <div class="subtitle">{{ staff_name }} - Secure Booking Verification</div>
     </div>
 
     <div class="premium-card-body">
+      <!-- Scanner Mode Toggle -->
+      <div class="d-flex justify-content-center gap-2 mb-4">
+        <button type="button" class="btn btn-primary" id="manualModeBtn" onclick="switchToManualMode()">
+          <i class="fas fa-keyboard me-1"></i>Manual Entry
+        </button>
+        <button type="button" class="btn btn-outline-primary" id="scannerModeBtn" onclick="switchToScannerMode()">
+          <i class="fas fa-qrcode me-1"></i>QR Scanner
+        </button>
+      </div>
+
+      <!-- Manual Entry Section -->
       <div id="manual-verify-section">
         <form id="manual-verify-form">
           <div class="code-input-group">
-            <label for="booking-code-input"
-              >Enter 6-Digit Booking Code</label
-            >
-            <input
-              type="text"
-              class="premium-input"
-              id="booking-code-input"
-              placeholder="ABC123"
-              maxlength="6"
-              autocomplete="off"
-              required
-              style="letter-spacing: 8px"
-            />
+            <label for="booking-code-input">Enter 6-Digit Booking Code</label>
+            <input type="text" class="premium-input" id="booking-code-input" placeholder="ABC123" maxlength="6"
+              autocomplete="off" required style="letter-spacing: 8px" />
           </div>
           <button type="submit" class="premium-btn">
             <i class="fas fa-search me-2"></i>Verify Booking
@@ -252,18 +249,31 @@
         </form>
       </div>
 
+      <!-- QR Scanner Section -->
+      <div id="scanner-verify-section" style="display: none">
+        <div class="mb-3 text-center">
+          <label class="form-label fw-bold">Scan QR Code</label>
+        </div>
+        <div id="qr-reader" style="width: 100%; max-width: 500px; margin: 0 auto;"></div>
+        <div class="text-center mt-3">
+          <button type="button" class="btn btn-secondary" onclick="switchToManualMode()">
+            <i class="fas fa-keyboard me-1"></i>Switch to Manual Entry
+          </button>
+        </div>
+      </div>
+
       <div id="booking-result" style="display: none"></div>
     </div>
 
     <div class="premium-footer">
       <div class="staff-badge">
-        <i class="fas fa-shield-alt me-1"></i> Staff Portal
+        <i class="fas fa-shield-alt me-1"></i> {{ staff_name }}
       </div>
       <div class="d-flex gap-2 align-items-center">
         <button onclick="location.reload()" class="btn btn-sm btn-outline-success" title="Refresh Page">
           <i class="fas fa-sync-alt"></i>
         </button>
-        <a href="{% url 'staff-logout' %}" class="btn btn-sm btn-outline-danger" title="Logout">
+        <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-danger" title="Logout">
           <i class="fas fa-sign-out-alt me-1"></i> Logout
         </a>
       </div>
@@ -271,7 +281,95 @@
   </div>
 </div>
 {% endblock landing_content %} {% block landing_scripts %} {{ block.super }}
+<!-- Add html5-qrcode library for QR scanning -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
+  let html5QrCode = null;
+
+  // Mode switching functions
+  function switchToManualMode() {
+    document.getElementById('manual-verify-section').style.display = 'block';
+    document.getElementById('scanner-verify-section').style.display = 'none';
+    document.getElementById('manualModeBtn').classList.add('btn-primary');
+    document.getElementById('manualModeBtn').classList.remove('btn-outline-primary');
+    document.getElementById('scannerModeBtn').classList.remove('btn-primary');
+    document.getElementById('scannerModeBtn').classList.add('btn-outline-primary');
+
+    // Stop scanner if running
+    if (html5QrCode && html5QrCode.getState() === 2) {
+      html5QrCode.stop();
+    }
+  }
+
+  function switchToScannerMode() {
+    document.getElementById('manual-verify-section').style.display = 'none';
+    document.getElementById('scanner-verify-section').style.display = 'block';
+    document.getElementById('scannerModeBtn').classList.add('btn-primary');
+    document.getElementById('scannerModeBtn').classList.remove('btn-outline-primary');
+    document.getElementById('manualModeBtn').classList.remove('btn-primary');
+    document.getElementById('manualModeBtn').classList.add('btn-outline-primary');
+
+    // Start scanner
+    startQrScanner();
+  }
+
+  // Start QR Code Scanner
+  function startQrScanner() {
+    if (html5QrCode === null) {
+      html5QrCode = new Html5Qrcode("qr-reader");
+    }
+
+    // Only start if not already scanning
+    if (html5QrCode.getState() !== 2) {
+      html5QrCode.start(
+        { facingMode: "environment" }, // Use back camera on mobile
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 }
+        },
+        (decodedText, decodedResult) => {
+          // QR code successfully scanned
+          console.log(`QR Code detected: ${decodedText}`);
+
+          // Stop scanning
+          html5QrCode.stop().then(() => {
+            // Process the QR code data
+            processQrCode(decodedText);
+          });
+        },
+        (errorMessage) => {
+          // QR code scan error (ignore these as they're frequent during scanning)
+        }
+      ).catch((err) => {
+        console.error("Failed to start scanner:", err);
+        alert("Failed to start QR scanner. Please try manual entry or check camera permissions.");
+        switchToManualMode();
+      });
+    }
+  }
+
+  // Process scanned QR code
+  function processQrCode(qrData) {
+    try {
+      // Parse QR data - assuming it's JSON with booking_code
+      const data = JSON.parse(qrData);
+      if (data.booking_code) {
+        verifyBooking(data.booking_code, qrData);
+      } else {
+        showError("Invalid QR code format");
+        setTimeout(() => switchToScannerMode(), 2000);
+      }
+    } catch (e) {
+      // If not JSON, try to use as booking code directly
+      if (qrData.length === 6) {
+        verifyBooking(qrData, null);
+      } else {
+        showError("Invalid QR code format");
+        setTimeout(() => switchToScannerMode(), 2000);
+      }
+    }
+  }
+
   // Manual Entry Form
   document
     .getElementById("manual-verify-form")
@@ -330,9 +428,8 @@
             <div class="booking-detail-card">
                 <div class="detail-row">
                     <span class="detail-label">Booking Code</span>
-                    <span class="detail-value" style="letter-spacing: 2px;">${
-                      booking.booking_code
-                    }</span>
+                    <span class="detail-value" style="letter-spacing: 2px;">${booking.booking_code
+      }</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Customer</span>
@@ -348,29 +445,27 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Quantity</span>
-                    <span class="detail-value">${
-                      booking.quantity
-                    } Ticket(s)</span>
+                    <span class="detail-value">${booking.quantity
+      } Ticket(s)</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Visit Date</span>
                     <span class="detail-value">${new Date(
-                      booking.booking_date
-                    ).toLocaleDateString(undefined, {
-                      weekday: "short",
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}</span>
+        booking.booking_date
+      ).toLocaleDateString(undefined, {
+        weekday: "short",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })}</span>
                 </div>
             </div>
             
             <div class="payment-area mb-4">
                 <div class="detail-label">CASH TO COLLECT AT VENUE</div>
                 <div class="remaining-amount">₹${booking.remaining_amount}</div>
-                <div class="small text-muted">Total: ₹${
-                  booking.total_amount
-                } | Paid: ₹${booking.advance_paid}</div>
+                <div class="small text-muted">Total: ₹${booking.total_amount
+      } | Paid: ₹${booking.advance_paid}</div>
             </div>
             
             <div class="mb-4">
@@ -385,9 +480,8 @@
                 </label>
             </div>
             
-            <button onclick="markAsVerified('${
-              booking.booking_code
-            }')" class="premium-btn py-3">
+            <button onclick="markAsVerified('${booking.booking_code
+      }')" class="premium-btn py-3">
                 <i class="fas fa-check-double me-2"></i>Confirm Entry
             </button>
         </div>

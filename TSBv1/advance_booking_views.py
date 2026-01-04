@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.utils import timezone
 from django.views import View
 from decimal import Decimal
@@ -14,6 +15,7 @@ import json
 from .models import Services, Customer, AdvanceBooking, Payment
 from .booking_utils import (generate_booking_code, generate_qr_code, 
                             validate_qr_data, get_client_ip)
+
 
 
 def convert_decimal128_to_float(value):
@@ -331,46 +333,34 @@ def my_advance_bookings(request):
 
 # Staff Verification Views
 
-STAFF_PIN = "123456"  # TODO: Move to settings or environment variable
-
-def staff_login(request):
-    """
-    Simple PIN-based staff login
-    """
-    if request.method == 'POST':
-        pin = request.POST.get('pin')
-        if pin == STAFF_PIN:
-            request.session['staff_authenticated'] = True
-            request.session['staff_login_time'] = timezone.now().isoformat()
-            return redirect('staff-verify')
-        else:
-            return render(request, 'app/staff_login.html', {'error': 'Invalid PIN'})
-    
-    return render(request, 'app/staff_login.html')
-
-
+@login_required
 def staff_verify(request):
     """
-    Staff verification portal - manual code entry only
+    Staff verification portal - manual code entry and QR scanning
+    Requires Django authentication and Staff group membership
     """
-    # Check staff authentication
-    if not request.session.get('staff_authenticated'):
-        return redirect('staff-login')
+    # Check if user is in Staff group
+    if not request.user.groups.filter(name='Staff').exists():
+        messages.error(request, "Access denied. Staff credentials required.")
+        return redirect('home')
     
     context = {
-        'today': timezone.now().date()
+        'today': timezone.now().date(),
+        'staff_name': request.user.get_full_name() or request.user.username,
     }
     
     return render(request, 'app/staff_verify.html', context)
 
 
+@login_required
 @csrf_exempt
 def verify_booking_api(request):
     """
     API endpoint for booking verification
     Accepts booking_code or qr_data
     """
-    if not request.session.get('staff_authenticated'):
+    # Check if user is in Staff group
+    if not request.user.groups.filter(name='Staff').exists():
         return JsonResponse({'error': 'Unauthorized'}, status=401)
     
     if request.method != 'POST':
@@ -458,12 +448,14 @@ def verify_booking_api(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
+@login_required
 @csrf_exempt
 def mark_booking_verified(request):
     """
     Mark booking as verified and optionally collect remaining payment
     """
-    if not request.session.get('staff_authenticated'):
+    # Check if user is in Staff group
+    if not request.user.groups.filter(name='Staff').exists():
         return JsonResponse({'error': 'Unauthorized'}, status=401)
     
     if request.method != 'POST':
@@ -511,12 +503,3 @@ def mark_booking_verified(request):
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
-
-def staff_logout(request):
-    """
-    Staff logout
-    """
-    request.session.pop('staff_authenticated', None)
-    request.session.pop('staff_login_time', None)
-    return redirect('staff-login')

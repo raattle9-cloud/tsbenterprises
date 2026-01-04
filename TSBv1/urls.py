@@ -1,9 +1,12 @@
 
+
 from django.urls import path
 from . import views
 from . import advance_booking_views
+from . import auth_views as custom_auth_views
 from django.contrib.auth import views as auth_view
 from .forms import LoginForm, MyPasswordResetForm, MyPasswordChangeForm, MyPasswordResetForm, MySetPasswordForm
+
 
 
 urlpatterns = [
@@ -53,7 +56,7 @@ urlpatterns = [
 
     #Customer Authentication url's
     path("registration/", views.CustomerRegistrationView.as_view(), name="customerregistration"),
-    path("accounts/login/", auth_view.LoginView.as_view(template_name='app/customerlogin.html', authentication_form=LoginForm), name="customerlogin"),
+    path("accounts/login/", custom_auth_views.StaffAwareLoginView.as_view(template_name='app/customerlogin.html', authentication_form=LoginForm), name="customerlogin"),
     path("password-reset/", auth_view.PasswordResetView.as_view(template_name='app/password_reset.html', form_class=MyPasswordResetForm), name="password_reset"),
    
     path("passwordchange/", auth_view.PasswordChangeView.as_view(template_name='app/changepassword.html', form_class=MyPasswordChangeForm, success_url='/passwordchangedone'), name="passwordchange"),
@@ -75,9 +78,7 @@ urlpatterns = [
     path('my-bookings/', advance_booking_views.my_advance_bookings, name='my-bookings'),
     
     # Staff Verification URLs
-    path('staff/login/', advance_booking_views.staff_login, name='staff-login'),
     path('staff/verify/', advance_booking_views.staff_verify, name='staff-verify'),
-    path('staff/logout/', advance_booking_views.staff_logout, name='staff-logout'),
     
     # Staff API endpoints
     path('api/verify-booking/', advance_booking_views.verify_booking_api, name='verify-booking-api'),

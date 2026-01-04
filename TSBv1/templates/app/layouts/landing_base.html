@@ -82,7 +82,7 @@
         <a href="{% url 'my-bookings' %}" class="header-btn" title="My Bookings">
           <i class="fas fa-ticket-alt"></i>
         </a>
-        <a href="{% url 'staff-login' %}" class="header-btn"
+        <a href="{% url 'customerlogin' %}?next=/staff/verify/" class="header-btn"
           style="background: linear-gradient(90deg, #f59e0b, #d97706); color: white;" title="Staff Login">
           <i class="fas fa-user-shield"></i>
         </a>
@@ -91,7 +91,7 @@
           <i class="fas fa-sign-out-alt"></i>
         </a>
         {% else %}
-        <a href="{% url 'staff-login' %}" class="header-btn"
+        <a href="{% url 'customerlogin' %}?next=/staff/verify/" class="header-btn"
           style="background: linear-gradient(90deg, #f59e0b, #d97706); color: white;" title="Staff Login">
           <i class="fas fa-user-shield"></i>
         </a>
@@ -153,14 +153,14 @@
             <span>{{ request.user.username }}</span>
           </div>
           <a href="{% url 'my-bookings' %}" class="header-btn secondary-btn">My Bookings</a>
-          <a href="{% url 'staff-login' %}" class="header-btn"
+          <a href="{% url 'customerlogin' %}?next=/staff/verify/" class="header-btn"
             style="background: linear-gradient(90deg, #f59e0b, #d97706); color: white;">
             <i class="fas fa-user-shield me-1"></i>Staff Login
           </a>
           <a href="{% url 'profile' %}" class="header-btn secondary-btn">Profile</a>
           <a href="{% url 'logout' %}" class="header-btn logout-btn">Logout</a>
           {% else %}
-          <a href="{% url 'staff-login' %}" class="header-btn"
+          <a href="{% url 'customerlogin' %}?next=/staff/verify/" class="header-btn"
             style="background: linear-gradient(90deg, #f59e0b, #d97706); color: white;">
             <i class="fas fa-user-shield me-1"></i>Staff Login
           </a>
