@@ -424,10 +424,10 @@ class checkout(View):
             try:
                 service = Services.objects.get(id=buy_now_id)
                 # Check if already in cart
-                existing_cart = Cart.objects.filter(user=request.user, service=service)
+                existing_cart = Cart.objects.filter(user=request.user, services=service)
                 if not existing_cart.exists():
                     # Add to cart with quantity 1
-                    Cart.objects.create(user=request.user, service=service, quantity=1)
+                    Cart.objects.create(user=request.user, services=service, quantity=1)
             except Services.DoesNotExist:
                 pass  # Service not found, just continue to checkout
         
