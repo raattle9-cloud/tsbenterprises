@@ -428,9 +428,24 @@ class checkout(View):
                 if not existing_cart.exists():
                     # Add to cart with quantity 1
                     Cart.objects.create(user=request.user, services=service, quantity=1)
+                
+                # Redirect to clean URL to avoid re-adding on refresh and show clean address
+                return redirect('checkout')
             except Services.DoesNotExist:
                 pass  # Service not found, just continue to checkout
         
+        # Fetch cart items for display
+        if request.user.is_authenticated:
+            cart = Cart.objects.filter(user=request.user)
+            amount = 0.0
+            for p in cart:
+                value = p.quantity * p.services.discounted_price
+                amount = amount + value
+            total_amount = amount + 40 # Adding GST/Shipping as per template placeholder
+        else:
+            cart = []
+            total_amount = 0
+
         return render(request, 'app/checkout.html', locals())
 
 def plus_cart(request):
