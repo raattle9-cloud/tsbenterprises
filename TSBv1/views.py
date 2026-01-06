@@ -442,9 +442,13 @@ class checkout(View):
                 value = p.quantity * p.services.discounted_price
                 amount = amount + value
             total_amount = amount + 40 # Adding GST/Shipping as per template placeholder
+            
+            # Fetch customer profiles for selection
+            customers = Customer.objects.filter(user=request.user)
         else:
             cart = []
             total_amount = 0
+            customers = []
 
         return render(request, 'app/checkout.html', locals())
 
