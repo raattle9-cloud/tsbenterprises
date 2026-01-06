@@ -113,10 +113,19 @@
                         <!-- Points to a hypothetical payment processing view or directly submits form -->
                         <!-- Adjust 'payments' url name if your actual payment logic is elsewhere. 
                              For now assuming 'payments' or similar view handles the final transaction -->
+                        {% if razorpay_order_id %}
+                        <!-- Razorpay Button -->
+                        <button type="button" id="rzp-button1" class="btn btn-warning btn-lg fw-bold" {% if not
+                            customers %}disabled{% endif %}>
+                            <i class="fas fa-lock me-2"></i>Pay ₹{{ total_amount }} Now
+                        </button>
+                        {% else %}
+                        <!-- Fallback (likely backend setup issue if price > 0) -->
                         <button type="submit" form="checkoutForm" class="btn btn-warning btn-lg fw-bold" {% if not
                             customers %}disabled{% endif %}>
-                            <i class="fas fa-lock me-2"></i>Proceed to Payment
+                            <i class="fas fa-lock me-2"></i>Proceed to Payment (Manual)
                         </button>
+                        {% endif %}
                     </div>
 
                     <div class="mt-3 text-center">
@@ -147,4 +156,47 @@
     </div>
     {% endif %}
 </div>
+</div>
+
+{% if razorpay_order_id %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        key: "{{ razorpay_key_id }}",
+        amount: "{{ razoramount }}",
+        currency: "{{ currency }}",
+        name: "TSB Enterprises",
+        description: "Checkout Payment",
+        image: "{% static 'app/images/product/tsb_logo.png' %}",
+        order_id: "{{ razorpay_order_id }}",
+        // Callback URL for success (you might want to create a dedicated success handler)
+        handler: function (response) {
+            console.log("Payment Successful:", response);
+            // Construct URL with query params
+            var redirectUrl = "{% url 'paymentdone' %}?order_id=" + response.razorpay_order_id +
+                "&payment_id=" + response.razorpay_payment_id +
+                "&cust_id=" + (document.querySelector('select[name="cust_id"]').value || '');
+            window.location.href = redirectUrl;
+        },
+        prefill: {
+            name: "{{ request.user.first_name }} {{ request.user.last_name }}",
+            email: "{{ request.user.email }}",
+            contact: "" // Could populate if available
+        },
+        theme: {
+            color: "#0d6efd",
+        },
+    };
+    var rzp1 = new Razorpay(options);
+
+    document.getElementById("rzp-button1").onclick = function (e) {
+        if (!document.querySelector('select[name="cust_id"]').value) {
+            alert("Please select a customer address.");
+            return;
+        }
+        e.preventDefault();
+        rzp1.open();
+    };
+</script>
+{% endif %}
 {% endblock landing_content %}

@@ -445,12 +445,93 @@ class checkout(View):
             
             # Fetch customer profiles for selection
             customers = Customer.objects.filter(user=request.user)
+            razorpay_order_id = None
+            razorpay_key_id = None
+            razoramount = 0
+            remaining_amount = total_amount # Simplified for now
+
+            # Razorpay logic
+            if cart and total_amount > 0:
+                try:
+                    # Logic similar to show_cart/checkout_buynow
+                     # Convert to paise
+                    razoramount = int(total_amount * 100)
+                    
+                    client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_KEY_SECRET))
+                    razorpay_order = client.order.create({
+                        'amount': razoramount,
+                        'currency': 'INR',
+                        'receipt': f'checkout_{request.user.id}_{int(timezone.now().timestamp())}',
+                        'payment_capture': 1
+                    })
+                    razorpay_order_id = razorpay_order['id']
+                    razorpay_key_id = settings.RAZOR_PAY_KEY_ID
+                except Exception as e:
+                    print(f"Razorpay order creation failed: {e}")
+
         else:
             cart = []
             total_amount = 0
             customers = []
+            razorpay_order_id = None
 
         return render(request, 'app/checkout.html', locals())
+
+def checkout_buynow(request, service_id):
+    """
+    Handle 'Buy Now' - specific URL that maps to checkout page.
+    """
+    if not request.user.is_authenticated:
+        messages.warning(request, "Please login to proceed.")
+        return redirect('customerlogin')
+
+    try:
+        service = Services.objects.get(id=service_id)
+        # Check if already in cart
+        existing_cart = Cart.objects.filter(user=request.user, services=service)
+        if not existing_cart.exists():
+            Cart.objects.create(user=request.user, services=service, quantity=1)
+    except Services.DoesNotExist:
+        messages.error(request, "Service not found.")
+        return redirect('services')
+
+    # Reuse checkout view logic (or redirect to checkout)
+    # But user wants SPECIFIC URL in browser.
+    # So we must render here.
+    
+    # Fetch cart items
+    user = request.user
+    cart = Cart.objects.filter(user=user).select_related('services')
+    
+    amount = 0.0
+    for p in cart:
+        value = p.quantity * p.services.discounted_price
+        amount = amount + value
+    total_amount = amount + 40
+    
+    # Razorpay Logic
+    razoramount = int(total_amount * 100)
+    razorpay_order_id = None
+    razorpay_key_id = None
+    
+    if cart and total_amount > 0:
+        try:
+            client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_KEY_SECRET))
+            razorpay_order = client.order.create({
+                'amount': razoramount,
+                'currency': 'INR',
+                'receipt': f'buynow_{user.id}_{int(timezone.now().timestamp())}',
+                'payment_capture': 1
+            })
+            razorpay_order_id = razorpay_order['id']
+            razorpay_key_id = settings.RAZOR_PAY_KEY_ID
+        except Exception as e:
+            print(f"Razorpay order creation failed: {e}")
+            
+    customers = Customer.objects.filter(user=request.user)
+    currency = 'INR'
+
+    return render(request, 'app/checkout.html', locals())
 
 def plus_cart(request):
     if not request.user.is_authenticated:
