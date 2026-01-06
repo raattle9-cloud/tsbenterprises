@@ -207,7 +207,7 @@ class CustomerRegistrationView(View):
             try:
                 form.save()
                 messages.success(request, "Congratulations! You have successfully registered.")
-                form = CustomerRegistrationForm()
+                return redirect('customerlogin')
             except Exception as e:
                 import traceback
                 print(f"Registration error: {e}")
@@ -287,7 +287,7 @@ class ProfileView(View):
                 reg.save()
                 messages.success(request, "Profile Saved Successfully!")
             
-            has_profile = True
+            return redirect('home')
         else:
             messages.warning(request, "Invalid Input Data!")
             has_profile = len(list(Customer.objects.filter(user=request.user))) > 0
@@ -652,17 +652,10 @@ def remove_cart(request):
             if not cart_items:
                 return JsonResponse({'error': 'cart item not found'}, status=404)
 
-            # Sum quantities across any duplicate rows
-            removed_quantity = sum((item.quantity or 0) for item in cart_items)
-            
-            # Delete each item individually
-            # Direct object deletion is more reliable in Djongo/MongoDB
-            for item in cart_items:
-                try:
-                    item.delete()
-                except Exception:
-                    # Final fallback using filter
-                    Cart.objects.filter(id=item.id).delete()
+            # Delete items matching user and service ID directly
+            # This is safer than iterating or object filtering in some NoSQL backends
+            Cart.objects.filter(user=request.user, services__id=serv_id).delete()
+            removed_quantity = 0 # Not strictly needed by frontend but keeps API consistent
 
             # Calculate new totals
             user = request.user

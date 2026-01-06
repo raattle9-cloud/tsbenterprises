@@ -3,297 +3,309 @@
 {% block title %}TSB-Enterprise{% endblock %}
 
 {% block extra_head %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{% static 'app/css/about.css' %}">
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'app/css/about.css' %}">
 {% endblock %}
 
 {% block landing_content %}
-  <section class="hero" id="hero-section">
-      <div class="image-card">
-        <div class="carousel" id="carousel">
-          <div class="slides">
-            <div class="slide"><img src="{% static 'app/images/WATERPARKS/W-3.jpg' %}" alt="slide 1"></div>
-            <div class="slide"><img src="{% static 'app/images/herowp2.jpeg' %}" alt="slide 2"></div>
-            <div class="slide"><img src="{% static 'app/images/wp2.avif' %}" alt="slide 3"></div>
-            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/7.jpg' %}" alt="slide 4"></div>
-            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/2.webp' %}" alt="slide 5"></div>
-            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/3.avif' %}" alt="slide 6"></div>
-            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/4.webp' %}" alt="slide 7"></div>
-            <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/5.jpg' %}" alt="slide 8"></div>
-          </div>
-
-          <div class="overlay">
-            <h1>FIND YOUR PARADISE</h1>
-            <button id="cta" class="cta">JUST ONE CLICK AWAY</button>
-          </div>
-
-          <div class="dots" id="carousel-dots" aria-hidden="false">
-            <button class="dot active" data-index="0" aria-label="Go to slide 1"></button>
-            <button class="dot" data-index="1" aria-label="Go to slide 2"></button>
-            <button class="dot" data-index="2" aria-label="Go to slide 3"></button>
-            <button class="dot" data-index="3" aria-label="Go to slide 4"></button>
-            <button class="dot" data-index="4" aria-label="Go to slide 5"></button>
-            <button class="dot" data-index="5" aria-label="Go to slide 6"></button>
-            <button class="dot" data-index="6" aria-label="Go to slide 7"></button>
-            <button class="dot" data-index="7" aria-label="Go to slide 8"></button>
-          </div>
-        </div>
+<section class="hero" id="hero-section">
+  <div class="image-card">
+    <div class="carousel" id="carousel">
+      <div class="slides">
+        <div class="slide"><img src="{% static 'app/images/WATERPARKS/W-3.jpg' %}" alt="slide 1"></div>
+        <div class="slide"><img src="{% static 'app/images/herowp2.jpeg' %}" alt="slide 2"></div>
+        <div class="slide"><img src="{% static 'app/images/wp2.avif' %}" alt="slide 3"></div>
+        <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/7.jpg' %}" alt="slide 4"></div>
+        <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/2.webp' %}" alt="slide 5"></div>
+        <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/3.avif' %}" alt="slide 6"></div>
+        <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/4.webp' %}" alt="slide 7"></div>
+        <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/5.jpg' %}" alt="slide 8"></div>
       </div>
-    </section>
 
-      <section class="stats-band">
-        <div class="stats-grid">
-          <div class="stat-item">
-            <div class="stat-value">370+</div>
-            <div class="stat-label">Premium Destinations</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">5L+</div>
-            <div class="stat-label">Happy Customers</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">4.9</div>
-            <div class="stat-label">Average Rating</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value">100%</div>
-            <div class="stat-label">Satisfaction Rate</div>
-          </div>
+      <div class="overlay">
+        <h1>FIND YOUR PARADISE</h1>
+        <a href="{% url 'services' %}" id="cta" class="cta" style="text-decoration: none; display: inline-block;">JUST
+          ONE CLICK AWAY</a>
+      </div>
+
+      <div class="dots" id="carousel-dots" aria-hidden="false">
+        <button class="dot active" data-index="0" aria-label="Go to slide 1"></button>
+        <button class="dot" data-index="1" aria-label="Go to slide 2"></button>
+        <button class="dot" data-index="2" aria-label="Go to slide 3"></button>
+        <button class="dot" data-index="3" aria-label="Go to slide 4"></button>
+        <button class="dot" data-index="4" aria-label="Go to slide 5"></button>
+        <button class="dot" data-index="5" aria-label="Go to slide 6"></button>
+        <button class="dot" data-index="6" aria-label="Go to slide 7"></button>
+        <button class="dot" data-index="7" aria-label="Go to slide 8"></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-band">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-value">370+</div>
+      <div class="stat-label">Premium Destinations</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">5L+</div>
+      <div class="stat-label">Happy Customers</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">4.9</div>
+      <div class="stat-label">Average Rating</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">100%</div>
+      <div class="stat-label">Satisfaction Rate</div>
+    </div>
+  </div>
+</section>
+
+<section class="premium-section" id="premium">
+  <div class="premium-header">
+    <span class="premium-pill">Premium Experiences</span>
+    <h2>Explore Our Premium Destinations</h2>
+    <p>From luxurious resorts to exciting waterparks, discover curated experiences tailored for your perfect getaway</p>
+  </div>
+  <div class="premium-grid">
+    <div class="premium-card">
+      <div class="card-carousel" data-card="resorts">
+        <img src="{% static 'app/images/RESORTS AND VILLAS/3.avif' %}" alt="Resort 1" class="carousel-img active">
+        <img src="{% static 'app/images/RESORTS AND VILLAS/8.avif' %}" alt="Resort 2" class="carousel-img">
+        <img src="{% static 'app/images/RESORTS AND VILLAS/7.jpg' %}" alt="Resort 3" class="carousel-img">
+        <button class="carousel-btn prev-btn" aria-label="Previous">&#10094;</button>
+        <button class="carousel-btn next-btn" aria-label="Next">&#10095;</button>
+      </div>
+      <div class="card-text">
+        <h3>RESORTS</h3>
+        <p>Experience world-class hospitality and comfort</p>
+        <a href="{% url 'mainCategory' 'RE' %}" class="explore-btn">Explore Resorts</a>
+      </div>
+    </div>
+
+    <div class="premium-card">
+      <div class="card-carousel" data-card="waterparks">
+        <img src="{% static 'app/images/WATERPARKS/W-1.webp' %}" alt="Waterpark 1" class="carousel-img active">
+        <img src="{% static 'app/images/WATERPARKS/W-2.avif' %}" alt="Waterpark 2" class="carousel-img">
+        <img src="{% static 'app/images/WATERPARKS/W-3.jpg' %}" alt="Waterpark 3" class="carousel-img">
+        <img src="{% static 'app/images/WATERPARKS/W-4.jpg' %}" alt="Waterpark 4" class="carousel-img">
+        <button class="carousel-btn prev-btn" aria-label="Previous">&#10094;</button>
+        <button class="carousel-btn next-btn" aria-label="Next">&#10095;</button>
+      </div>
+      <div class="card-text">
+        <h3>WATERPARKS</h3>
+        <p>Dive into excitement and fun at amazing destinations</p>
+        <a href="{% url 'mainCategory' 'WP' %}" class="explore-btn">Explore Waterparks</a>
+      </div>
+    </div>
+
+    <div class="premium-card">
+      <div class="card-carousel" data-card="packages">
+        <img src="{% static 'app/images/RESORTS AND VILLAS/4.webp' %}" alt="Package 1" class="carousel-img active">
+        <img src="{% static 'app/images/RESORTS AND VILLAS/5.jpg' %}" alt="Package 2" class="carousel-img">
+        <img src="{% static 'app/images/RESORTS AND VILLAS/2.webp' %}" alt="Package 3" class="carousel-img">
+        <button class="carousel-btn prev-btn" aria-label="Previous">&#10094;</button>
+        <button class="carousel-btn next-btn" aria-label="Next">&#10095;</button>
+      </div>
+      <div class="card-text">
+        <h3>DESTINATION PACKAGES</h3>
+        <p>Discover amazing destinations with curated packages</p>
+        <a href="{% url 'mainCategory' 'DP' %}" class="explore-btn">Explore Packages</a>
+      </div>
+    </div>
+
+    <div class="premium-card">
+      <div class="card-carousel" data-card="dhabas">
+        <img src="{% static 'app/images/DHABAS/D-1.avif' %}" alt="Dhaba 1" class="carousel-img active">
+        <img src="{% static 'app/images/DHABAS/D-2.jpg' %}" alt="Dhaba 2" class="carousel-img">
+        <img src="{% static 'app/images/DHABAS/D-3.jpg' %}" alt="Dhaba 3" class="carousel-img">
+        <img src="{% static 'app/images/DHABAS/D-4.jpg' %}" alt="Dhaba 4" class="carousel-img">
+        <img src="{% static 'app/images/DHABAS/D-5.jpg' %}" alt="Dhaba 5" class="carousel-img">
+        <button class="carousel-btn prev-btn" aria-label="Previous">&#10094;</button>
+        <button class="carousel-btn next-btn" aria-label="Next">&#10095;</button>
+      </div>
+      <div class="card-text">
+        <h3>DHABAS</h3>
+        <p>Savor authentic flavors and traditional cuisine</p>
+        <a href="{% url 'mainCategory' 'DB' %}" class="explore-btn">Explore Dhabas</a>
+      </div>
+    </div>
+
+    <div class="premium-card">
+      <div class="card-carousel" data-card="villas">
+        <img src="{% static 'app/images/RESORTS AND VILLAS/8.avif' %}" alt="Villa 1" class="carousel-img active">
+        <img src="{% static 'app/images/RESORTS AND VILLAS/3.avif' %}" alt="Villa 2" class="carousel-img">
+        <img src="{% static 'app/images/RESORTS AND VILLAS/7.jpg' %}" alt="Villa 3" class="carousel-img">
+        <button class="carousel-btn prev-btn" aria-label="Previous">&#10094;</button>
+        <button class="carousel-btn next-btn" aria-label="Next">&#10095;</button>
+      </div>
+      <div class="card-text">
+        <h3>VILLAS</h3>
+        <p>Experience luxury living in beautifully designed villas</p>
+        <a href="{% url 'mainCategory' 'VI' %}" class="explore-btn">Explore Villas</a>
+      </div>
+    </div>
+
+    <div class="premium-card">
+      <div class="card-carousel" data-card="games">
+        <img src="{% static 'app/images/GAMES/G-1.avif' %}" alt="Game 1" class="carousel-img active">
+        <img src="{% static 'app/images/GAMES/G-2.webp' %}" alt="Game 2" class="carousel-img">
+        <img src="{% static 'app/images/GAMES/G-3.webp' %}" alt="Game 3" class="carousel-img">
+        <img src="{% static 'app/images/GAMES/G-4.jpg' %}" alt="Game 4" class="carousel-img">
+        <button class="carousel-btn prev-btn" aria-label="Previous">&#10094;</button>
+        <button class="carousel-btn next-btn" aria-label="Next">&#10095;</button>
+      </div>
+      <div class="card-text">
+        <h3>GAMES</h3>
+        <p>Unleash your spirit at exciting gaming destinations</p>
+        <a href="{% url 'mainCategory' 'GO' %}" class="explore-btn">Explore Games</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about-hero" id="about">
+  <div class="container">
+    <div class="about-hero-bg"></div>
+    <div class="about-hero-wrapper">
+      <div class="about-hero-content">
+        <h1 class="about-hero-title">
+          Creating unforgettable<br>
+          experiences, one journey<br>
+          at a time.
+        </h1>
+        <p class="about-hero-subtitle">
+          We're redefining travel with premium destinations, exceptional service,<br>
+          and a commitment to making every moment count.
+        </p>
+      </div>
+      <div class="about-hero-motto">
+        <div class="motto-badge">
+          <i class="fas fa-quote-left"></i> Our Motto
         </div>
-      </section>
-
-      <section class="premium-section" id="premium">
-        <div class="premium-header">
-          <span class="premium-pill">Premium Experiences</span>
-          <h2>Explore Our Premium Destinations</h2>
-          <p>From luxurious resorts to exciting waterparks, discover curated experiences tailored for your perfect getaway</p>
-        </div>
-        <div class="premium-grid">
-          <div class="premium-card">
-            <div class="card-carousel" data-card="resorts">
-              <img src="{% static 'app/images/RESORTS AND VILLAS/3.avif' %}" alt="Resort 1" class="carousel-img active">
-              <img src="{% static 'app/images/RESORTS AND VILLAS/8.avif' %}" alt="Resort 2" class="carousel-img">
-              <img src="{% static 'app/images/RESORTS AND VILLAS/7.jpg' %}" alt="Resort 3" class="carousel-img">
-              <button class="carousel-btn prev-btn" aria-label="Previous">&#10094;</button>
-              <button class="carousel-btn next-btn" aria-label="Next">&#10095;</button>
-            </div>
-            <div class="card-text">
-                <h3>RESORTS</h3>
-                <p>Experience world-class hospitality and comfort</p>
-                <a href="{% url 'mainCategory' 'RE' %}" class="explore-btn">Explore Resorts</a>
-            </div>
+        <h2 class="motto-title">Our Commitment</h2>
+        <p class="motto-text">
+          TSB Enterprises is dedicated to maximizing value and savings for our customers while ensuring their complete
+          satisfaction and fulfillment. We strive to make premium travel experiences accessible to everyone.
+        </p>
+        <div class="motto-highlights">
+          <div class="motto-item">
+            <i class="fas fa-rupee-sign"></i>
+            <span>Maximum Savings</span>
           </div>
-          
-          <div class="premium-card">
-            <div class="card-carousel" data-card="waterparks">
-              <img src="{% static 'app/images/WATERPARKS/W-1.webp' %}" alt="Waterpark 1" class="carousel-img active">
-              <img src="{% static 'app/images/WATERPARKS/W-2.avif' %}" alt="Waterpark 2" class="carousel-img">
-              <img src="{% static 'app/images/WATERPARKS/W-3.jpg' %}" alt="Waterpark 3" class="carousel-img">
-              <img src="{% static 'app/images/WATERPARKS/W-4.jpg' %}" alt="Waterpark 4" class="carousel-img">
-              <button class="carousel-btn prev-btn" aria-label="Previous">&#10094;</button>
-              <button class="carousel-btn next-btn" aria-label="Next">&#10095;</button>
-            </div>
-            <div class="card-text">
-                <h3>WATERPARKS</h3>
-                <p>Dive into excitement and fun at amazing destinations</p>
-                <a href="{% url 'mainCategory' 'WP' %}" class="explore-btn">Explore Waterparks</a>
-            </div>
+          <div class="motto-item">
+            <i class="fas fa-heart"></i>
+            <span>Customer Satisfaction</span>
           </div>
-
-          <div class="premium-card">
-            <div class="card-carousel" data-card="packages">
-              <img src="{% static 'app/images/RESORTS AND VILLAS/4.webp' %}" alt="Package 1" class="carousel-img active">
-              <img src="{% static 'app/images/RESORTS AND VILLAS/5.jpg' %}" alt="Package 2" class="carousel-img">
-              <img src="{% static 'app/images/RESORTS AND VILLAS/2.webp' %}" alt="Package 3" class="carousel-img">
-              <button class="carousel-btn prev-btn" aria-label="Previous">&#10094;</button>
-              <button class="carousel-btn next-btn" aria-label="Next">&#10095;</button>
-            </div>
-            <div class="card-text">
-                <h3>DESTINATION PACKAGES</h3>
-                <p>Discover amazing destinations with curated packages</p>
-                <a href="{% url 'mainCategory' 'DP' %}" class="explore-btn">Explore Packages</a>
-            </div>
-          </div>
-
-          <div class="premium-card">
-            <div class="card-carousel" data-card="dhabas">
-              <img src="{% static 'app/images/DHABAS/D-1.avif' %}" alt="Dhaba 1" class="carousel-img active">
-              <img src="{% static 'app/images/DHABAS/D-2.jpg' %}" alt="Dhaba 2" class="carousel-img">
-              <img src="{% static 'app/images/DHABAS/D-3.jpg' %}" alt="Dhaba 3" class="carousel-img">
-              <img src="{% static 'app/images/DHABAS/D-4.jpg' %}" alt="Dhaba 4" class="carousel-img">
-              <img src="{% static 'app/images/DHABAS/D-5.jpg' %}" alt="Dhaba 5" class="carousel-img">
-              <button class="carousel-btn prev-btn" aria-label="Previous">&#10094;</button>
-              <button class="carousel-btn next-btn" aria-label="Next">&#10095;</button>
-            </div>
-            <div class="card-text">
-                <h3>DHABAS</h3>
-                <p>Savor authentic flavors and traditional cuisine</p>
-                <a href="{% url 'mainCategory' 'DB' %}" class="explore-btn">Explore Dhabas</a>
-            </div>
-          </div>
-
-          <div class="premium-card">
-            <div class="card-carousel" data-card="villas">
-              <img src="{% static 'app/images/RESORTS AND VILLAS/8.avif' %}" alt="Villa 1" class="carousel-img active">
-              <img src="{% static 'app/images/RESORTS AND VILLAS/3.avif' %}" alt="Villa 2" class="carousel-img">
-              <img src="{% static 'app/images/RESORTS AND VILLAS/7.jpg' %}" alt="Villa 3" class="carousel-img">
-              <button class="carousel-btn prev-btn" aria-label="Previous">&#10094;</button>
-              <button class="carousel-btn next-btn" aria-label="Next">&#10095;</button>
-            </div>
-            <div class="card-text">
-                <h3>VILLAS</h3>
-                <p>Experience luxury living in beautifully designed villas</p>
-                <a href="{% url 'mainCategory' 'VI' %}" class="explore-btn">Explore Villas</a>
-            </div>
-          </div>
-
-          <div class="premium-card">
-            <div class="card-carousel" data-card="games">
-              <img src="{% static 'app/images/GAMES/G-1.avif' %}" alt="Game 1" class="carousel-img active">
-              <img src="{% static 'app/images/GAMES/G-2.webp' %}" alt="Game 2" class="carousel-img">
-              <img src="{% static 'app/images/GAMES/G-3.webp' %}" alt="Game 3" class="carousel-img">
-              <img src="{% static 'app/images/GAMES/G-4.jpg' %}" alt="Game 4" class="carousel-img">
-              <button class="carousel-btn prev-btn" aria-label="Previous">&#10094;</button>
-              <button class="carousel-btn next-btn" aria-label="Next">&#10095;</button>
-            </div>
-            <div class="card-text">
-                <h3>GAMES</h3>
-                <p>Unleash your spirit at exciting gaming destinations</p>
-                <a href="{% url 'mainCategory' 'GO' %}" class="explore-btn">Explore Games</a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-  <section class="about-hero" id="about">
-    <div class="container">
-      <div class="about-hero-bg"></div>
-      <div class="about-hero-wrapper">
-        <div class="about-hero-content">
-          <h1 class="about-hero-title">
-            Creating unforgettable<br>
-            experiences, one journey<br>
-            at a time.
-          </h1>
-          <p class="about-hero-subtitle">
-            We're redefining travel with premium destinations, exceptional service,<br>
-            and a commitment to making every moment count.
-          </p>
-        </div>
-        <div class="about-hero-motto">
-          <div class="motto-badge">
-            <i class="fas fa-quote-left"></i> Our Motto
-          </div>
-          <h2 class="motto-title">Our Commitment</h2>
-          <p class="motto-text">
-            TSB Enterprises is dedicated to maximizing value and savings for our customers while ensuring their complete satisfaction and fulfillment. We strive to make premium travel experiences accessible to everyone.
-          </p>
-          <div class="motto-highlights">
-            <div class="motto-item">
-              <i class="fas fa-rupee-sign"></i>
-              <span>Maximum Savings</span>
-            </div>
-            <div class="motto-item">
-              <i class="fas fa-heart"></i>
-              <span>Customer Satisfaction</span>
-            </div>
-            <div class="motto-item">
-              <i class="fas fa-check-circle"></i>
-              <span>Complete Fulfillment</span>
-            </div>
+          <div class="motto-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Complete Fulfillment</span>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="figures-section">
-    <div class="orb orb-left"></div>
-    <div class="orb orb-right"></div>
-    <h1>Our Achievements</h1>
-    <div class="figures-row">
-      <div class="figure-card">
-        <div class="figure-icon"><i class="fas fa-users"></i></div>
-        <span class="figure-value">0</span>
-        <span class="figure-label">Happy Customers</span>
+<section class="figures-section">
+  <div class="orb orb-left"></div>
+  <div class="orb orb-right"></div>
+  <h1>Our Achievements</h1>
+  <div class="figures-row">
+    <div class="figure-card">
+      <div class="figure-icon"><i class="fas fa-users"></i></div>
+      <span class="figure-value">0</span>
+      <span class="figure-label">Happy Customers</span>
+    </div>
+    <div class="figure-card">
+      <div class="figure-icon"><i class="fas fa-smile"></i></div>
+      <span class="figure-value">0</span>
+      <span class="figure-label">Satisfaction</span>
+    </div>
+    <div class="figure-card">
+      <div class="figure-icon"><i class="fas fa-handshake"></i></div>
+      <span class="figure-value">0</span>
+      <span class="figure-label">Partners</span>
+    </div>
+    <div class="figure-card">
+      <div class="figure-icon"><i class="fas fa-trophy"></i></div>
+      <span class="figure-value">0</span>
+      <span class="figure-label">Awards</span>
+    </div>
+  </div>
+</section>
+
+<section class="faq-section" id="faqs">
+  <h2>Frequently Asked Questions</h2>
+  <div class="faq-list">
+    <div class="faq-item">
+      <button class="faq-question">How do I make a booking? <span class="faq-toggle"><i
+            class="fas fa-chevron-down"></i></span></button>
+      <div class="faq-answer">You can book directly on our website by selecting your destination and dates. Our team is
+        also available to assist you with any queries.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">Is my payment information secure? <span class="faq-toggle"><i
+            class="fas fa-chevron-down"></i></span></button>
+      <div class="faq-answer">Absolutely. We use industry-leading encryption to ensure all your payment details are safe
+        and confidential.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">Can I modify or cancel my reservation? <span class="faq-toggle"><i
+            class="fas fa-chevron-down"></i></span></button>
+      <div class="faq-answer">Yes, you can modify or cancel your booking from your account dashboard. Please check our
+        policy for any applicable fees.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">What destinations do you offer? <span class="faq-toggle"><i
+            class="fas fa-chevron-down"></i></span></button>
+      <div class="faq-answer">We offer a wide range of destinations including resorts, waterparks, and unique local
+        experiences across India.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">How can I contact customer support? <span class="faq-toggle"><i
+            class="fas fa-chevron-down"></i></span></button>
+      <div class="faq-answer">Our support team is available 24/7 via phone, email, or live chat to assist you with any
+        questions or concerns.</div>
+    </div>
+  </div>
+</section>
+
+<section class="trust-section">
+  <div class="trust-orb-1"></div>
+  <div class="trust-orb-2"></div>
+  <div class="container">
+    <div class="trust-header text-center">
+      <span class="trust-pill">Why Choose Us</span>
+      <h2>Why Choose TSB Enterprises?</h2>
+      <p>Your trusted partner for unforgettable travel experiences</p>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-badge bounce-in">
+        <div class="icon"><i class="fas fa-shield-alt"></i></div>
+        <h4>Secure Booking</h4>
+        <p>100% secure payments with industry-leading encryption</p>
       </div>
-      <div class="figure-card">
-        <div class="figure-icon"><i class="fas fa-smile"></i></div>
-        <span class="figure-value">0</span>
-        <span class="figure-label">Satisfaction</span>
+      <div class="trust-badge bounce-in delay-1">
+        <div class="icon"><i class="fas fa-award"></i></div>
+        <h4>Best Price Guarantee</h4>
+        <p>Find a lower price? We'll match it instantly</p>
       </div>
-      <div class="figure-card">
-        <div class="figure-icon"><i class="fas fa-handshake"></i></div>
-        <span class="figure-value">0</span>
-        <span class="figure-label">Partners</span>
+      <div class="trust-badge bounce-in delay-2">
+        <div class="icon"><i class="fas fa-clock"></i></div>
+        <h4>24/7 Support</h4>
+        <p>Round-the-clock assistance from our expert team</p>
       </div>
-      <div class="figure-card">
-        <div class="figure-icon"><i class="fas fa-trophy"></i></div>
-        <span class="figure-value">0</span>
-        <span class="figure-label">Awards</span>
+      <div class="trust-badge bounce-in delay-3">
+        <div class="icon"><i class="fas fa-heart"></i></div>
+        <h4>500k+ Happy Guests</h4>
+        <p>Join thousands of satisfied travelers</p>
       </div>
     </div>
-  </section>
-
-  <section class="faq-section" id="faqs">
-    <h2>Frequently Asked Questions</h2>
-    <div class="faq-list">
-      <div class="faq-item">
-        <button class="faq-question">How do I make a booking? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
-        <div class="faq-answer">You can book directly on our website by selecting your destination and dates. Our team is also available to assist you with any queries.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">Is my payment information secure? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
-        <div class="faq-answer">Absolutely. We use industry-leading encryption to ensure all your payment details are safe and confidential.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">Can I modify or cancel my reservation? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
-        <div class="faq-answer">Yes, you can modify or cancel your booking from your account dashboard. Please check our policy for any applicable fees.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">What destinations do you offer? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
-        <div class="faq-answer">We offer a wide range of destinations including resorts, waterparks, and unique local experiences across India.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">How can I contact customer support? <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span></button>
-        <div class="faq-answer">Our support team is available 24/7 via phone, email, or live chat to assist you with any questions or concerns.</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="trust-section">
-    <div class="trust-orb-1"></div>
-    <div class="trust-orb-2"></div>
-    <div class="container">
-      <div class="trust-header text-center">
-        <span class="trust-pill">Why Choose Us</span>
-        <h2>Why Choose TSB Enterprises?</h2>
-        <p>Your trusted partner for unforgettable travel experiences</p>
-      </div>
-      <div class="trust-grid">
-        <div class="trust-badge bounce-in">
-          <div class="icon"><i class="fas fa-shield-alt"></i></div>
-          <h4>Secure Booking</h4>
-          <p>100% secure payments with industry-leading encryption</p>
-        </div>
-        <div class="trust-badge bounce-in delay-1">
-          <div class="icon"><i class="fas fa-award"></i></div>
-          <h4>Best Price Guarantee</h4>
-          <p>Find a lower price? We'll match it instantly</p>
-        </div>
-        <div class="trust-badge bounce-in delay-2">
-          <div class="icon"><i class="fas fa-clock"></i></div>
-          <h4>24/7 Support</h4>
-          <p>Round-the-clock assistance from our expert team</p>
-        </div>
-        <div class="trust-badge bounce-in delay-3">
-          <div class="icon"><i class="fas fa-heart"></i></div>
-          <h4>500k+ Happy Guests</h4>
-          <p>Join thousands of satisfied travelers</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  </div>
+</section>
 
 <section class="review-section" id="review">
   <div class="review-container">
@@ -301,18 +313,23 @@
       <div class="review-quote-icon"><i class="fas fa-quote-left"></i></div>
       <div class="review-title">What our customers are saying</div>
       <div class="review-arrows">
-        <button class="review-arrow review-arrow-prev" aria-label="Previous Review"><i class="fas fa-arrow-left"></i></button>
-        <button class="review-arrow review-arrow-next" aria-label="Next Review"><i class="fas fa-arrow-right"></i></button>
+        <button class="review-arrow review-arrow-prev" aria-label="Previous Review"><i
+            class="fas fa-arrow-left"></i></button>
+        <button class="review-arrow review-arrow-next" aria-label="Next Review"><i
+            class="fas fa-arrow-right"></i></button>
       </div>
     </div>
     <div class="review-slider">
       <div class="review-card active">
-        <div class="review-text">Absolutely amazing experience! The resort was luxurious, staff was incredibly helpful, and the booking process was seamless. TSB truly exceeded our expectations!</div>
+        <div class="review-text">Absolutely amazing experience! The resort was luxurious, staff was incredibly helpful,
+          and the booking process was seamless. TSB truly exceeded our expectations!</div>
         <div class="review-stars">
-          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+            class="fas fa-star"></i>
         </div>
         <div class="review-author">
-          <img src="https://ui-avatars.com/api/?name=Priya+Sharma&background=667eea&color=fff&size=100" alt="Priya Sharma" class="review-avatar">
+          <img src="https://ui-avatars.com/api/?name=Priya+Sharma&background=667eea&color=fff&size=100"
+            alt="Priya Sharma" class="review-avatar">
           <div>
             <div class="review-name">Priya Sharma</div>
             <div class="review-meta">Mumbai, India</div>
@@ -320,12 +337,15 @@
         </div>
       </div>
       <div class="review-card">
-        <div class="review-text">Best waterpark experience ever! Perfect for families. The customer service from TSB was top-notch, and the deals were unbeatable. Will definitely book again!</div>
+        <div class="review-text">Best waterpark experience ever! Perfect for families. The customer service from TSB was
+          top-notch, and the deals were unbeatable. Will definitely book again!</div>
         <div class="review-stars">
-          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+            class="fas fa-star"></i>
         </div>
         <div class="review-author">
-          <img src="https://ui-avatars.com/api/?name=Raj+Patel&background=fbbf24&color=000&size=100" alt="Raj Patel" class="review-avatar">
+          <img src="https://ui-avatars.com/api/?name=Raj+Patel&background=fbbf24&color=000&size=100" alt="Raj Patel"
+            class="review-avatar">
           <div>
             <div class="review-name">Raj Patel</div>
             <div class="review-meta">Delhi, India</div>
@@ -333,12 +353,15 @@
         </div>
       </div>
       <div class="review-card">
-        <div class="review-text">TSB made our dream vacation come true! From start to finish, everything was perfect. Highly recommend their destination packages. Outstanding service!</div>
+        <div class="review-text">TSB made our dream vacation come true! From start to finish, everything was perfect.
+          Highly recommend their destination packages. Outstanding service!</div>
         <div class="review-stars">
-          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+            class="fas fa-star"></i>
         </div>
         <div class="review-author">
-          <img src="https://ui-avatars.com/api/?name=Anita+Kumar&background=06b6d4&color=fff&size=100" alt="Anita Kumar" class="review-avatar">
+          <img src="https://ui-avatars.com/api/?name=Anita+Kumar&background=06b6d4&color=fff&size=100" alt="Anita Kumar"
+            class="review-avatar">
           <div>
             <div class="review-name">Anita Kumar</div>
             <div class="review-meta">Bangalore, India</div>
@@ -346,12 +369,15 @@
         </div>
       </div>
       <div class="review-card">
-        <div class="review-text">We booked a villa through TSB and it was a fantastic experience. The amenities were top-notch and the staff was very friendly. Highly recommended for family trips!</div>
+        <div class="review-text">We booked a villa through TSB and it was a fantastic experience. The amenities were
+          top-notch and the staff was very friendly. Highly recommended for family trips!</div>
         <div class="review-stars">
-          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+            class="fas fa-star"></i>
         </div>
         <div class="review-author">
-          <img src="https://ui-avatars.com/api/?name=Arjun+Mehta&background=ea580c&color=fff&size=100" alt="Arjun Mehta" class="review-avatar">
+          <img src="https://ui-avatars.com/api/?name=Arjun+Mehta&background=ea580c&color=fff&size=100" alt="Arjun Mehta"
+            class="review-avatar">
           <div>
             <div class="review-name">Arjun Mehta</div>
             <div class="review-meta">Jaipur, India</div>
@@ -359,12 +385,15 @@
         </div>
       </div>
       <div class="review-card">
-        <div class="review-text">TSB's customer support is outstanding! They helped us with every query and made sure our trip was smooth. Will definitely use their services again.</div>
+        <div class="review-text">TSB's customer support is outstanding! They helped us with every query and made sure
+          our trip was smooth. Will definitely use their services again.</div>
         <div class="review-stars">
-          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+            class="fas fa-star"></i>
         </div>
         <div class="review-author">
-          <img src="https://ui-avatars.com/api/?name=Sneha+Rao&background=34d399&color=000&size=100" alt="Sneha Rao" class="review-avatar">
+          <img src="https://ui-avatars.com/api/?name=Sneha+Rao&background=34d399&color=000&size=100" alt="Sneha Rao"
+            class="review-avatar">
           <div>
             <div class="review-name">Sneha Rao</div>
             <div class="review-meta">Hyderabad, India</div>
@@ -372,12 +401,15 @@
         </div>
       </div>
       <div class="review-card">
-        <div class="review-text">From booking to checkout, everything was seamless. The resort was beautiful and the food was delicious. TSB made our holiday memorable!</div>
+        <div class="review-text">From booking to checkout, everything was seamless. The resort was beautiful and the
+          food was delicious. TSB made our holiday memorable!</div>
         <div class="review-stars">
-          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+            class="fas fa-star"></i>
         </div>
         <div class="review-author">
-          <img src="https://ui-avatars.com/api/?name=Ravi+Singh&background=6366f1&color=fff&size=100" alt="Ravi Singh" class="review-avatar">
+          <img src="https://ui-avatars.com/api/?name=Ravi+Singh&background=6366f1&color=fff&size=100" alt="Ravi Singh"
+            class="review-avatar">
           <div>
             <div class="review-name">Ravi Singh</div>
             <div class="review-meta">Lucknow, India</div>
@@ -390,7 +422,7 @@
 
 <section class="contact-section" id="contact">
   <div class="trust-orb-1"></div>
-    <div class="trust-orb-2"></div>
+  <div class="trust-orb-2"></div>
   <div class="contact-container">
     <div class="contact-image fade-in">
       <img src="{% static 'app/images/contact-us.jpg' %}" alt="Contact Support" class="contact-img">
@@ -398,13 +430,15 @@
     <div class="contact-content slide-in-left">
       <h2 class="contact-title">Contact Our Certified Travel Experts</h2>
       <p class="contact-desc">
-        Need personalized assistance planning your perfect vacation? Our certified travel agents are here to help you with expert recommendations, customized itineraries, and exceptional service.
+        Need personalized assistance planning your perfect vacation? Our certified travel agents are here to help you
+        with expert recommendations, customized itineraries, and exceptional service.
       </p>
       <div class="contact-buttons">
         <a href="tel:+01234567890" class="contact-btn contact-btn-primary">
           <i class="fas fa-phone-alt"></i> Call Now
         </a>
-        <a href="https://wa.me/7028768942/?text=NeedInformation" class="contact-btn contact-btn-secondary" target="_blank">
+        <a href="https://wa.me/7028768942/?text=NeedInformation" class="contact-btn contact-btn-secondary"
+          target="_blank">
           <i class="fab fa-whatsapp"></i> WhatsApp Us
         </a>
       </div>
@@ -415,11 +449,12 @@
 <section class="partners-section">
   <div class="partners-header">
     <h2 class="partners-heading">Our Trusted Partners</h2>
-    <p class="partners-description">We collaborate with premium brands and destinations to bring you the best experiences</p>
+    <p class="partners-description">We collaborate with premium brands and destinations to bring you the best
+      experiences</p>
   </div>
   <div class="partners-band">
     <div class="partners-carousel" id="partners-carousel">
-      </div>
+    </div>
   </div>
 </section>
 
@@ -474,136 +509,136 @@
 {% endblock %}
 
 {% block landing_scripts %}
-  {{ block.super }}
-  <script>
-    (function() {
-      const faqInit = () => {
-        document.querySelectorAll('.faq-question').forEach(btn => {
-          btn.addEventListener('click', function() {
-            const answer = this.nextElementSibling;
-            const icon = this.querySelector('.faq-toggle i');
-            const faqItem = this.closest('.faq-item');
-            
-            // Check if currently open by checking if it has the active class or if maxHeight is set
-            const isOpen = faqItem.classList.contains('active') || 
-                          (answer.style.maxHeight && answer.style.maxHeight !== '0px');
-            
-            // Close all other FAQs (optional - remove if you want multiple open)
-            document.querySelectorAll('.faq-item').forEach(item => {
-              if (item !== faqItem && item.classList.contains('active')) {
-                const otherAnswer = item.querySelector('.faq-answer');
-                const otherIcon = item.querySelector('.faq-toggle i');
-                otherAnswer.style.maxHeight = '0px';
-                otherAnswer.style.padding = '0';
-                item.classList.remove('active');
-                if (otherIcon) {
-                  otherIcon.style.transform = '';
-                  otherIcon.style.color = '';
-                }
-              }
-            });
-            
-            if (!isOpen) {
-              // Open the FAQ - calculate full height including padding
-              // Temporarily set to auto to measure the actual content height
-              answer.style.maxHeight = 'none';
-              answer.style.padding = '12px 0px 12px 18px';
-              answer.style.opacity = '1';
-              answer.style.overflow = 'visible';
-              answer.style.height = 'auto';
-              
-              // Force a reflow to ensure styles are applied before measuring
-              answer.offsetHeight;
-              
-              // Get the full height including padding and border
-              // Use both scrollHeight and getBoundingClientRect for accuracy
-              const scrollHeight = answer.scrollHeight;
-              const boundingHeight = answer.getBoundingClientRect().height;
-              const computedStyle = window.getComputedStyle(answer);
-              const lineHeight = parseFloat(computedStyle.lineHeight) || 1.5;
-              const fontSize = parseFloat(computedStyle.fontSize) || 16;
-              
-              // Calculate full height - use the maximum of all measurements
-              const fullHeight = Math.max(scrollHeight, boundingHeight);
-              
-              // Add extra buffer for line-height variations, subpixel rendering, and text wrapping
-              // Buffer should account for at least one line of text (lineHeight * fontSize)
-              const buffer = Math.max(25, lineHeight * fontSize * 0.5);
-              const finalHeight = fullHeight + buffer;
-              
-              // Reset to 0 for animation
-              answer.style.maxHeight = '0px';
-              answer.style.padding = '0';
-              answer.style.opacity = '0';
-              answer.style.overflow = 'hidden';
-              answer.style.height = 'auto';
-              
-              // Force reflow to ensure the reset is applied
-              answer.offsetHeight;
-              
-              // Now animate to full height with padding
-              answer.style.maxHeight = finalHeight + 'px';
-              answer.style.padding = '12px 0px 12px 18px';
-              answer.style.opacity = '1';
-              faqItem.classList.add('active');
-              if (icon) {
-                icon.style.transform = 'rotate(180deg)';
-                icon.style.color = '#1976d2';
-              }
-            } else {
-              // Close the FAQ
-              answer.style.maxHeight = '0px';
-              answer.style.padding = '0';
-              answer.style.opacity = '0';
-              faqItem.classList.remove('active');
-              if (icon) {
-                icon.style.transform = '';
-                icon.style.color = '';
+{{ block.super }}
+<script>
+  (function () {
+    const faqInit = () => {
+      document.querySelectorAll('.faq-question').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const answer = this.nextElementSibling;
+          const icon = this.querySelector('.faq-toggle i');
+          const faqItem = this.closest('.faq-item');
+
+          // Check if currently open by checking if it has the active class or if maxHeight is set
+          const isOpen = faqItem.classList.contains('active') ||
+            (answer.style.maxHeight && answer.style.maxHeight !== '0px');
+
+          // Close all other FAQs (optional - remove if you want multiple open)
+          document.querySelectorAll('.faq-item').forEach(item => {
+            if (item !== faqItem && item.classList.contains('active')) {
+              const otherAnswer = item.querySelector('.faq-answer');
+              const otherIcon = item.querySelector('.faq-toggle i');
+              otherAnswer.style.maxHeight = '0px';
+              otherAnswer.style.padding = '0';
+              item.classList.remove('active');
+              if (otherIcon) {
+                otherIcon.style.transform = '';
+                otherIcon.style.color = '';
               }
             }
           });
-        });
-      };
-  
-      const figureData = [
-        { target: 500000, suffix: '+' },
-        { target: 80, suffix: '%' },
-        { target: 200, suffix: '' },
-        { target: 20, suffix: '+' }
-      ];
-      let figuresAnimated = false;
-      const animateCounter = (element, target, suffix, duration = 2000) => {
-        const increment = target / (duration / 16);
-        let current = 0;
-        const timer = setInterval(() => {
-          current += increment;
-          if (current >= target) {
-            current = target;
-            clearInterval(timer);
+
+          if (!isOpen) {
+            // Open the FAQ - calculate full height including padding
+            // Temporarily set to auto to measure the actual content height
+            answer.style.maxHeight = 'none';
+            answer.style.padding = '12px 0px 12px 18px';
+            answer.style.opacity = '1';
+            answer.style.overflow = 'visible';
+            answer.style.height = 'auto';
+
+            // Force a reflow to ensure styles are applied before measuring
+            answer.offsetHeight;
+
+            // Get the full height including padding and border
+            // Use both scrollHeight and getBoundingClientRect for accuracy
+            const scrollHeight = answer.scrollHeight;
+            const boundingHeight = answer.getBoundingClientRect().height;
+            const computedStyle = window.getComputedStyle(answer);
+            const lineHeight = parseFloat(computedStyle.lineHeight) || 1.5;
+            const fontSize = parseFloat(computedStyle.fontSize) || 16;
+
+            // Calculate full height - use the maximum of all measurements
+            const fullHeight = Math.max(scrollHeight, boundingHeight);
+
+            // Add extra buffer for line-height variations, subpixel rendering, and text wrapping
+            // Buffer should account for at least one line of text (lineHeight * fontSize)
+            const buffer = Math.max(25, lineHeight * fontSize * 0.5);
+            const finalHeight = fullHeight + buffer;
+
+            // Reset to 0 for animation
+            answer.style.maxHeight = '0px';
+            answer.style.padding = '0';
+            answer.style.opacity = '0';
+            answer.style.overflow = 'hidden';
+            answer.style.height = 'auto';
+
+            // Force reflow to ensure the reset is applied
+            answer.offsetHeight;
+
+            // Now animate to full height with padding
+            answer.style.maxHeight = finalHeight + 'px';
+            answer.style.padding = '12px 0px 12px 18px';
+            answer.style.opacity = '1';
+            faqItem.classList.add('active');
+            if (icon) {
+              icon.style.transform = 'rotate(180deg)';
+              icon.style.color = '#1976d2';
+            }
+          } else {
+            // Close the FAQ
+            answer.style.maxHeight = '0px';
+            answer.style.padding = '0';
+            answer.style.opacity = '0';
+            faqItem.classList.remove('active');
+            if (icon) {
+              icon.style.transform = '';
+              icon.style.color = '';
+            }
           }
-          element.textContent = Math.floor(current) + suffix;
-        }, 16);
-      };
-      const checkFiguresVisibility = () => {
-        const figuresSection = document.querySelector('.figures-section');
-        const figureCards = document.querySelectorAll('.figure-card .figure-value');
-        if (figuresAnimated || !figuresSection) return;
-        const rect = figuresSection.getBoundingClientRect();
-        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
-        if (isVisible) {
-          figuresAnimated = true;
-          figureCards.forEach((card, index) => {
-            const { target, suffix } = figureData[index];
-            animateCounter(card, target, suffix);
-          });
-        }
-      };
-  
-      window.addEventListener('DOMContentLoaded', () => {
-        faqInit();
-        checkFiguresVisibility();
+        });
       });
-      document.addEventListener('scroll', checkFiguresVisibility);
-    })();
-  </script>
+    };
+
+    const figureData = [
+      { target: 500000, suffix: '+' },
+      { target: 80, suffix: '%' },
+      { target: 200, suffix: '' },
+      { target: 20, suffix: '+' }
+    ];
+    let figuresAnimated = false;
+    const animateCounter = (element, target, suffix, duration = 2000) => {
+      const increment = target / (duration / 16);
+      let current = 0;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        element.textContent = Math.floor(current) + suffix;
+      }, 16);
+    };
+    const checkFiguresVisibility = () => {
+      const figuresSection = document.querySelector('.figures-section');
+      const figureCards = document.querySelectorAll('.figure-card .figure-value');
+      if (figuresAnimated || !figuresSection) return;
+      const rect = figuresSection.getBoundingClientRect();
+      const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+      if (isVisible) {
+        figuresAnimated = true;
+        figureCards.forEach((card, index) => {
+          const { target, suffix } = figureData[index];
+          animateCounter(card, target, suffix);
+        });
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      faqInit();
+      checkFiguresVisibility();
+    });
+    document.addEventListener('scroll', checkFiguresVisibility);
+  })();
+</script>
 {% endblock %}
