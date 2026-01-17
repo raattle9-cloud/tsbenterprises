@@ -3,86 +3,85 @@
 {% block title %}Profile{% endblock %}
 
 {% block landing_content %}
-  <section class="py-5" style="margin-top: 120px;">
-    <div class="container">
-      <div class="row g-4">
-        {% if user.is_authenticated %}
-          <div class="col-lg-3">
-            <div class="card shadow-sm h-100">
-              <div class="card-body">
-                <h5 class="card-title text-uppercase text-muted small">Quick Actions</h5>
-                <ul class="list-unstyled mt-3">
-                  <li class="d-grid my-2">
-                    <a href="{% url 'profile' %}" class="btn btn-success">Update Profile</a>
-                  </li>
-                  <li class="d-grid my-2">
-                    <a href="{% url 'payments' %}" class="btn btn-outline-secondary">Payments</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+<section class="py-5" style="margin-top: 120px;">
+  <div class="container">
+    <div class="row g-4">
+      {% if user.is_authenticated %}
+      <div class="col-lg-3">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title text-uppercase text-muted small">Quick Actions</h5>
+            <ul class="list-unstyled mt-3">
+              <li class="d-grid my-2">
+                <a href="{% url 'profile' %}" class="btn btn-success">Update Profile</a>
+              </li>
+              <li class="d-grid my-2">
+                <a href="{% url 'my-bookings' %}" class="btn btn-outline-secondary">My Bookings</a>
+              </li>
+            </ul>
           </div>
-        {% else %}
-          <div class="col-lg-8 offset-lg-2">
-            <div class="card border-0 shadow-sm">
-              <div class="card-body text-center py-5">
-                <h4 class="mb-3">Please login to update your profile</h4>
-                <a href="{% url 'customerlogin' %}" class="btn btn-success px-4">Login</a>
-              </div>
-            </div>
-          </div>
-        {% endif %}
-
-        {% if user.is_authenticated %}
-          <div class="col-lg-7 offset-lg-1">
-            <div class="card shadow-sm border-0">
-              <div class="card-body p-4">
-                <h4 class="mb-4">Profile Details</h4>
-                <form action="" method="post">
-                  {% csrf_token %}
-                  <div class="row g-3">
-                    {% for fm in form %}
-                      <div class="col-md-6">
-                        {{ fm.label_tag }}
-                        {{ fm }}
-                        <div class="text-danger small">
-                          {{ fm.errors }}
-                        </div>
-                      </div>
-                    {% endfor %}
-                  </div>
-                  <div class="text-center mt-4">
-                    <input type="submit" class="btn btn-success px-5" value="Save Changes">
-                  </div>
-
-                  {% if form.non_field_errors %}
-                    {% for error in form.non_field_errors %}
-                      <p class="text-danger text-center mt-3" id="message">{{ error }}</p>
-                      <script>
-                        setTimeout(function() {
-                          var msg = document.getElementById('message');
-                          if (msg) {
-                            msg.style.display = 'none';
-                          }
-                        }, 5000);
-                      </script>
-                    {% endfor %}
-                  {% endif %}
-
-                  {% if messages %}
-                    {% for msg in messages %}
-                      <div class="alert alert-{{ msg.tags }} mt-3" role="alert">
-                        {{ msg }}
-                      </div>
-                    {% endfor %}
-                  {% endif %}
-                </form>
-              </div>
-            </div>
-          </div>
-        {% endif %}
+        </div>
       </div>
-    </div>
-  </section>
-{% endblock %}
+      {% else %}
+      <div class="col-lg-8 offset-lg-2">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body text-center py-5">
+            <h4 class="mb-3">Please login to update your profile</h4>
+            <a href="{% url 'customerlogin' %}" class="btn btn-success px-4">Login</a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
 
+      {% if user.is_authenticated %}
+      <div class="col-lg-7 offset-lg-1">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <h4 class="mb-4">Profile Details</h4>
+            <form action="" method="post">
+              {% csrf_token %}
+              <div class="row g-3">
+                {% for fm in form %}
+                <div class="col-md-6">
+                  {{ fm.label_tag }}
+                  {{ fm }}
+                  <div class="text-danger small">
+                    {{ fm.errors }}
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              <div class="text-center mt-4">
+                <input type="submit" class="btn btn-success px-5" value="Save Changes">
+              </div>
+
+              {% if form.non_field_errors %}
+              {% for error in form.non_field_errors %}
+              <p class="text-danger text-center mt-3" id="message">{{ error }}</p>
+              <script>
+                setTimeout(function () {
+                  var msg = document.getElementById('message');
+                  if (msg) {
+                    msg.style.display = 'none';
+                  }
+                }, 5000);
+              </script>
+              {% endfor %}
+              {% endif %}
+
+              {% if messages %}
+              {% for msg in messages %}
+              <div class="alert alert-{{ msg.tags }} mt-3" role="alert">
+                {{ msg }}
+              </div>
+              {% endfor %}
+              {% endif %}
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

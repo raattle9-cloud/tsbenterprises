@@ -294,9 +294,7 @@ class ProfileView(View):
         
         return render(request, "app/profile.html", {'form': form, 'has_profile': has_profile})
 
-def payments(request):
-    return render(request, 'app/payments.html',locals())
-    
+
 def logout_user(request):
     logout(request)
     messages.success(request, "You have successfully logged out.")
