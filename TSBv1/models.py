@@ -4,6 +4,38 @@ from django.core.validators import RegexValidator
 
 # Create your models here.
 
+
+class MongoFloatField(models.FloatField):
+    """Custom FloatField that handles MongoDB's Decimal128 type"""
+    
+    def from_db_value(self, value, expression, connection):
+        """Convert Decimal128 from MongoDB to Python float"""
+        if value is None:
+            return value
+        # Handle Decimal128 objects from MongoDB
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            # If it's a Decimal128, convert via string
+            try:
+                return float(str(value))
+            except (TypeError, ValueError):
+                return 0.0
+    
+    def get_prep_value(self, value):
+        """Prepare value for database storage"""
+        if value is None:
+            return value
+        # Convert any type to float before saving
+        try:
+            if isinstance(value, (int, float)):
+                return float(value)
+            else:
+                # Handle Decimal128, Decimal, or string
+                return float(str(value))
+        except (TypeError, ValueError):
+            return 0.0
+
 CATEGORY_CHOICES = (
     ("RE", "Resort"),
     ("WP", "Waterpark"),
@@ -55,8 +87,8 @@ STATE_CHOICES = (
 
 class Services(models.Model):
     title = models.CharField(max_length=100)
-    selling_price = models.FloatField()
-    discounted_price = models.FloatField()
+    selling_price = MongoFloatField()
+    discounted_price = MongoFloatField()
     description = models.TextField()
     composition = models.TextField(default="")
     servapp = models.TextField(default="")
@@ -70,7 +102,7 @@ class Services(models.Model):
         default="FIXED",
         blank=True,
     )
-    advance_payment_value = models.FloatField(
+    advance_payment_value = MongoFloatField(
         default=0,
         help_text="Fixed amount in INR or percentage (0-100)",
     )
@@ -220,7 +252,7 @@ PAYMENT_TYPE_CHOICES = (
 
 class Payment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    amount = models.FloatField()
+    amount = MongoFloatField()
     razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
     razorpay_payment_status = models.CharField(max_length=100, blank=True, null=True)
     razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
@@ -278,9 +310,9 @@ class AdvanceBooking(models.Model):
     # Booking Details
     quantity = models.PositiveIntegerField(default=1)
     booking_date = models.DateField(help_text="Date for which the booking is made")
-    total_amount = models.FloatField()
-    advance_paid = models.FloatField()
-    remaining_amount = models.FloatField()
+    total_amount = MongoFloatField()
+    advance_paid = MongoFloatField()
+    remaining_amount = MongoFloatField()
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
