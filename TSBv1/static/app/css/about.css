@@ -1050,7 +1050,11 @@ h2[style*="Frequently Asked Questions"] {
   margin-right: 10px;
   font-size: 18px;
   padding: 8px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
   background: #1f2937;
   border-radius: 50%;
   transition: 0.3s;
