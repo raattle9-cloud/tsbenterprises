@@ -70,9 +70,7 @@ class Services(models.Model):
         default="FIXED",
         blank=True,
     )
-    advance_payment_value = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
+    advance_payment_value = models.FloatField(
         default=0,
         help_text="Fixed amount in INR or percentage (0-100)",
     )
@@ -280,9 +278,9 @@ class AdvanceBooking(models.Model):
     # Booking Details
     quantity = models.PositiveIntegerField(default=1)
     booking_date = models.DateField(help_text="Date for which the booking is made")
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    advance_paid = models.DecimalField(max_digits=10, decimal_places=2)
-    remaining_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    total_amount = models.FloatField()
+    advance_paid = models.FloatField()
+    remaining_amount = models.FloatField()
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
