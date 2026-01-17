@@ -267,135 +267,134 @@
                   height: 100%;
                   object-fit: cover;
                   width: 100%;
-                  background-color: #f0f0f0;
-              />
+                  background-color: #f0f0f0;" />
               {% endif %}
               {% endwith %}
 
               <!-- Wishlist & Sale Badges -->
               <div class=" position-absolute top-0 end-0 m-2 d-flex gap-2 align-items-center">
-              {% if request.user.is_authenticated %}
-              {% if serv.id in wishlist_service_ids %}
-              <button class="btn btn-sm btn-danger rounded-circle minus-wishlist wishlist-btn" pid="{{ serv.id }}"
-                title="Remove from Wishlist" style="width: 36px; height: 36px; padding: 0; z-index: 10">
-                <i class="fas fa-heart"></i>
-              </button>
-              {% else %}
-              <button class="btn btn-sm btn-light rounded-circle plus-wishlist wishlist-btn" pid="{{ serv.id }}"
-                title="Add to Wishlist" style="width: 36px; height: 36px; padding: 0; z-index: 10">
-                <i class="far fa-heart"></i>
-              </button>
-              {% endif %}
-              {% else %}
-              <a href="{% url 'customerlogin' %}" class="btn btn-sm btn-light rounded-circle wishlist-btn"
-                title="Login to add to Wishlist" style="width: 36px; height: 36px; padding: 0; z-index: 10">
-                <i class="far fa-heart"></i>
-              </a>
-              {% endif %}
-              {% if serv.discounted_price < serv.selling_price %} <span
-                class="badge bg-danger px-2 py-1 d-flex align-items-center" style="font-size: 0.75rem">
-                <i class="fas fa-tag me-1"></i>Sale
-                </span>
+                {% if request.user.is_authenticated %}
+                {% if serv.id in wishlist_service_ids %}
+                <button class="btn btn-sm btn-danger rounded-circle minus-wishlist wishlist-btn" pid="{{ serv.id }}"
+                  title="Remove from Wishlist" style="width: 36px; height: 36px; padding: 0; z-index: 10">
+                  <i class="fas fa-heart"></i>
+                </button>
+                {% else %}
+                <button class="btn btn-sm btn-light rounded-circle plus-wishlist wishlist-btn" pid="{{ serv.id }}"
+                  title="Add to Wishlist" style="width: 36px; height: 36px; padding: 0; z-index: 10">
+                  <i class="far fa-heart"></i>
+                </button>
                 {% endif %}
-          </div>
+                {% else %}
+                <a href="{% url 'customerlogin' %}" class="btn btn-sm btn-light rounded-circle wishlist-btn"
+                  title="Login to add to Wishlist" style="width: 36px; height: 36px; padding: 0; z-index: 10">
+                  <i class="far fa-heart"></i>
+                </a>
+                {% endif %}
+                {% if serv.discounted_price < serv.selling_price %} <span
+                  class="badge bg-danger px-2 py-1 d-flex align-items-center" style="font-size: 0.75rem">
+                  <i class="fas fa-tag me-1"></i>Sale
+                  </span>
+                  {% endif %}
+              </div>
 
-          <!-- Price Overlay -->
-          <div class="position-absolute bottom-0 start-0 end-0 p-2" style="
+              <!-- Price Overlay -->
+              <div class="position-absolute bottom-0 start-0 end-0 p-2" style="
                   background: linear-gradient(
                     180deg,
                     transparent 0%,
                     rgba(0, 0, 0, 0.7) 100%
                   );
                 ">
-            <div class="text-white">
-              <small class="opacity-75" style="font-size: 0.7rem">From</small>
-              <div class="fw-bold" style="font-size: 1rem">
-                ₹{{ serv.discounted_price|floatformat:0 }}/-
+                <div class="text-white">
+                  <small class="opacity-75" style="font-size: 0.7rem">From</small>
+                  <div class="fw-bold" style="font-size: 1rem">
+                    ₹{{ serv.discounted_price|floatformat:0 }}/-
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <div class="card-body d-flex flex-column p-3">
+            <h6 class="card-title mb-2 fw-bold" style="min-height: 40px; line-height: 1.3">
+              <a href="{% url 'category-detail' serv.id %}" class="text-decoration-none text-dark">
+                {{ serv.title|truncatewords:8 }}
+              </a>
+            </h6>
+
+            <div class="mb-2">
+              <div class="d-flex align-items-baseline flex-wrap gap-1">
+                <span class="fw-bold text-primary">₹{{ serv.discounted_price|floatformat:0 }}/-</span>
+                {% if serv.discounted_price < serv.selling_price %} <span
+                  class="text-muted text-decoration-line-through small">₹{{ serv.selling_price|floatformat:0 }}/-</span>
+                  {% endif %}
               </div>
             </div>
-          </div>
-          </a>
-        </div>
 
-        <div class="card-body d-flex flex-column p-3">
-          <h6 class="card-title mb-2 fw-bold" style="min-height: 40px; line-height: 1.3">
-            <a href="{% url 'category-detail' serv.id %}" class="text-decoration-none text-dark">
-              {{ serv.title|truncatewords:8 }}
-            </a>
-          </h6>
-
-          <div class="mb-2">
-            <div class="d-flex align-items-baseline flex-wrap gap-1">
-              <span class="fw-bold text-primary">₹{{ serv.discounted_price|floatformat:0 }}/-</span>
-              {% if serv.discounted_price < serv.selling_price %} <span
-                class="text-muted text-decoration-line-through small">₹{{ serv.selling_price|floatformat:0 }}/-</span>
-                {% endif %}
-            </div>
-          </div>
-
-          {% if serv.description %}
-          <p class="card-text text-muted small mb-3 flex-grow-1" style="
+            {% if serv.description %}
+            <p class="card-text text-muted small mb-3 flex-grow-1" style="
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
                 line-clamp: 2;
               ">
-            {{ serv.description|truncatewords:12 }}
-          </p>
-          {% endif %}
-
-          <div class="mt-auto d-flex gap-2">
-            {% if serv.supports_advance_payment %}
-            <a href="{% url 'advance-checkout' serv.id %}" class="btn btn-warning flex-fill"
-              style="font-size: 0.75rem; padding: 0.35rem 0.6rem; line-height: 1.2;">
-              <i class="fas fa-shopping-bag me-1" style="font-size: 0.7rem;"></i>Book Now
-            </a>
-            {% else %}
-            <a href="{% url 'checkout' %}?buy_now={{serv.id}}" class="btn btn-success flex-fill"
-              style="font-size: 0.75rem; padding: 0.35rem 0.6rem; line-height: 1.2;">
-              <i class="fas fa-bolt me-1" style="font-size: 0.7rem;"></i>Buy Now
-            </a>
+              {{ serv.description|truncatewords:12 }}
+            </p>
             {% endif %}
-            <form action="/add-to-cart" class="d-inline flex-fill">
-              <input type="hidden" name="serv_id" value="{{serv.id}}">
-              <button type="submit" class="btn btn-primary w-100"
+
+            <div class="mt-auto d-flex gap-2">
+              {% if serv.supports_advance_payment %}
+              <a href="{% url 'advance-checkout' serv.id %}" class="btn btn-warning flex-fill"
                 style="font-size: 0.75rem; padding: 0.35rem 0.6rem; line-height: 1.2;">
-                <i class="fas fa-shopping-cart me-1" style="font-size: 0.7rem;"></i>Add to Cart
-              </button>
-            </form>
+                <i class="fas fa-shopping-bag me-1" style="font-size: 0.7rem;"></i>Book Now
+              </a>
+              {% else %}
+              <a href="{% url 'checkout-buynow' serv.id %}" class="btn btn-success flex-fill"
+                style="font-size: 0.75rem; padding: 0.35rem 0.6rem; line-height: 1.2;">
+                <i class="fas fa-bolt me-1" style="font-size: 0.7rem;"></i>Buy Now
+              </a>
+              {% endif %}
+              <form action="/add-to-cart" class="d-inline flex-fill">
+                <input type="hidden" name="serv_id" value="{{serv.id}}">
+                <button type="submit" class="btn btn-primary w-100"
+                  style="font-size: 0.75rem; padding: 0.35rem 0.6rem; line-height: 1.2;">
+                  <i class="fas fa-shopping-cart me-1" style="font-size: 0.7rem;"></i>Add to Cart
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
+      {% endfor %}
     </div>
-    {% endfor %}
-  </div>
 
-  <!-- No Results Message (hidden by default) -->
-  <div class="no-results" id="noResults" style="display: none">
-    <i class="fas fa-search"></i>
-    <h4 class="fw-bold text-muted">No services found</h4>
-    <p class="text-muted">Try adjusting your search or filter criteria</p>
-    <button class="btn btn-primary" onclick="resetFilters()">
-      <i class="fas fa-redo me-2"></i>Reset Filters
-    </button>
-  </div>
-
-  {% else %}
-  <div class="text-center py-5">
-    <div class="modern-card p-5">
-      <i class="fas fa-inbox fa-4x text-muted mb-4" style="opacity: 0.5"></i>
-      <h3 class="fw-bold mb-3" style="color: var(--primary)">
-        No Services Available
-      </h3>
-      <p class="text-muted mb-4">Check back later for new services.</p>
-      <a href="{% url 'home' %}" class="btn btn-primary">
-        <i class="fas fa-home me-2"></i>Back to Home
-      </a>
+    <!-- No Results Message (hidden by default) -->
+    <div class="no-results" id="noResults" style="display: none">
+      <i class="fas fa-search"></i>
+      <h4 class="fw-bold text-muted">No services found</h4>
+      <p class="text-muted">Try adjusting your search or filter criteria</p>
+      <button class="btn btn-primary" onclick="resetFilters()">
+        <i class="fas fa-redo me-2"></i>Reset Filters
+      </button>
     </div>
+
+    {% else %}
+    <div class="text-center py-5">
+      <div class="modern-card p-5">
+        <i class="fas fa-inbox fa-4x text-muted mb-4" style="opacity: 0.5"></i>
+        <h3 class="fw-bold mb-3" style="color: var(--primary)">
+          No Services Available
+        </h3>
+        <p class="text-muted mb-4">Check back later for new services.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary">
+          <i class="fas fa-home me-2"></i>Back to Home
+        </a>
+      </div>
+    </div>
+    {% endif %}
   </div>
-  {% endif %}
-</div>
 </div>
 {% endblock %} {% block landing_scripts %} {{ block.super }}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

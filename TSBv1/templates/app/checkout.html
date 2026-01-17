@@ -1,52 +1,212 @@
-{% extends 'app/base.html' %}
+{% extends 'app/layouts/landing_base.html' %}
 {% load static %}
-{% block title %} Details {% endblock title %}
 
-{% block main-content %}
-<br/><br/>
+{% block title %}Checkout | TSB Enterprises{% endblock %}
 
-
+{% block landing_content %}
+<div class="container mt-5 pt-5 mb-5">
     {% if cart %}
-    <div class="container my-7">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Checkout</h5>
-                        <ul class="list-group list-group-flush">
-                            {% for item in cart %}
-                                <h5>{{ item.title }} </h5> <span style="float: right;">x1</span>
-                                <li class="list-group-item">Item 2 <span style="float: right;">x1</span></li>
-                                <li class="list-group-item">Item 3 <span style="float: right;">x1</span></li>
-                            {% endfor %}
-                            <!-- Add more items as needed -->
-                            <li class="list-group-item">Amount: ${{ item.amount }}</li>
-                            <li class="list-group-item">Total Amount: ${{ total_amount }}</li>
-                            <li class="list-group-item">GST: $40</li>
-                        </ul>
-                        <form action="#" method="post" class="mt-3">
-                            {% csrf_token %}
-                            <button type="submit" class="btn buttonshadow btn-primary btn-block">Proceed to Payment</button>
-                        </form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white" style="background-color: #0d6efd !important;">
+                    <h3 class="mb-0 text-white" style="color: #ffffff !important; font-weight: 600;">Checkout</h3>
+                </div>
+                <div class="card-body">
+                    <form id="checkoutForm" method="post" action="{% url 'payments' %}">
+                        {% csrf_token %}
+
+                        <!-- 1. Review Cart Items -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">1. Review Items</h5>
+                            <div class="list-group">
+                                {% for item in cart %}
+                                <div class="list-group-item p-3 border rounded mb-2">
+                                    <div class="d-flex align-items-center">
+                                        {% with primary=item.services.get_primary_image %}
+                                        {% if primary %}
+                                        <img src="{{ primary.image_url }}" alt="{{ item.services.title }}"
+                                            style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                                        {% else %}
+                                        <img src="{% static 'app/images/aboutus.jpg' %}" alt="{{ item.services.title }}"
+                                            style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                                        {% endif %}
+                                        {% endwith %}
+
+                                        <div class="ms-3 flex-grow-1">
+                                            <div class="d-flex justify-content-between">
+                                                <h5 class="mb-1">{{ item.services.title }}</h5>
+                                                <span class="fw-bold">₹{{ item.total_cost }}</span>
+                                            </div>
+                                            <p class="text-muted mb-0 small">
+                                                Quantity: {{ item.quantity }} x ₹{{ item.services.discounted_price }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- 2. Select Customer Profile -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">2. Select Customer Profile</h5>
+                            <select name="cust_id" class="form-select" required>
+                                {% for customer in customers %}
+                                <option value="{{ customer.id }}" {% if forloop.first %}selected{% endif %}>
+                                    {{ customer.name }} - {{ customer.mobile }} ({{ customer.locality }}, {{
+                                    customer.city }})
+                                </option>
+                                {% empty %}
+                                <option value="" disabled selected>No customer profiles found.</option>
+                                {% endfor %}
+                            </select>
+                            {% if not customers %}
+                            <div class="mt-2 text-danger">
+                                <small>You need to have a customer profile to proceed. <a
+                                        href="{% url 'profile' %}?next={% url 'checkout' %}">Click here</a> to add
+                                    one.</small>
+                            </div>
+                            {% endif %}
+
+                            <div class="mt-2 align-items-center">
+                                <a href="{% url 'profile' %}?next={% url 'checkout' %}"
+                                    class="small text-primary text-decoration-none">
+                                    <i class="fas fa-plus-circle me-1"></i>Add New Address
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- 3. Payment Method (Static for now as per flow) -->
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> You will be redirected to the secure payment gateway to complete your
+                            transaction.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Sidebar -->
+        <div class="col-md-4">
+            <div class="card shadow border-0 overflow-hidden sticky-top" style="top: 100px;">
+                <div class="card-header bg-dark text-white py-3" style="background-color: #212529 !important;">
+                    <h5 class="mb-0 text-white" style="color: #ffffff !important; font-weight: 600;">Price Summary</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Subtotal:</span>
+                        <span class="fw-bold">₹{{ amount }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Shipping/GST:</span>
+                        <span class="fw-bold">₹40.00</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3 text-success">
+                        <span><strong>Total Payable:</strong></span>
+                        <strong style="font-size: 1.2rem;">₹{{ total_amount }}</strong>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <!-- Points to a hypothetical payment processing view or directly submits form -->
+                        <!-- Adjust 'payments' url name if your actual payment logic is elsewhere. 
+                             For now assuming 'payments' or similar view handles the final transaction -->
+                        {% if razorpay_order_id %}
+                        <!-- Razorpay Button -->
+                        {% if not customers %}
+                        <button type="button" id="rzp-button1" class="btn btn-warning btn-lg fw-bold" disabled>
+                            <i class="fas fa-lock me-2"></i>Pay ₹{{ total_amount }} Now
+                        </button>
+                        {% else %}
+                        <button type="button" id="rzp-button1" class="btn btn-warning btn-lg fw-bold">
+                            <i class="fas fa-lock me-2"></i>Pay ₹{{ total_amount }} Now
+                        </button>
+                        {% endif %}
+                        {% else %}
+                        <!-- Fallback (likely backend setup issue if price > 0) -->
+                        {% if not customers %}
+                        <button type="submit" form="checkoutForm" class="btn btn-warning btn-lg fw-bold" disabled>
+                            <i class="fas fa-lock me-2"></i>Proceed to Payment (Manual)
+                        </button>
+                        {% else %}
+                        <button type="submit" form="checkoutForm" class="btn btn-warning btn-lg fw-bold">
+                            <i class="fas fa-lock me-2"></i>Proceed to Payment (Manual)
+                        </button>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-shield-alt me-1"></i>Secure checkout by Razorpay
+                        </small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     {% else %}
-    <div class="container my-7">
+    <div class="container my-5 py-5">
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Your cart is empty</h5>
-                        <p class="card-text text-center">Please add items to your cart before proceeding to checkout.</p>
+            <div class="col-md-8 text-center">
+                <div class="card shadow-sm p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-shopping-cart fa-4x text-muted opacity-50"></i>
                     </div>
+                    <h3 class="fw-bold mb-3">Your cart is empty</h3>
+                    <p class="text-muted mb-4">Please add items to your cart before proceeding to checkout.</p>
+                    <a href="{% url 'home' %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                    </a>
                 </div>
             </div>
         </div>
     </div>
     {% endif %}
+</div>
+</div>
 
-{% endblock main-content %}
+{% if razorpay_order_id %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        key: "{{ razorpay_key_id }}",
+        amount: "{{ razoramount }}",
+        currency: "{{ currency }}",
+        name: "TSB Enterprises",
+        description: "Checkout Payment",
+        image: "{% static 'app/images/product/tsb_logo.png' %}",
+        order_id: "{{ razorpay_order_id }}",
+        // Callback URL for success (you might want to create a dedicated success handler)
+        handler: function (response) {
+            console.log("Payment Successful:", response);
+            // Construct URL with query params
+            var redirectUrl = "{% url 'paymentdone' %}?order_id=" + response.razorpay_order_id +
+                "&payment_id=" + response.razorpay_payment_id +
+                "&cust_id=" + (document.querySelector('select[name=\"cust_id\"]').value || '');
+            window.location.href = redirectUrl;
+        },
+        prefill: {
+            name: "{{ request.user.first_name }} {{ request.user.last_name }}",
+            email: "{{ request.user.email }}",
+            contact: "" // Could populate if available
+        },
+        theme: {
+            color: "#0d6efd",
+        },
+    };
+    var rzp1 = new Razorpay(options);
 
+    document.getElementById("rzp-button1").onclick = function (e) {
+        if (!document.querySelector('select[name=\"cust_id\"]').value) {
+            alert("Please select a customer address.");
+            return;
+        }
+        e.preventDefault();
+        rzp1.open();
+    };
+</script>
+{% endif %}
+{% endblock landing_content %}

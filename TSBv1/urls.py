@@ -33,6 +33,7 @@ urlpatterns = [
     path('paymentdone/', views.payment_done, name='paymentdone'),
 
     path("checkout/",views.checkout.as_view(), name="checkout"),
+    path("checkout/buynow/<int:service_id>/", views.checkout_buynow, name="checkout-buynow"),
 
     path('pluscart/', views.plus_cart, name="plus-cart"),
     path('minuscart/', views.minus_cart, name="minus-cart"),
