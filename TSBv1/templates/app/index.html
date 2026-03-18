@@ -470,6 +470,12 @@
   </div>
 </section>
 
+{% if trusted_partners %}
+<script id="dynamic-partners-data" type="application/json">
+[{% for partner in trusted_partners %}{"url": "{{ partner.logo_url }}", "name": "{{ partner.name }}", "link": "{{ partner.website_url }}"}{% if not forloop.last %},{% endif %}{% endfor %}]
+</script>
+{% endif %}
+
 <footer class="modern-footer">
   <div class="footer-container">
     <div class="footer-row">

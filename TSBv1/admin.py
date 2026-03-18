@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.utils.html import mark_safe
-from django.urls import reverse
+from django.urls import reverse, path
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.admin.utils import unquote
 from django.core.exceptions import PermissionDenied, ValidationError
-from .models import Customer, Services, Cart, Payment, OrderPlaced, ServiceImage, AdvanceBooking, HeroImage
+from django.template.response import TemplateResponse
+from .models import Customer, Services, Cart, Payment, OrderPlaced, ServiceImage, AdvanceBooking, HeroImage, TrustedPartner
 
 # Register your models here.
 
@@ -352,6 +353,7 @@ class HeroImageAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'image_preview_large', 'uploaded_at']
     ordering = ()
     actions = ['activate_images', 'deactivate_images', 'delete_selected_images']
+    change_list_template = 'admin/hero_image_changelist.html'
 
     def get_ordering(self, request):
         return []
@@ -374,6 +376,41 @@ class HeroImageAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+    def get_urls(self):
+        custom_urls = [
+            path('bulk-upload/', self.admin_site.admin_view(self.bulk_upload_view), name='heroimage_bulk_upload'),
+        ]
+        return custom_urls + super().get_urls()
+
+    def bulk_upload_view(self, request):
+        from django.contrib import messages
+        if request.method == 'POST':
+            files = request.FILES.getlist('images')
+            if not files:
+                messages.warning(request, 'No files selected.')
+                return HttpResponseRedirect(reverse('admin:TSBv1_heroimage_changelist'))
+            count = 0
+            # Get the highest current display_order
+            existing = list(HeroImage.objects.all())
+            max_order = max([img.display_order for img in existing], default=0) if existing else 0
+            for f in files:
+                max_order += 1
+                HeroImage.objects.create(
+                    image=f,
+                    alt_text=f.name.rsplit('.', 1)[0].replace('_', ' ').replace('-', ' ').title(),
+                    display_order=max_order,
+                    is_active=True,
+                )
+                count += 1
+            messages.success(request, f'Successfully uploaded {count} hero image(s).')
+            return HttpResponseRedirect(reverse('admin:TSBv1_heroimage_changelist'))
+        context = {
+            **self.admin_site.each_context(request),
+            'title': 'Bulk Upload Hero Images',
+            'opts': self.model._meta,
+        }
+        return TemplateResponse(request, 'admin/hero_image_bulk_upload.html', context)
 
     def image_preview(self, obj):
         if obj.image:
@@ -437,6 +474,146 @@ class HeroImageAdmin(admin.ModelAdmin):
                 messages.error(request, f'Error deleting hero image {img.id}: {str(e)}')
         from django.contrib import messages
         messages.success(request, f'Successfully deleted {count} hero image(s).')
+
+    def get_object(self, request, object_id, from_field=None):
+        queryset = self.get_queryset(request)
+        model = queryset.model
+        field = model._meta.pk if from_field is None else model._meta.get_field(from_field)
+        try:
+            object_id = field.to_python(object_id)
+            obj = queryset.get(pk=object_id)
+        except (model.DoesNotExist, ValidationError, ValueError):
+            return None
+        return obj
+
+
+@admin.register(TrustedPartner)
+class TrustedPartnerAdmin(admin.ModelAdmin):
+    list_display = ['id', 'logo_preview', 'name', 'website_url', 'display_order', 'is_active', 'uploaded_at', 'delete_button']
+    list_editable = ['name', 'display_order', 'is_active']
+    readonly_fields = ['id', 'logo_preview_large', 'uploaded_at']
+    ordering = ()
+    actions = ['activate_partners', 'deactivate_partners', 'delete_selected_partners']
+    change_list_template = 'admin/trusted_partner_changelist.html'
+
+    def get_ordering(self, request):
+        return []
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).order_by()
+
+    def get_sortable_by(self, request):
+        return []
+
+    fieldsets = (
+        ('Logo', {
+            'fields': ('logo', 'logo_preview_large')
+        }),
+        ('Settings', {
+            'fields': ('name', 'website_url', 'display_order', 'is_active')
+        }),
+        ('Info', {
+            'fields': ('uploaded_at',),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def get_urls(self):
+        custom_urls = [
+            path('bulk-upload/', self.admin_site.admin_view(self.bulk_upload_view), name='trustedpartner_bulk_upload'),
+        ]
+        return custom_urls + super().get_urls()
+
+    def bulk_upload_view(self, request):
+        from django.contrib import messages
+        if request.method == 'POST':
+            files = request.FILES.getlist('logos')
+            if not files:
+                messages.warning(request, 'No files selected.')
+                return HttpResponseRedirect(reverse('admin:TSBv1_trustedpartner_changelist'))
+            count = 0
+            existing = list(TrustedPartner.objects.all())
+            max_order = max([p.display_order for p in existing], default=0) if existing else 0
+            for f in files:
+                max_order += 1
+                TrustedPartner.objects.create(
+                    logo=f,
+                    name=f.name.rsplit('.', 1)[0].replace('_', ' ').replace('-', ' ').title(),
+                    display_order=max_order,
+                    is_active=True,
+                )
+                count += 1
+            messages.success(request, f'Successfully uploaded {count} partner logo(s).')
+            return HttpResponseRedirect(reverse('admin:TSBv1_trustedpartner_changelist'))
+        context = {
+            **self.admin_site.each_context(request),
+            'title': 'Bulk Upload Partner Logos',
+            'opts': self.model._meta,
+        }
+        return TemplateResponse(request, 'admin/trusted_partner_bulk_upload.html', context)
+
+    def logo_preview(self, obj):
+        if obj.logo:
+            return mark_safe(f'<img src="{obj.logo.url}" style="width: 80px; height: 50px; object-fit: contain; border-radius: 6px; background: #f5f5f5; padding: 4px;" />')
+        return "-"
+    logo_preview.short_description = 'Preview'
+
+    def logo_preview_large(self, obj):
+        if obj.logo:
+            return mark_safe(f'<img src="{obj.logo.url}" style="max-width: 300px; max-height: 150px; object-fit: contain; border-radius: 8px; background: #f5f5f5; padding: 8px;" />')
+        return "No logo uploaded"
+    logo_preview_large.short_description = 'Logo Preview'
+
+    def delete_button(self, obj):
+        if obj.pk:
+            delete_url = reverse('admin:TSBv1_trustedpartner_delete', args=[obj.pk])
+            return mark_safe(
+                f'<a href="{delete_url}" class="button" style="background-color: #dc3545; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; display: inline-block;">'
+                f'<i class="fas fa-trash"></i> Delete'
+                f'</a>'
+            )
+        return "-"
+    delete_button.short_description = 'Actions'
+    delete_button.allow_tags = True
+
+    def activate_partners(self, request, queryset):
+        count = queryset.count()
+        for p in queryset:
+            TrustedPartner.objects.filter(id=p.id).update(is_active=True)
+        self.message_user(request, f'{count} partner(s) activated.')
+    activate_partners.short_description = 'Activate selected partners'
+
+    def deactivate_partners(self, request, queryset):
+        count = queryset.count()
+        for p in queryset:
+            TrustedPartner.objects.filter(id=p.id).update(is_active=False)
+        self.message_user(request, f'{count} partner(s) deactivated.')
+    deactivate_partners.short_description = 'Deactivate selected partners'
+
+    def delete_selected_partners(self, request, queryset):
+        count = queryset.count()
+        for p in queryset:
+            p.delete()
+        self.message_user(request, f'Successfully deleted {count} partner(s).')
+    delete_selected_partners.short_description = 'Delete selected partners'
+
+    def delete_model(self, request, obj):
+        try:
+            obj.delete()
+        except Exception as e:
+            from django.contrib import messages
+            messages.error(request, f'Error deleting partner: {str(e)}')
+
+    def delete_queryset(self, request, queryset):
+        count = queryset.count()
+        for p in queryset:
+            try:
+                p.delete()
+            except Exception as e:
+                from django.contrib import messages
+                messages.error(request, f'Error deleting partner {p.id}: {str(e)}')
+        from django.contrib import messages
+        messages.success(request, f'Successfully deleted {count} partner(s).')
 
     def get_object(self, request, object_id, from_field=None):
         queryset = self.get_queryset(request)

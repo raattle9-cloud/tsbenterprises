@@ -183,7 +183,19 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // PARTNERS CAROUSEL (SEAMLESS INFINITE SCROLL)
-  const partnerImages = [
+  // Check for dynamic partner data from Django (injected as JSON in the template)
+  let partnerData = null;
+  const dynamicDataEl = document.getElementById('dynamic-partners-data');
+  if (dynamicDataEl) {
+    try {
+      partnerData = JSON.parse(dynamicDataEl.textContent);
+    } catch(e) {
+      partnerData = null;
+    }
+  }
+
+  // Fallback to hardcoded placeholder images if no dynamic data
+  const fallbackPartnerImages = [
     'https://s3-us-west-2.amazonaws.com/s.cdpn.io/557257/1.png',
     'https://s3-us-west-2.amazonaws.com/s.cdpn.io/557257/7.png',
     'https://s3-us-west-2.amazonaws.com/s.cdpn.io/557257/6.png',
@@ -192,49 +204,68 @@ document.addEventListener('DOMContentLoaded', function() {
     'https://s3-us-west-2.amazonaws.com/s.cdpn.io/557257/3.png',
     'https://s3-us-west-2.amazonaws.com/s.cdpn.io/557257/2.png',
   ];
-  
+
   const partnersCarousel = document.getElementById('partners-carousel');
-  
+
   function renderAllPartnerCards() {
-    const allImages = [...partnerImages, ...partnerImages, ...partnerImages]; // duplicate for loop
+    // Use dynamic data if available, otherwise fallback
+    let items;
+    if (partnerData && partnerData.length > 0) {
+      items = partnerData;
+    } else {
+      items = fallbackPartnerImages.map(src => ({ url: src, name: 'Partner Logo', link: '' }));
+    }
+
+    const allItems = [...items, ...items, ...items]; // triplicate for infinite scroll
     partnersCarousel.innerHTML = '';
-  
-    allImages.forEach(src => {
+
+    allItems.forEach(item => {
       const card = document.createElement('div');
       card.className = 'partner-card';
       const img = document.createElement('img');
-      img.src = src;
-      img.alt = 'Partner Logo';
-      card.appendChild(img);
+      img.src = item.url;
+      img.alt = item.name || 'Partner Logo';
+      if (item.link) {
+        const link = document.createElement('a');
+        link.href = item.link;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.appendChild(img);
+        card.appendChild(link);
+      } else {
+        card.appendChild(img);
+      }
       partnersCarousel.appendChild(card);
     });
+
+    return items.length;
   }
-  
+
   function startSmoothPartnersCarousel() {
-    renderAllPartnerCards();
-  
+    const itemCount = renderAllPartnerCards();
+
     const cardWidth = 240; // 200 (card) + ~40 padding (from CSS)
-    const setWidth = partnerImages.length * cardWidth; // width of one full set
-  
+    const setWidth = itemCount * cardWidth; // width of one full set
+
     let position = 0;
     const speed = 1; // smaller = slower
-  
+
     function animate() {
       // move left continuously
       position += speed;
-  
+
       // once we've moved one set width, jump back by exactly one set
       if (position >= setWidth) {
         position -= setWidth;
       }
-  
+
       partnersCarousel.style.transform = `translateX(-${position}px)`;
       requestAnimationFrame(animate);
     }
-  
+
     animate();
   }
-  
+
   document.addEventListener('DOMContentLoaded', startSmoothPartnersCarousel);
   
   
