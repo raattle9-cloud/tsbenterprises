@@ -12,14 +12,20 @@
   <div class="image-card">
     <div class="carousel" id="carousel">
       <div class="slides">
-        <div class="slide"><img src="{% static 'app/images/WATERPARKS/W-3.jpg' %}" alt="slide 1"></div>
-        <div class="slide"><img src="{% static 'app/images/herowp2.jpeg' %}" alt="slide 2"></div>
-        <div class="slide"><img src="{% static 'app/images/wp2.avif' %}" alt="slide 3"></div>
-        <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/7.jpg' %}" alt="slide 4"></div>
-        <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/2.webp' %}" alt="slide 5"></div>
-        <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/3.avif' %}" alt="slide 6"></div>
-        <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/4.webp' %}" alt="slide 7"></div>
-        <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/5.jpg' %}" alt="slide 8"></div>
+        {% if hero_images %}
+          {% for img in hero_images %}
+            <div class="slide"><img src="{{ img.image_url }}" alt="{{ img.alt_text }}"></div>
+          {% endfor %}
+        {% else %}
+          <div class="slide"><img src="{% static 'app/images/WATERPARKS/W-3.jpg' %}" alt="slide 1"></div>
+          <div class="slide"><img src="{% static 'app/images/herowp2.jpeg' %}" alt="slide 2"></div>
+          <div class="slide"><img src="{% static 'app/images/wp2.avif' %}" alt="slide 3"></div>
+          <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/7.jpg' %}" alt="slide 4"></div>
+          <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/2.webp' %}" alt="slide 5"></div>
+          <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/3.avif' %}" alt="slide 6"></div>
+          <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/4.webp' %}" alt="slide 7"></div>
+          <div class="slide"><img src="{% static 'app/images/RESORTS AND VILLAS/5.jpg' %}" alt="slide 8"></div>
+        {% endif %}
       </div>
 
       <div class="overlay">
@@ -29,14 +35,20 @@
       </div>
 
       <div class="dots" id="carousel-dots" aria-hidden="false">
-        <button class="dot active" data-index="0" aria-label="Go to slide 1"></button>
-        <button class="dot" data-index="1" aria-label="Go to slide 2"></button>
-        <button class="dot" data-index="2" aria-label="Go to slide 3"></button>
-        <button class="dot" data-index="3" aria-label="Go to slide 4"></button>
-        <button class="dot" data-index="4" aria-label="Go to slide 5"></button>
-        <button class="dot" data-index="5" aria-label="Go to slide 6"></button>
-        <button class="dot" data-index="6" aria-label="Go to slide 7"></button>
-        <button class="dot" data-index="7" aria-label="Go to slide 8"></button>
+        {% if hero_images %}
+          {% for img in hero_images %}
+            <button class="dot{% if forloop.first %} active{% endif %}" data-index="{{ forloop.counter0 }}" aria-label="Go to slide {{ forloop.counter }}"></button>
+          {% endfor %}
+        {% else %}
+          <button class="dot active" data-index="0" aria-label="Go to slide 1"></button>
+          <button class="dot" data-index="1" aria-label="Go to slide 2"></button>
+          <button class="dot" data-index="2" aria-label="Go to slide 3"></button>
+          <button class="dot" data-index="3" aria-label="Go to slide 4"></button>
+          <button class="dot" data-index="4" aria-label="Go to slide 5"></button>
+          <button class="dot" data-index="5" aria-label="Go to slide 6"></button>
+          <button class="dot" data-index="6" aria-label="Go to slide 7"></button>
+          <button class="dot" data-index="7" aria-label="Go to slide 8"></button>
+        {% endif %}
       </div>
     </div>
   </div>

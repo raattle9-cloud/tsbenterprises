@@ -1,5 +1,5 @@
 from django.db.models import Count
-from .models import Services, Customer, Cart, Wishlist, CATEGORY_CHOICES
+from .models import Services, Customer, Cart, Wishlist, CATEGORY_CHOICES, HeroImage
 from django.views import View
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -34,7 +34,9 @@ def health_check(request):
     })
 
 def home(request):
-    return render(request,"app/index.html")
+    hero_images = list(HeroImage.objects.filter(is_active=True))
+    hero_images.sort(key=lambda x: x.display_order)
+    return render(request, "app/index.html", {"hero_images": hero_images})
 
 def index2(request):
     return render(request,"app/index2.html")

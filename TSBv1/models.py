@@ -193,6 +193,37 @@ class ServiceImage(models.Model):
         return f"{settings.STATIC_URL}images/{image_path}"
 
 
+class HeroImage(models.Model):
+    image = models.ImageField(upload_to="hero/")
+    alt_text = models.CharField(max_length=200, default="Hero slide")
+    display_order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Hero Image {self.id} - {self.alt_text}"
+
+    @property
+    def image_url(self):
+        if not self.image:
+            return ""
+
+        image_path = str(self.image)
+
+        if image_path.startswith("http"):
+            return image_path
+
+        try:
+            url = self.image.url
+            if "cloudinary.com" in url:
+                return url
+        except Exception:
+            pass
+
+        from django.conf import settings
+        return f"{settings.STATIC_URL}images/{image_path}"
+
+
 class Customer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=20)

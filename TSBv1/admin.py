@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.admin.utils import unquote
 from django.core.exceptions import PermissionDenied, ValidationError
-from .models import Customer, Services, Cart, Payment, OrderPlaced, ServiceImage, AdvanceBooking
+from .models import Customer, Services, Cart, Payment, OrderPlaced, ServiceImage, AdvanceBooking, HeroImage
 
 # Register your models here.
 
@@ -343,3 +343,108 @@ class AdvanceBookingAdmin(admin.ModelAdmin):
             booking.save()
         self.message_user(request, f'{queryset.count()} booking(s) marked as verified.')
     mark_as_verified.short_description = 'Mark as verified (manual)'
+
+
+@admin.register(HeroImage)
+class HeroImageAdmin(admin.ModelAdmin):
+    list_display = ['id', 'image_preview', 'alt_text', 'display_order', 'is_active', 'uploaded_at', 'delete_button']
+    list_editable = ['alt_text', 'display_order', 'is_active']
+    readonly_fields = ['id', 'image_preview_large', 'uploaded_at']
+    ordering = ()
+    actions = ['activate_images', 'deactivate_images', 'delete_selected_images']
+
+    def get_ordering(self, request):
+        return []
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).order_by()
+
+    def get_sortable_by(self, request):
+        return []
+
+    fieldsets = (
+        ('Image', {
+            'fields': ('image', 'image_preview_large')
+        }),
+        ('Settings', {
+            'fields': ('alt_text', 'display_order', 'is_active')
+        }),
+        ('Info', {
+            'fields': ('uploaded_at',),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def image_preview(self, obj):
+        if obj.image:
+            return mark_safe(f'<img src="{obj.image.url}" style="width: 120px; height: 60px; object-fit: cover; border-radius: 6px;" />')
+        return "-"
+    image_preview.short_description = 'Preview'
+
+    def image_preview_large(self, obj):
+        if obj.image:
+            return mark_safe(f'<img src="{obj.image.url}" style="max-width: 400px; max-height: 200px; object-fit: cover; border-radius: 8px;" />')
+        return "No image uploaded"
+    image_preview_large.short_description = 'Image Preview'
+
+    def delete_button(self, obj):
+        if obj.pk:
+            delete_url = reverse('admin:TSBv1_heroimage_delete', args=[obj.pk])
+            return mark_safe(
+                f'<a href="{delete_url}" class="button" style="background-color: #dc3545; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; display: inline-block;">'
+                f'<i class="fas fa-trash"></i> Delete'
+                f'</a>'
+            )
+        return "-"
+    delete_button.short_description = 'Actions'
+    delete_button.allow_tags = True
+
+    def activate_images(self, request, queryset):
+        count = queryset.count()
+        for img in queryset:
+            HeroImage.objects.filter(id=img.id).update(is_active=True)
+        self.message_user(request, f'{count} image(s) activated.')
+    activate_images.short_description = 'Activate selected images'
+
+    def deactivate_images(self, request, queryset):
+        count = queryset.count()
+        for img in queryset:
+            HeroImage.objects.filter(id=img.id).update(is_active=False)
+        self.message_user(request, f'{count} image(s) deactivated.')
+    deactivate_images.short_description = 'Deactivate selected images'
+
+    def delete_selected_images(self, request, queryset):
+        count = queryset.count()
+        for img in queryset:
+            img.delete()
+        self.message_user(request, f'Successfully deleted {count} hero image(s).')
+    delete_selected_images.short_description = 'Delete selected hero images'
+
+    def delete_model(self, request, obj):
+        try:
+            obj.delete()
+        except Exception as e:
+            from django.contrib import messages
+            messages.error(request, f'Error deleting hero image: {str(e)}')
+
+    def delete_queryset(self, request, queryset):
+        count = queryset.count()
+        for img in queryset:
+            try:
+                img.delete()
+            except Exception as e:
+                from django.contrib import messages
+                messages.error(request, f'Error deleting hero image {img.id}: {str(e)}')
+        from django.contrib import messages
+        messages.success(request, f'Successfully deleted {count} hero image(s).')
+
+    def get_object(self, request, object_id, from_field=None):
+        queryset = self.get_queryset(request)
+        model = queryset.model
+        field = model._meta.pk if from_field is None else model._meta.get_field(from_field)
+        try:
+            object_id = field.to_python(object_id)
+            obj = queryset.get(pk=object_id)
+        except (model.DoesNotExist, ValidationError, ValueError):
+            return None
+        return obj
