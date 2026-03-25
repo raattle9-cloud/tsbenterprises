@@ -107,6 +107,14 @@ class Services(models.Model):
         help_text="Fixed amount in INR or percentage (0-100)",
     )
 
+    # Vendor Contact
+    vendor_whatsapp = models.CharField(
+        max_length=15,
+        blank=True,
+        default="",
+        help_text="Vendor WhatsApp number in international format (digits only, e.g. 919876543210)",
+    )
+
     def __str__(self):
         return self.title
 

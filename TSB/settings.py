@@ -133,21 +133,8 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+# Disabled for simpler signup experience
+AUTH_PASSWORD_VALIDATORS = []
 
 
 # Internationalization
@@ -207,3 +194,50 @@ RAZOR_PAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', 'W7MYw65yiAkUL6A2dKUtLn6
 # Legacy aliases for backward compatibility
 razor_pay_key_id = RAZOR_PAY_KEY_ID
 key_secret = RAZOR_PAY_KEY_SECRET
+
+# WhatsApp Business API Configuration (from environment variables)
+WHATSAPP_ACCESS_TOKEN = os.getenv('WHATSAPP_ACCESS_TOKEN', '')
+WHATSAPP_PHONE_NUMBER_ID = os.getenv('WHATSAPP_PHONE_NUMBER_ID', '')
+WHATSAPP_API_VERSION = os.getenv('WHATSAPP_API_VERSION', 'v22.0')
+
+# Application Mode: 'dev' or 'production'
+APP_MODE = os.getenv('APP_MODE', 'dev')
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] [{levelname}] [{name}] {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'] if APP_MODE == 'dev' else ['file'],
+        'level': 'DEBUG' if APP_MODE == 'dev' else 'WARNING',
+    },
+    'loggers': {
+        'TSBv1': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG' if APP_MODE == 'dev' else 'INFO',
+            'propagate': False,
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

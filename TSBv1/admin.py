@@ -27,7 +27,7 @@ class ServiceImageInline(admin.TabularInline):
 
 @admin.register(Services)
 class ServicesModelAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'discounted_price', 'selling_price', 'category', 'supports_advance_payment', 'primary_image_preview', 'delete_button']
+    list_display = ['id', 'title', 'discounted_price', 'selling_price', 'category', 'vendor_whatsapp', 'supports_advance_payment', 'primary_image_preview', 'delete_button']
     list_filter = ['category', 'supports_advance_payment']
     search_fields = ['title', 'description']
     list_editable = ['discounted_price', 'selling_price', 'category']
@@ -83,6 +83,10 @@ class ServicesModelAdmin(admin.ModelAdmin):
         }),
         ('Details', {
             'fields': ('description', 'composition', 'servapp')
+        }),
+        ('Vendor Contact', {
+            'fields': ('vendor_whatsapp',),
+            'description': 'WhatsApp number of the vendor. Notifications will be sent here when a customer purchases this service.'
         }),
     )
 

@@ -225,6 +225,21 @@ def advance_payment_process(request, booking_id):
             logger.info(f"[PAYMENT] QR code generated and saved")
             logger.info(f"[PAYMENT] Final booking status: {booking.status}")
             
+            # Send WhatsApp notification to vendor
+            try:
+                from .whatsapp_service import send_vendor_purchase_notification
+                send_vendor_purchase_notification(
+                    service=booking.service,
+                    customer_name=booking.customer.name,
+                    quantity=booking.quantity,
+                    booking_code=booking.booking_code,
+                    advance_paid=convert_decimal128_to_float(booking.advance_paid),
+                    remaining_amount=convert_decimal128_to_float(booking.remaining_amount),
+                    booking_date=booking.booking_date,
+                )
+            except Exception as wa_err:
+                logger.error(f"[WHATSAPP] Failed to send vendor notification: {wa_err}")
+            
             # Redirect to confirmation page
             return redirect('advance-booking-confirmation', booking.id)
             

@@ -1,5 +1,5 @@
 from django.db.models import Count
-from .models import Services, Customer, Cart, Wishlist, CATEGORY_CHOICES, HeroImage, TrustedPartner
+from .models import Services, Customer, Cart, Wishlist, Payment, OrderPlaced, CATEGORY_CHOICES, HeroImage, TrustedPartner
 from django.views import View
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -220,9 +220,12 @@ class CustomerRegistrationView(View):
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
             try:
-                form.save()
-                messages.success(request, "Congratulations! You have successfully registered.")
-                return redirect('customerlogin')
+                user = form.save()
+                # Auto-login the user after registration
+                from django.contrib.auth import login
+                login(request, user)
+                messages.success(request, "Welcome! You have successfully registered.")
+                return redirect('services')
             except Exception as e:
                 import traceback
                 print(f"Registration error: {e}")
@@ -418,18 +421,260 @@ def show_cart(request):
     return render(request, 'app/addtocart.html', context)
 
 def payment_done(request):
+    import logging
+    logger = logging.getLogger('TSBv1')
+    
     order_id = request.GET.get('order_id')
     payment_id = request.GET.get('payment_id')
     cust_id = request.GET.get('cust_id')
-
-    # You can add logic to update payment status, store in DB, etc.
-    return render(request, 'paymentdone.html', {
+    
+    logger.info("=" * 60)
+    logger.info("[PAYMENT_DONE] ===== PAYMENT DONE HANDLER TRIGGERED =====")
+    logger.info(f"[PAYMENT_DONE] User: {request.user} | Authenticated: {request.user.is_authenticated}")
+    logger.info(f"[PAYMENT_DONE] order_id={order_id}, payment_id={payment_id}, cust_id={cust_id}")
+    print("\n" + "=" * 60)
+    print("[PAYMENT_DONE] ===== PAYMENT DONE HANDLER TRIGGERED =====")
+    print(f"[PAYMENT_DONE] User: {request.user} | Authenticated: {request.user.is_authenticated}")
+    print(f"[PAYMENT_DONE] order_id={order_id}, payment_id={payment_id}, cust_id={cust_id}")
+    
+    total_amount = 0
+    
+    if request.user.is_authenticated:
+        user = request.user
+        cart_items = list(Cart.objects.filter(user=user))
+        print(f"[PAYMENT_DONE] Cart items found: {len(cart_items)}")
+        logger.info(f"[PAYMENT_DONE] Cart items found: {len(cart_items)}")
+        
+        # Get customer
+        customer = None
+        customer_name = "Customer"
+        if cust_id:
+            try:
+                customer = Customer.objects.get(id=cust_id)
+                customer_name = customer.name
+                print(f"[PAYMENT_DONE] Customer: {customer_name}")
+                logger.info(f"[PAYMENT_DONE] Customer: {customer_name}")
+            except Customer.DoesNotExist:
+                print(f"[PAYMENT_DONE] WARNING: Customer ID {cust_id} not found")
+                logger.warning(f"[PAYMENT_DONE] Customer ID {cust_id} not found")
+        else:
+            # Try to get first customer for this user
+            customers = list(Customer.objects.filter(user=user))
+            if customers:
+                customer = customers[0]
+                customer_name = customer.name
+                print(f"[PAYMENT_DONE] Using first customer: {customer_name}")
+        
+        if cart_items:
+            # Calculate total
+            total_amount = sum(c.quantity * c.services.discounted_price for c in cart_items) + 40
+            print(f"[PAYMENT_DONE] Total amount: ₹{total_amount}")
+            
+            # Create payment record
+            try:
+                payment = Payment.objects.create(
+                    user=user,
+                    amount=total_amount,
+                    razorpay_order_id=order_id or '',
+                    razorpay_payment_id=payment_id or '',
+                    paid=True if payment_id else False,
+                    payment_type="FULL"
+                )
+                print(f"[PAYMENT_DONE] Payment record created: ID={payment.id}")
+                logger.info(f"[PAYMENT_DONE] Payment record created: ID={payment.id}")
+            except Exception as e:
+                print(f"[PAYMENT_DONE] ERROR creating Payment: {e}")
+                logger.error(f"[PAYMENT_DONE] ERROR creating Payment: {e}")
+                import traceback
+                traceback.print_exc()
+                payment = None
+            
+            # Create orders and send WhatsApp for each item
+            for item in cart_items:
+                print(f"[PAYMENT_DONE] Processing: {item.services.title} x{item.quantity}")
+                print(f"[PAYMENT_DONE]   vendor_whatsapp: '{item.services.vendor_whatsapp}'")
+                logger.info(f"[PAYMENT_DONE] Processing: {item.services.title} x{item.quantity}, vendor_whatsapp='{item.services.vendor_whatsapp}'")
+                
+                # Create OrderPlaced record
+                if customer:
+                    try:
+                        order = OrderPlaced.objects.create(
+                            user=user,
+                            customer=customer,
+                            services=item.services,
+                            quantity=item.quantity,
+                            status="PENDING",
+                            payment=payment
+                        )
+                        print(f"[PAYMENT_DONE] OrderPlaced created: ID={order.id}")
+                        logger.info(f"[PAYMENT_DONE] OrderPlaced created: ID={order.id}")
+                    except Exception as e:
+                        print(f"[PAYMENT_DONE] ERROR creating OrderPlaced: {e}")
+                        logger.error(f"[PAYMENT_DONE] ERROR creating OrderPlaced: {e}")
+                        import traceback
+                        traceback.print_exc()
+                
+                # Send WhatsApp vendor notification
+                vendor_number = item.services.vendor_whatsapp
+                if vendor_number:
+                    try:
+                        from .whatsapp_service import send_vendor_purchase_notification
+                        print(f"[WHATSAPP] Sending notification to vendor: {vendor_number}")
+                        logger.info(f"[WHATSAPP] Sending notification to vendor: {vendor_number}")
+                        result = send_vendor_purchase_notification(
+                            service=item.services,
+                            customer_name=customer_name,
+                            quantity=item.quantity,
+                            order_id=order_id,
+                            total_amount=total_amount,
+                        )
+                        print(f"[WHATSAPP] Result: {result}")
+                        logger.info(f"[WHATSAPP] Result: {result}")
+                    except Exception as e:
+                        print(f"[WHATSAPP] EXCEPTION: {e}")
+                        logger.error(f"[WHATSAPP] EXCEPTION: {e}")
+                        import traceback
+                        traceback.print_exc()
+                else:
+                    print(f"[WHATSAPP] SKIPPED: No vendor WhatsApp number for '{item.services.title}'")
+                    logger.warning(f"[WHATSAPP] SKIPPED: No vendor number for '{item.services.title}'")
+            
+            # Clear cart
+            Cart.objects.filter(user=user).delete()
+            print(f"[PAYMENT_DONE] Cart cleared for user {user}")
+            logger.info(f"[PAYMENT_DONE] Cart cleared for user {user}")
+        else:
+            print("[PAYMENT_DONE] WARNING: Cart was empty at payment_done")
+            logger.warning("[PAYMENT_DONE] Cart was empty at payment_done")
+    else:
+        print("[PAYMENT_DONE] WARNING: User not authenticated")
+        logger.warning("[PAYMENT_DONE] User not authenticated")
+    
+    print(f"[PAYMENT_DONE] ===== PAYMENT DONE COMPLETE =====")
+    print("=" * 60 + "\n")
+    logger.info("[PAYMENT_DONE] ===== PAYMENT DONE COMPLETE =====")
+    
+    return render(request, 'app/paymentdone.html', {
         'order_id': order_id,
         'payment_id': payment_id,
-        'cust_id': cust_id
+        'cust_id': cust_id,
+        'total_amount': total_amount,
     })
 
 class checkout(View):
+    def post(self, request):
+        """Handle manual payment fallback when Razorpay is not configured."""
+        print("\n" + "="*60)
+        print("[CHECKOUT POST] ===== CHECKOUT POST HANDLER TRIGGERED =====")
+        print(f"[CHECKOUT POST] User: {request.user}")
+        print(f"[CHECKOUT POST] Authenticated: {request.user.is_authenticated}")
+        print(f"[CHECKOUT POST] POST data: {dict(request.POST)}")
+        
+        if not request.user.is_authenticated:
+            print("[CHECKOUT POST] ERROR: User not authenticated")
+            messages.warning(request, "Please login to proceed.")
+            return redirect('customerlogin')
+        
+        user = request.user
+        cust_id = request.POST.get('cust_id')
+        print(f"[CHECKOUT POST] Customer ID from form: {cust_id}")
+        
+        if not cust_id:
+            print("[CHECKOUT POST] ERROR: No customer ID provided")
+            messages.error(request, "Please select a customer address to proceed.")
+            return redirect('checkout')
+        
+        try:
+            customer = Customer.objects.get(id=cust_id, user=user)
+            print(f"[CHECKOUT POST] Customer found: {customer.name} ({customer.mobile})")
+        except Customer.DoesNotExist:
+            print(f"[CHECKOUT POST] ERROR: Customer ID {cust_id} not found for user {user}")
+            messages.error(request, "Invalid customer profile.")
+            return redirect('checkout')
+        
+        cart = Cart.objects.filter(user=user)
+        cart_count = cart.count()
+        print(f"[CHECKOUT POST] Cart items: {cart_count}")
+        
+        if not cart.exists():
+            print("[CHECKOUT POST] ERROR: Cart is empty")
+            messages.warning(request, "Your cart is empty.")
+            return redirect('home')
+        
+        # Calculate total
+        amount = 0
+        for c in cart:
+            item_total = c.quantity * c.services.discounted_price
+            print(f"[CHECKOUT POST] Cart item: {c.services.title} x{c.quantity} @ ₹{c.services.discounted_price} = ₹{item_total}")
+            print(f"[CHECKOUT POST]   vendor_whatsapp: '{c.services.vendor_whatsapp}'")
+            amount += item_total
+        total_amount = amount + 40
+        print(f"[CHECKOUT POST] Subtotal: ₹{amount}, Total (with ₹40 shipping): ₹{total_amount}")
+        
+        # Create payment record
+        try:
+            payment = Payment.objects.create(
+                user=user,
+                amount=total_amount,
+                paid=False,
+                payment_type="FULL"
+            )
+            print(f"[CHECKOUT POST] Payment record created: ID={payment.id}")
+        except Exception as e:
+            print(f"[CHECKOUT POST] ERROR creating payment: {e}")
+            import traceback
+            traceback.print_exc()
+            messages.error(request, "Failed to process payment. Please try again.")
+            return redirect('checkout')
+        
+        # Create order records and send WhatsApp notifications
+        cart_items = list(cart)  # Evaluate queryset before deleting
+        for c in cart_items:
+            try:
+                order = OrderPlaced.objects.create(
+                    user=user,
+                    customer=customer,
+                    services=c.services,
+                    quantity=c.quantity,
+                    status="PENDING",
+                    payment=payment
+                )
+                print(f"[CHECKOUT POST] OrderPlaced created: ID={order.id} for {c.services.title}")
+            except Exception as e:
+                print(f"[CHECKOUT POST] ERROR creating OrderPlaced: {e}")
+                import traceback
+                traceback.print_exc()
+            
+            # Send WhatsApp notification to vendor
+            vendor_number = c.services.vendor_whatsapp
+            print(f"[WHATSAPP] Checking vendor number for '{c.services.title}': '{vendor_number}'")
+            if vendor_number:
+                try:
+                    from .whatsapp_service import send_vendor_purchase_notification
+                    print(f"[WHATSAPP] Calling send_vendor_purchase_notification...")
+                    result = send_vendor_purchase_notification(
+                        service=c.services,
+                        customer_name=customer.name,
+                        quantity=c.quantity,
+                        total_amount=total_amount,
+                    )
+                    print(f"[WHATSAPP] Result: {result}")
+                except Exception as e:
+                    print(f"[WHATSAPP] EXCEPTION: {e}")
+                    import traceback
+                    traceback.print_exc()
+            else:
+                print(f"[WHATSAPP] SKIPPED: No vendor WhatsApp number set for '{c.services.title}'")
+        
+        # Clear the cart
+        cart.delete()
+        print(f"[CHECKOUT POST] Cart cleared for user {user}")
+        
+        messages.success(request, f"Order placed successfully! Total: ₹{total_amount}. Our team will contact you shortly.")
+        print(f"[CHECKOUT POST] ===== CHECKOUT COMPLETE =====")
+        print("="*60 + "\n")
+        return redirect('home')
+
     def get(self, request):
         # Handle "Buy Now" - automatically add item to cart if buy_now parameter is present
         buy_now_id = request.GET.get('buy_now')

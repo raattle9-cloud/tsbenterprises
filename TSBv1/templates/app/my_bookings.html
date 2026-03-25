@@ -1,5 +1,6 @@
 {% extends 'app/layouts/landing_base.html' %}
 {% load static %}
+{% load tsb_filters %}
 
 {% block title %}My Tickets & Bookings{% endblock %}
 
@@ -56,12 +57,12 @@
                             <div class="col-6 pt-2 border-top mt-2">
                                 <small class="text-muted d-block">{% if booking.remaining_amount > 0 %}Paid Online{%
                                     else %}Total Paid{% endif %}</small>
-                                <strong class="text-success">₹{{ booking.advance_paid }}</strong>
+                                <strong class="text-success">₹{{ booking.advance_paid|as_float }}</strong>
                             </div>
                             <div class="col-6 pt-2 border-top mt-2 text-end">
                                 {% if booking.remaining_amount > 0 %}
                                 <small class="text-muted d-block">Pay at Venue</small>
-                                <strong class="text-danger">₹{{ booking.remaining_amount }}</strong>
+                                <strong class="text-danger">₹{{ booking.remaining_amount|as_float }}</strong>
                                 {% else %}
                                 <small class="text-muted d-block">Status</small>
                                 <strong class="text-success">Fully Paid</strong>

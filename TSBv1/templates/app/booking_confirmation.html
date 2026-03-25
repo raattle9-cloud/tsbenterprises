@@ -1,5 +1,6 @@
 {% extends 'app/layouts/landing_base.html' %}
 {% load static %}
+{% load tsb_filters %}
 
 {% block title %}Advance Booking Confirmed!{% endblock %}
 
@@ -60,25 +61,24 @@
                     <h5 class="border-bottom pb-2 mb-3">Payment Summary</h5>
                     <div class="row mb-2">
                         <div class="col-6">Total Amount:</div>
-                        <div class="col-6">₹{{ booking.total_amount }}</div>
+                        <div class="col-6">₹{{ booking.total_amount|as_float }}</div>
                     </div>
                     <div class="row mb-2 text-success">
                         <div class="col-6"><strong>Paid Online:</strong></div>
-                        <div class="col-6"><strong>₹{{ booking.advance_paid }}</strong></div>
+                        <div class="col-6"><strong>₹{{ booking.advance_paid|as_float }}</strong></div>
                     </div>
 
                     {% if booking.remaining_amount > 0 %}
                     <div class="row mb-2">
                         <div class="col-6" style="font-size: 1.2em;"><strong>Pay at Venue:</strong></div>
-                        <div class="col-6 text-danger" style="font-size: 1.2em;"><strong>₹{{ booking.remaining_amount
-                                }}</strong></div>
+                        <div class="col-6 text-danger" style="font-size: 1.2em;"><strong>₹{{ booking.remaining_amount|as_float }}</strong></div>
                     </div>
 
                     <div class="alert alert-info mt-4">
                         <i class="fas fa-info-circle"></i> <strong>Important:</strong>
                         <ul class="mb-0 mt-2">
                             <li>Show this QR code or booking code at the waterpark entrance</li>
-                            <li>Pay the remaining amount (₹{{ booking.remaining_amount }}) at the venue</li>
+                            <li>Pay the remaining amount (₹{{ booking.remaining_amount|as_float }}) at the venue</li>
                             <li>This booking is valid until {{ booking.valid_until|date:"F d, Y" }}</li>
                             <li>Take a screenshot of this page for easy access</li>
                         </ul>
