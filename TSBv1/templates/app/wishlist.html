@@ -124,6 +124,19 @@
 {% block landing_scripts %}
 {{ block.super }}
 <script>
+  function showWishlistError(msg) {
+    var existing = document.getElementById('wishlist-error');
+    if (existing) existing.remove();
+    var el = document.createElement('div');
+    el.id = 'wishlist-error';
+    el.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:9999;min-width:280px;max-width:90vw;';
+    el.innerHTML = '<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:12px;padding:14px 18px;'
+      + 'display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.12);">'
+      + '<span>⚠️</span><span style="color:#856404;font-size:.93rem;">' + msg + '</span></div>';
+    document.body.appendChild(el);
+    setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 4000);
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     // Handle remove from wishlist
     document.querySelectorAll(".minus-wishlist").forEach(function (btn) {
@@ -154,12 +167,11 @@
                 location.reload();
               }
             } else {
-              alert(data.error || "Failed to remove item");
+              showWishlistError("Could not remove item. Please try again.");
             }
           })
-          .catch((err) => {
-            console.error("Error:", err);
-            alert("Failed to remove item from wishlist");
+          .catch(function() {
+            showWishlistError("Could not remove item. Please refresh and try again.");
           });
       });
     });

@@ -35,6 +35,7 @@ WantedBy=multi-user.target
 -----------------
 """
 import os
+import re
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -114,7 +115,16 @@ WSGI_APPLICATION = 'TSB.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 # MongoDB Connection URL from environment
-DATABASE_URL = os.getenv('DATABASE_URL')
+def _normalize_database_url(database_url):
+    if not database_url or '://' not in database_url or '?' not in database_url:
+        return database_url
+
+    base_url, query_string = database_url.split('?', 1)
+    query_string = re.sub(r'(appName=[^&?]+?)(retryWrites=)', r'\1&\2', query_string, count=1)
+    return f'{base_url}?{query_string}'
+
+
+DATABASE_URL = _normalize_database_url(os.getenv('DATABASE_URL'))
 
 # MongoDB Configuration using Djongo
 # The DATABASE_URL in .env should be a standard MongoDB Connection URI
@@ -174,12 +184,6 @@ STORAGES = {
     },
 }
 
-# Also set DEFAULT_FILE_STORAGE for Django 4.1 compatibility
-# This ensures ImageField.url returns Cloudinary URLs
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -200,8 +204,14 @@ WHATSAPP_ACCESS_TOKEN = os.getenv('WHATSAPP_ACCESS_TOKEN', '')
 WHATSAPP_PHONE_NUMBER_ID = os.getenv('WHATSAPP_PHONE_NUMBER_ID', '')
 WHATSAPP_API_VERSION = os.getenv('WHATSAPP_API_VERSION', 'v22.0')
 
+# Invoice / billing
+PLATFORM_OWNER_PHONE = os.getenv('PLATFORM_OWNER_PHONE', '91810465118')
+PLATFORM_OWNER_NAME = os.getenv('PLATFORM_OWNER_NAME', 'TSB Admin')
+# SITE_BASE_URL = os.getenv('SITE_BASE_URL', 'http://localhost:8000')
+SITE_BASE_URL = os.getenv('SITE_BASE_URL', 'https://gowaterpark.in')
+
 # Application Mode: 'dev' or 'production'
-APP_MODE = os.getenv('APP_MODE', 'dev')
+APP_MODE = os.getenv('APP_MODE', 'prod')
 
 # Logging Configuration
 LOGGING = {

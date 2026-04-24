@@ -1,5 +1,5 @@
 from django.db.models import Count
-from .models import Services, Customer, Cart, Wishlist, Payment, OrderPlaced, CATEGORY_CHOICES, HeroImage, TrustedPartner
+from .models import Services, Customer, Cart, Wishlist, Payment, OrderPlaced, CATEGORY_CHOICES, HeroImage, TrustedPartner, Invoice
 from django.views import View
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -420,6 +420,27 @@ def show_cart(request):
     }
     return render(request, 'app/addtocart.html', context)
 
+def download_invoice(request, token):
+    """
+    Serve the invoice PDF for a given token UUID.
+    No login required — the UUID acts as a secret share-link.
+    """
+    from django.shortcuts import get_object_or_404
+    from .bill_generator import generate_invoice_pdf
+
+    invoice = get_object_or_404(Invoice, token=token)
+    try:
+        pdf_bytes = generate_invoice_pdf(invoice)
+    except Exception as e:
+        import logging
+        logging.getLogger("TSBv1").error(f"[INVOICE_VIEW] PDF generation failed for {token}: {e}", exc_info=True)
+        return HttpResponse("Could not generate invoice PDF. Please try again later.", status=500)
+
+    response = HttpResponse(pdf_bytes, content_type="application/pdf")
+    response["Content-Disposition"] = f'inline; filename="{invoice.invoice_no}.pdf"'
+    return response
+
+
 def payment_done(request):
     import logging
     logger = logging.getLogger('TSBv1')
@@ -465,6 +486,7 @@ def payment_done(request):
                 customer_name = customer.name
                 print(f"[PAYMENT_DONE] Using first customer: {customer_name}")
         
+        invoices = []
         if cart_items:
             # Calculate total
             total_amount = sum(c.quantity * c.services.discounted_price for c in cart_items) + 40
@@ -496,9 +518,10 @@ def payment_done(request):
                 logger.info(f"[PAYMENT_DONE] Processing: {item.services.title} x{item.quantity}, vendor_whatsapp='{item.services.vendor_whatsapp}'")
                 
                 # Create OrderPlaced record
+                order_obj = None
                 if customer:
                     try:
-                        order = OrderPlaced.objects.create(
+                        order_obj = OrderPlaced.objects.create(
                             user=user,
                             customer=customer,
                             services=item.services,
@@ -506,38 +529,31 @@ def payment_done(request):
                             status="PENDING",
                             payment=payment
                         )
-                        print(f"[PAYMENT_DONE] OrderPlaced created: ID={order.id}")
-                        logger.info(f"[PAYMENT_DONE] OrderPlaced created: ID={order.id}")
+                        print(f"[PAYMENT_DONE] OrderPlaced created: ID={order_obj.id}")
+                        logger.info(f"[PAYMENT_DONE] OrderPlaced created: ID={order_obj.id}")
                     except Exception as e:
                         print(f"[PAYMENT_DONE] ERROR creating OrderPlaced: {e}")
                         logger.error(f"[PAYMENT_DONE] ERROR creating OrderPlaced: {e}")
                         import traceback
                         traceback.print_exc()
-                
-                # Send WhatsApp vendor notification
-                vendor_number = item.services.vendor_whatsapp
-                if vendor_number:
+
+                # Create invoice + notify all three parties
+                if customer and payment:
                     try:
-                        from .whatsapp_service import send_vendor_purchase_notification
-                        print(f"[WHATSAPP] Sending notification to vendor: {vendor_number}")
-                        logger.info(f"[WHATSAPP] Sending notification to vendor: {vendor_number}")
-                        result = send_vendor_purchase_notification(
+                        from .invoice_service import create_and_notify
+                        item_amount = item.quantity * item.services.discounted_price + 40
+                        invoice = create_and_notify(
+                            order=order_obj,
+                            payment=payment,
+                            customer=customer,
                             service=item.services,
-                            customer_name=customer_name,
+                            amount=item_amount,
                             quantity=item.quantity,
-                            order_id=order_id,
-                            total_amount=total_amount,
                         )
-                        print(f"[WHATSAPP] Result: {result}")
-                        logger.info(f"[WHATSAPP] Result: {result}")
+                        if invoice:
+                            invoices.append(invoice)
                     except Exception as e:
-                        print(f"[WHATSAPP] EXCEPTION: {e}")
-                        logger.error(f"[WHATSAPP] EXCEPTION: {e}")
-                        import traceback
-                        traceback.print_exc()
-                else:
-                    print(f"[WHATSAPP] SKIPPED: No vendor WhatsApp number for '{item.services.title}'")
-                    logger.warning(f"[WHATSAPP] SKIPPED: No vendor number for '{item.services.title}'")
+                        logger.error(f"[INVOICE] Failed for {item.services.title}: {e}", exc_info=True)
             
             # Clear cart
             Cart.objects.filter(user=user).delete()
@@ -559,6 +575,7 @@ def payment_done(request):
         'payment_id': payment_id,
         'cust_id': cust_id,
         'total_amount': total_amount,
+        'invoices': invoices,
     })
 
 class checkout(View):
@@ -627,11 +644,12 @@ class checkout(View):
             messages.error(request, "Failed to process payment. Please try again.")
             return redirect('checkout')
         
-        # Create order records and send WhatsApp notifications
+        # Create order records, invoices, and send WhatsApp notifications
         cart_items = list(cart)  # Evaluate queryset before deleting
         for c in cart_items:
+            order_obj = None
             try:
-                order = OrderPlaced.objects.create(
+                order_obj = OrderPlaced.objects.create(
                     user=user,
                     customer=customer,
                     services=c.services,
@@ -639,32 +657,27 @@ class checkout(View):
                     status="PENDING",
                     payment=payment
                 )
-                print(f"[CHECKOUT POST] OrderPlaced created: ID={order.id} for {c.services.title}")
+                print(f"[CHECKOUT POST] OrderPlaced created: ID={order_obj.id} for {c.services.title}")
             except Exception as e:
                 print(f"[CHECKOUT POST] ERROR creating OrderPlaced: {e}")
                 import traceback
                 traceback.print_exc()
-            
-            # Send WhatsApp notification to vendor
-            vendor_number = c.services.vendor_whatsapp
-            print(f"[WHATSAPP] Checking vendor number for '{c.services.title}': '{vendor_number}'")
-            if vendor_number:
-                try:
-                    from .whatsapp_service import send_vendor_purchase_notification
-                    print(f"[WHATSAPP] Calling send_vendor_purchase_notification...")
-                    result = send_vendor_purchase_notification(
-                        service=c.services,
-                        customer_name=customer.name,
-                        quantity=c.quantity,
-                        total_amount=total_amount,
-                    )
-                    print(f"[WHATSAPP] Result: {result}")
-                except Exception as e:
-                    print(f"[WHATSAPP] EXCEPTION: {e}")
-                    import traceback
-                    traceback.print_exc()
-            else:
-                print(f"[WHATSAPP] SKIPPED: No vendor WhatsApp number set for '{c.services.title}'")
+
+            try:
+                from .invoice_service import create_and_notify
+                item_amount = c.quantity * c.services.discounted_price + 40
+                create_and_notify(
+                    order=order_obj,
+                    payment=payment,
+                    customer=customer,
+                    service=c.services,
+                    amount=item_amount,
+                    quantity=c.quantity,
+                )
+            except Exception as e:
+                print(f"[INVOICE] Failed for {c.services.title}: {e}")
+                import traceback
+                traceback.print_exc()
         
         # Clear the cart
         cart.delete()
@@ -733,6 +746,7 @@ class checkout(View):
             customers = []
             razorpay_order_id = None
 
+        currency = 'INR'
         return render(request, 'app/checkout.html', locals())
 
 def checkout_buynow(request, service_id):

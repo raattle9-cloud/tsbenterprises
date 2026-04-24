@@ -108,9 +108,40 @@
         }
     };
     var rzp1 = new Razorpay(options);
-    document.getElementById('rzp-button1').onclick = function (e) {
-        rzp1.open();
-        e.preventDefault();
+
+    function showAdvanceError(msg) {
+        var existing = document.getElementById('adv-pay-error');
+        if (existing) existing.remove();
+        var el = document.createElement('div');
+        el.id = 'adv-pay-error';
+        el.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:9999;min-width:300px;max-width:90vw;';
+        el.innerHTML = '<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:12px;padding:14px 20px;'
+            + 'display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">'
+            + '<span style="font-size:1.2rem;">⚠️</span>'
+            + '<span style="color:#856404;font-size:.93rem;">' + msg + '</span>'
+            + '</div>';
+        document.body.appendChild(el);
+        setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 6000);
     }
+
+    rzp1.on('payment.failed', function(response) {
+        showAdvanceError('Payment could not be completed. Please try again.');
+        var btn = document.getElementById('rzp-button1');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-lock me-2"></i>Pay Advance Now'; }
+    });
+
+    options.modal = {
+        ondismiss: function() {
+            var btn = document.getElementById('rzp-button1');
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-lock me-2"></i>Pay Advance Now'; }
+        }
+    };
+
+    document.getElementById('rzp-button1').onclick = function (e) {
+        e.preventDefault();
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Opening payment…';
+        rzp1.open();
+    };
 </script>
 {% endblock %}

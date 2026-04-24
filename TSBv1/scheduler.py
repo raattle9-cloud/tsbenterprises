@@ -31,14 +31,14 @@ def health_check_ping():
         )
         
         if response.status_code == 200:
-            logger.info(f'✓ Health check successful: {response.status_code}')
+            logger.info(f'Health check successful: {response.status_code}')
         else:
-            logger.warning(f'⚠ Health check returned status: {response.status_code}')
+            logger.warning(f'Health check returned status: {response.status_code}')
             
     except requests.RequestException as e:
-        logger.error(f'✗ Health check failed: {str(e)}')
+        logger.error(f'Health check failed: {str(e)}')
     except Exception as e:
-        logger.error(f'✗ Unexpected error in health check: {str(e)}')
+        logger.error(f'Unexpected error in health check: {str(e)}')
 
 
 def start_scheduler():
@@ -61,7 +61,7 @@ def start_scheduler():
             )
             
             scheduler.start()
-            logger.info('✓ Health check scheduler started successfully')
+            logger.info('Health check scheduler started successfully')
             return True
         except Exception as e:
             logger.error(f'Failed to start health check scheduler: {str(e)}')

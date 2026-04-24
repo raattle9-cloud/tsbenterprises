@@ -84,4 +84,6 @@ urlpatterns = [
     path('api/verify-booking/', advance_booking_views.verify_booking_api, name='verify-booking-api'),
     path('api/mark-verified/', advance_booking_views.mark_booking_verified, name='mark-verified-api'),
 
+    # Invoice download (public — UUID is the secret)
+    path('invoices/<uuid:token>/', views.download_invoice, name='download-invoice'),
 ]

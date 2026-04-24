@@ -171,6 +171,22 @@
 {% if razorpay_order_id %}
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+    function showPaymentError(msg) {
+        var existing = document.getElementById('payment-error-banner');
+        if (existing) existing.remove();
+        var banner = document.createElement('div');
+        banner.id = 'payment-error-banner';
+        banner.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:9999;min-width:320px;max-width:90vw;';
+        banner.innerHTML = '<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);">'
+            + '<span style="font-size:1.4rem;">⚠️</span>'
+            + '<div><strong style="color:#856404;display:block;">Payment could not be completed</strong>'
+            + '<span style="color:#6c757d;font-size:.9rem;">' + msg + '</span></div>'
+            + '<button onclick="this.closest(\'#payment-error-banner\').remove()" style="margin-left:auto;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#856404;">✕</button>'
+            + '</div>';
+        document.body.appendChild(banner);
+        setTimeout(function(){ if(banner.parentNode) banner.parentNode.removeChild(banner); }, 8000);
+    }
+
     var options = {
         key: "{{ razorpay_key_id }}",
         amount: "{{ razoramount }}",
@@ -179,32 +195,43 @@
         description: "Checkout Payment",
         image: "{% static 'app/images/product/tsb_logo.png' %}",
         order_id: "{{ razorpay_order_id }}",
-        // Callback URL for success (you might want to create a dedicated success handler)
         handler: function (response) {
-            console.log("Payment Successful:", response);
-            // Construct URL with query params
-            var redirectUrl = "{% url 'paymentdone' %}?order_id=" + response.razorpay_order_id +
-                "&payment_id=" + response.razorpay_payment_id +
-                "&cust_id=" + (document.querySelector('select[name=\"cust_id\"]').value || '');
+            var btn = document.getElementById('rzp-button1');
+            if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Redirecting…'; }
+            var custId = document.querySelector('select[name="cust_id"]');
+            var redirectUrl = "{% url 'paymentdone' %}?order_id=" + response.razorpay_order_id
+                + "&payment_id=" + response.razorpay_payment_id
+                + "&cust_id=" + (custId ? custId.value : '');
             window.location.href = redirectUrl;
+        },
+        modal: {
+            ondismiss: function() {
+                var btn = document.getElementById('rzp-button1');
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-lock me-2"></i>Pay ₹{{ total_amount }} Now'; }
+            }
         },
         prefill: {
             name: "{{ request.user.first_name }} {{ request.user.last_name }}",
             email: "{{ request.user.email }}",
-            contact: "" // Could populate if available
         },
-        theme: {
-            color: "#0d6efd",
-        },
+        theme: { color: "#0d6efd" },
     };
     var rzp1 = new Razorpay(options);
+    rzp1.on('payment.failed', function(response) {
+        showPaymentError('Please try again or use a different payment method.');
+        var btn = document.getElementById('rzp-button1');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-lock me-2"></i>Pay ₹{{ total_amount }} Now'; }
+    });
 
-    document.getElementById("rzp-button1").onclick = function (e) {
-        if (!document.querySelector('select[name=\"cust_id\"]').value) {
-            alert("Please select a customer address.");
+    document.getElementById('rzp-button1').onclick = function(e) {
+        e.preventDefault();
+        var custId = document.querySelector('select[name="cust_id"]');
+        if (!custId || !custId.value) {
+            showPaymentError('Please select a delivery address before paying.');
             return;
         }
-        e.preventDefault();
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Opening payment…';
         rzp1.open();
     };
 </script>

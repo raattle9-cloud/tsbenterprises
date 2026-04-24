@@ -427,3 +427,37 @@ class AdvanceBooking(models.Model):
         from django.utils import timezone
 
         return self.status == "PENDING" and self.valid_until > timezone.now()
+
+
+import uuid as _uuid
+
+
+class Invoice(models.Model):
+    """Stores a generated invoice, accessible via a secure token URL."""
+
+    invoice_no = models.CharField(max_length=50, unique=True)
+    token = models.UUIDField(default=_uuid.uuid4, unique=True, editable=False)
+
+    # Links to the source transaction (exactly one of these is set)
+    order = models.ForeignKey(
+        OrderPlaced, on_delete=models.SET_NULL, null=True, blank=True, related_name="invoices"
+    )
+    advance_booking = models.ForeignKey(
+        AdvanceBooking, on_delete=models.SET_NULL, null=True, blank=True, related_name="invoices"
+    )
+
+    # Denormalised for PDF regeneration without chasing nullable FKs
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    service = models.ForeignKey(Services, on_delete=models.CASCADE)
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
+    amount = MongoFloatField()
+    quantity = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.invoice_no
+
+    def get_download_url(self):
+        from django.conf import settings
+        base = getattr(settings, "SITE_BASE_URL", "http://localhost:8000").rstrip("/")
+        return f"{base}/invoices/{self.token}/"

@@ -215,6 +215,28 @@ def generate_bill_pdf(service, customer_name, quantity, total_amount=None,
     return pdf_bytes
 
 
+def generate_invoice_pdf(invoice):
+    """Generate a PDF from an Invoice model instance (for on-demand download)."""
+    booking = invoice.advance_booking
+    order = invoice.order
+    kwargs = dict(
+        service=invoice.service,
+        customer_name=invoice.customer.name,
+        quantity=invoice.quantity,
+        total_amount=invoice.amount,
+        order_id=invoice.invoice_no,
+    )
+    if booking:
+        try:
+            kwargs["booking_code"] = booking.booking_code
+            kwargs["advance_paid"] = float(str(booking.advance_paid))
+            kwargs["remaining_amount"] = float(str(booking.remaining_amount))
+            kwargs["booking_date"] = str(booking.booking_date)
+        except Exception:
+            pass
+    return generate_bill_pdf(**kwargs)
+
+
 def save_bill_pdf(pdf_bytes, filename=None):
     """Save PDF to a temp file and return the path."""
     import tempfile

@@ -165,30 +165,43 @@
     image: "{% static 'app/images/product/tsb_logo.png' %}",
     order_id: "{{ razorpay_order_id }}",
     handler: function (response) {
-      // Payment successful - redirect to success page
-      console.log("Razorpay Payment Successful:", response);
-      alert("Payment successful! Order ID: " + response.razorpay_order_id);
-      window.location.href = "{% url 'home' %}";
+      var btn = document.getElementById("rzp-button1");
+      if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Redirecting…'; }
+      var custId = document.querySelector('select[name="cust_id"]');
+      var redirectUrl = "{% url 'paymentdone' %}?order_id=" + response.razorpay_order_id
+        + "&payment_id=" + response.razorpay_payment_id
+        + "&cust_id=" + (custId ? custId.value : '');
+      window.location.href = redirectUrl;
+    },
+    modal: {
+      ondismiss: function() {
+        var btn = document.getElementById("rzp-button1");
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-lock me-2"></i>Pay ₹{{ advance_amount }} Now'; }
+      }
     },
     prefill: {
       name: "{{ request.user.first_name }} {{ request.user.last_name }}",
       email: "{{ request.user.email }}",
     },
-    theme: {
-      color: "#0d6efd",
-    },
+    theme: { color: "#0d6efd" },
   };
   var rzp1 = new Razorpay(options);
   rzp1.on("payment.failed", function (response) {
-    alert("Payment failed: " + response.error.description);
+    showCartNotification("Payment could not be completed. Please try again.", "error");
+    var btn = document.getElementById("rzp-button1");
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-lock me-2"></i>Pay ₹{{ advance_amount }} Now'; }
   });
   document.getElementById("rzp-button1").onclick = function (e) {
     e.preventDefault();
+    this.disabled = true;
+    this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Opening payment…';
     rzp1.open();
   };
 </script>
-{% endif %} {% endblock landing_content %} {% block landing_scripts %} {{
-block.super }}
+{% endif %}
+{% endblock landing_content %}
+{% block landing_scripts %}
+{{block.super}}
 <style>
   /* Fix quantity display overlapping buttons */
   .cart-quantity-group {
@@ -258,154 +271,127 @@ block.super }}
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+  // ── Notification helper ──────────────────────────────────────────────────
+  function showCartNotification(msg, type) {
+    var existing = document.getElementById('cart-notification');
+    if (existing) existing.remove();
+    var colors = type === 'error'
+      ? { bg: '#fff3cd', border: '#ffc107', text: '#856404', icon: '⚠️' }
+      : { bg: '#d1fae5', border: '#10b981', text: '#065f46', icon: '✓' };
+    var el = document.createElement('div');
+    el.id = 'cart-notification';
+    el.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:9999;min-width:280px;max-width:90vw;';
+    el.innerHTML = '<div style="background:' + colors.bg + ';border:1px solid ' + colors.border + ';border-radius:12px;'
+      + 'padding:14px 18px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">'
+      + '<span style="font-size:1.2rem;">' + colors.icon + '</span>'
+      + '<span style="color:' + colors.text + ';font-size:.93rem;">' + msg + '</span>'
+      + '</div>';
+    document.body.appendChild(el);
+    setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 3500);
+  }
+
+  // ── Cart interactions ───────────────────────────────────────────────────
   document.addEventListener("DOMContentLoaded", function () {
-    // Plus cart - increase quantity
+    var busy = false;
+
+    function setLoading(on) {
+      busy = on;
+      document.querySelectorAll(".plus-cart, .minus-cart, .remove-cart").forEach(function(b) {
+        b.style.pointerEvents = on ? 'none' : 'auto';
+        b.style.opacity = on ? '0.5' : '1';
+      });
+    }
+
+    function updateTotals(amount, totalamount) {
+      var totalEl = document.getElementById("totalamount");
+      if (totalEl) totalEl.textContent = "₹" + totalamount;
+    }
+
+    function updateCartCount() {
+      var countEl = document.querySelector(".card-header h5");
+      if (countEl) {
+        var remaining = document.querySelectorAll(".cart-item").length;
+        countEl.innerHTML = '<i class="fas fa-list me-2"></i>Cart Items (' + remaining + ')';
+      }
+    }
+
     document.querySelectorAll(".plus-cart").forEach(function (btn) {
       btn.addEventListener("click", function (e) {
         e.preventDefault();
-        const servId = this.getAttribute("pid");
-
+        if (busy) return;
+        var servId = this.getAttribute("pid");
+        setLoading(true);
         fetch("/pluscart/?prod_id=" + servId)
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.error) {
-              alert(data.error);
-              return;
-            }
-            // Update quantity display
-            const qtyEl = document.getElementById("quantity-" + servId);
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (data.error) { showCartNotification("Could not update quantity. Please try again.", "error"); return; }
+            var qtyEl = document.getElementById("quantity-" + servId);
             if (qtyEl) qtyEl.textContent = data.quantity;
-
-            // Update totals
             updateTotals(data.amount, data.totalamount);
           })
-          .catch((err) => {
-            console.error("Error:", err);
-            alert("Failed to update cart");
-          });
+          .catch(function() { showCartNotification("Could not update cart. Please refresh and try again.", "error"); })
+          .finally(function() { setLoading(false); });
       });
     });
 
-    // Minus cart - decrease quantity
     document.querySelectorAll(".minus-cart").forEach(function (btn) {
       btn.addEventListener("click", function (e) {
         e.preventDefault();
-        const servId = this.getAttribute("pid");
-        const cartItem = this.closest(".cart-item");
-
+        if (busy) return;
+        var servId = this.getAttribute("pid");
+        var cartItem = this.closest(".cart-item");
+        setLoading(true);
         fetch("/minuscart/?prod_id=" + servId)
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.error) {
-              alert(data.error);
-              return;
-            }
-
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (data.error) { showCartNotification("Could not update quantity. Please try again.", "error"); return; }
             if (data.removed) {
-              // Remove item from DOM
               if (cartItem) cartItem.remove();
               updateCartCount();
-              // Reload if cart is empty
-              if (document.querySelectorAll(".cart-item").length === 0) {
-                location.reload();
-              }
+              if (document.querySelectorAll(".cart-item").length === 0) { location.reload(); return; }
             } else {
-              // Update quantity display
-              const qtyEl = document.getElementById("quantity-" + servId);
+              var qtyEl = document.getElementById("quantity-" + servId);
               if (qtyEl) qtyEl.textContent = data.quantity;
             }
-
-            // Update totals
             updateTotals(data.amount, data.totalamount);
           })
-          .catch((err) => {
-            console.error("Error:", err);
-            alert("Failed to update cart");
-          });
+          .catch(function() { showCartNotification("Could not update cart. Please refresh and try again.", "error"); })
+          .finally(function() { setLoading(false); });
       });
     });
 
-    // Remove cart - remove entire item
     document.querySelectorAll(".remove-cart").forEach(function (btn) {
       btn.addEventListener("click", function (e) {
         e.preventDefault();
-        const servId = this.getAttribute("pid");
-        const cartItem = this.closest(".cart-item");
-
-        if (!confirm("Are you sure you want to remove this item?")) return;
-
+        if (busy) return;
+        var servId = this.getAttribute("pid");
+        var cartItem = this.closest(".cart-item");
+        // Fade item instead of confirm() dialog
+        if (cartItem) { cartItem.style.transition = 'opacity .2s'; cartItem.style.opacity = '0.4'; }
+        setLoading(true);
         fetch("/removecart/?prod_id=" + servId)
-          .then((response) => response.json())
-          .then((data) => {
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
             if (data.error) {
-              alert(data.error);
+              if (cartItem) cartItem.style.opacity = '1';
+              showCartNotification("Could not remove item. Please try again.", "error");
               return;
             }
-
-            // Remove item from DOM
             if (cartItem) cartItem.remove();
             updateCartCount();
-
-            // Check if cart is empty and reload
             if (document.querySelectorAll(".cart-item").length === 0) {
               location.reload();
             } else {
-              // Delay reload slightly to ensure backend has processed
-              setTimeout(() => {
-                location.reload();
-              }, 300);
+              setTimeout(function() { location.reload(); }, 200);
             }
           })
-          .catch((err) => {
-            console.error("Error:", err);
-            alert("Failed to remove item");
-          });
+          .catch(function() {
+            if (cartItem) cartItem.style.opacity = '1';
+            showCartNotification("Could not remove item. Please refresh and try again.", "error");
+          })
+          .finally(function() { setLoading(false); });
       });
     });
-
-    // Helper: Update totals display
-    function updateTotals(amount, totalamount) {
-      const subtotalEl = document.getElementById("amount");
-      const totalEl = document.getElementById("totalamount");
-      const advanceEl = document.getElementById("advance_amount");
-      const remainingEl = document.getElementById("remaining_amount");
-
-      if (subtotalEl) subtotalEl.textContent = "₹" + amount;
-      if (totalEl) totalEl.textContent = "₹" + totalamount;
-
-      // Note: Advance amounts are complex (may need server-side recalculation)
-      // If advance payment logic changes are needed, consider reloading selectively
-    }
-
-    // Disable buttons during fetch to prevent race conditions
-    function setLoading(isLoading) {
-      document.querySelectorAll(".plus-cart, .minus-cart, .remove-cart").forEach(btn => {
-        if (isLoading) {
-          btn.style.pointerEvents = 'none';
-          btn.style.opacity = '0.5';
-        } else {
-          btn.style.pointerEvents = 'auto';
-          btn.style.opacity = '1';
-        }
-      });
-    }
-
-    // Wrap fetch calls with setLoading
-    const originalFetch = window.fetch;
-    window.fetch = function (...args) {
-      setLoading(true);
-      return originalFetch.apply(this, args).finally(() => setLoading(false));
-    };
-
-    // Helper: Update cart count in header
-    function updateCartCount() {
-      const countEl = document.querySelector(".card-header h5");
-      if (countEl) {
-        const remaining = document.querySelectorAll(".cart-item").length;
-        countEl.innerHTML =
-          '<i class="fas fa-list me-2"></i>Cart Items (' + remaining + ")";
-      }
-    }
   });
 </script>
 {% endblock %}

@@ -131,10 +131,24 @@
 
     document.getElementById('quantity').addEventListener('input', updatePrices);
 
+    function showBookingError(msg) {
+        var existing = document.getElementById('booking-error');
+        if (existing) existing.remove();
+        var el = document.createElement('div');
+        el.id = 'booking-error';
+        el.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:9999;min-width:300px;max-width:90vw;';
+        el.innerHTML = '<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:12px;padding:14px 20px;'
+            + 'display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.12);">'
+            + '<span style="font-size:1.2rem;">⚠️</span>'
+            + '<span style="color:#856404;font-size:.93rem;">' + msg + '</span></div>';
+        document.body.appendChild(el);
+        setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 6000);
+    }
+
     document.getElementById('payButton').addEventListener('click', function () {
         const dateInput = document.getElementById('booking_date');
         if (!dateInput.value) {
-            alert('Please select a visit date');
+            showBookingError('Please select a visit date before continuing.');
             return;
         }
 
@@ -148,23 +162,20 @@
         fetch('{% url "advance-checkout" service.id %}', {
             method: 'POST',
             body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            }
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
         })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     window.location.href = data.redirect_url;
                 } else {
-                    alert(data.error || 'Something went wrong');
+                    showBookingError(data.error || 'Something went wrong. Please try again.');
                     payBtn.disabled = false;
                     payBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Pay Advance & Book';
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to process booking');
+            .catch(function() {
+                showBookingError('Could not connect. Please check your connection and try again.');
                 payBtn.disabled = false;
                 payBtn.innerHTML = '<i class="fas fa-lock me-2"></i>Pay Advance & Book';
             });
