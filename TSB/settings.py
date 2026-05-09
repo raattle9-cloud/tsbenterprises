@@ -228,19 +228,21 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'debug.log'),
-            'formatter': 'verbose',
-        },
+        # File handler disabled — debug.log was growing unboundedly on the server.
+        # Re-enable locally if needed for debugging.
+        # 'file': {
+        #     'class': 'logging.FileHandler',
+        #     'filename': os.path.join(BASE_DIR, 'debug.log'),
+        #     'formatter': 'verbose',
+        # },
     },
     'root': {
-        'handlers': ['console', 'file'] if APP_MODE == 'dev' else ['file'],
+        'handlers': ['console'],  # removed 'file' — logs go to console only
         'level': 'DEBUG' if APP_MODE == 'dev' else 'WARNING',
     },
     'loggers': {
         'TSBv1': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],  # removed 'file'
             'level': 'DEBUG' if APP_MODE == 'dev' else 'INFO',
             'propagate': False,
         },

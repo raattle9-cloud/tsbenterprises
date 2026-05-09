@@ -175,18 +175,19 @@ class ServiceImage(models.Model):
         """
         Returns the correct image URL:
         - Cloudinary URL if the image was uploaded to Cloudinary
-        - Local static URL if the image is stored locally
+        - Constructed Cloudinary URL using CLOUDINARY_CLOUD_NAME for legacy paths
         """
         if not self.image:
             return ""
 
         image_path = str(self.image)
 
-        # If it's already a full URL (Cloudinary), return it
+        # If it's already a full Cloudinary (or any http) URL, return it as-is
         if image_path.startswith("http"):
             return image_path
 
-        # Check if the image exists on Cloudinary by checking if the URL is a Cloudinary URL
+        # Ask the storage backend for the URL — cloudinary_storage will return
+        # a full https://res.cloudinary.com/... URL for files it manages
         try:
             url = self.image.url
             if "cloudinary.com" in url:
@@ -194,11 +195,22 @@ class ServiceImage(models.Model):
         except Exception:
             pass
 
-        # Fallback to local static URL for existing local images
-        # Images are stored in static/images/service/
+        # Fallback: construct the Cloudinary URL directly from the stored path.
+        # This handles legacy records where the image was uploaded to Cloudinary
+        # but the storage backend fails to build the URL (e.g. misconfiguration).
         from django.conf import settings
 
-        return f"{settings.STATIC_URL}images/{image_path}"
+        cloud_name = (
+            settings.CLOUDINARY_STORAGE.get("CLOUD_NAME", "")
+            or settings.CLOUDINARY_STORAGE.get("cloud_name", "")
+        )
+        if cloud_name and image_path:
+            # Cloudinary public_id path — strip leading slash if present
+            public_id = image_path.lstrip("/")
+            return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+
+        # Ultimate fallback — empty string (avoids broken local paths)
+        return ""
 
 
 class HeroImage(models.Model):
@@ -229,7 +241,16 @@ class HeroImage(models.Model):
             pass
 
         from django.conf import settings
-        return f"{settings.STATIC_URL}images/{image_path}"
+
+        cloud_name = (
+            settings.CLOUDINARY_STORAGE.get("CLOUD_NAME", "")
+            or settings.CLOUDINARY_STORAGE.get("cloud_name", "")
+        )
+        if cloud_name and image_path:
+            public_id = image_path.lstrip("/")
+            return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+
+        return ""
 
 
 class TrustedPartner(models.Model):
@@ -261,7 +282,16 @@ class TrustedPartner(models.Model):
             pass
 
         from django.conf import settings
-        return f"{settings.STATIC_URL}images/{logo_path}"
+
+        cloud_name = (
+            settings.CLOUDINARY_STORAGE.get("CLOUD_NAME", "")
+            or settings.CLOUDINARY_STORAGE.get("cloud_name", "")
+        )
+        if cloud_name and logo_path:
+            public_id = logo_path.lstrip("/")
+            return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+
+        return ""
 
 
 class Customer(models.Model):
