@@ -9,13 +9,15 @@ class Tsbv1Config(AppConfig):
         """
         Initialize the health check scheduler when the app is ready.
         """
-        try:
-            from .scheduler import start_scheduler
-            start_scheduler()
-        except Exception as e:
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.error(f'Failed to start scheduler: {str(e)}')
+        # Scheduler disabled — keep-alive ping is handled by an external cron
+        # service (e.g. cron-job.org) hitting /health/ every 10 minutes.
+        # try:
+        #     from .scheduler import start_scheduler
+        #     start_scheduler()
+        # except Exception as e:
+        #     import logging
+        #     logger = logging.getLogger(__name__)
+        #     logger.error(f'Failed to start scheduler: {str(e)}')
 
         # Fix for Python 3.14 + Django 4.1 Context.__copy__ bug
         # This prevents the 'super object has no attribute dicts' crash
