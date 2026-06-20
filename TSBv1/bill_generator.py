@@ -265,58 +265,91 @@ def generate_bill_pdf(service, customer_name, quantity, total_amount=None,
     elems.append(Spacer(1, 2*mm))
 
     shipping_gst = 40.0
-    if total_amount is not None:
-        grand_total = float(total_amount)
+    is_advance = advance_paid is not None
+
+    if is_advance:
+        # total_amount here is the FULL booking value (passed from booking.total_amount)
+        full_value = float(total_amount) if total_amount is not None else item_total + shipping_gst
+        adv = float(advance_paid)
+        rem = float(remaining_amount) if remaining_amount is not None else max(0.0, full_value - adv)
+
+        pay_rows = [
+            ['Subtotal (services)',      f'Rs. {item_total:,.2f}'],
+            ['Handling / Convenience',   f'Rs. {shipping_gst:,.2f}'],
+            ['TOTAL BOOKING VALUE',      f'Rs. {full_value:,.2f}'],
+            ['Advance Paid (Online)',     f'Rs. {adv:,.2f}'],
+            ['Balance Due at Venue',     f'Rs. {rem:,.2f}'],
+        ]
+        # Row indices for special styling
+        booking_val_idx = 2   # TOTAL BOOKING VALUE  — bold navy/navy
+        advance_idx     = 3   # Advance Paid         — bold blue/blue
+        venue_idx       = 4   # Balance Due          — bold amber/amber
+
+        ts = [
+            ('FONTNAME',  (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE',  (0, 0), (-1, -1), 9),
+            ('TEXTCOLOR', (0, 0), (0, -1), C_GREY),
+            ('TEXTCOLOR', (1, 0), (1, -1), C_DARKGRY),
+            ('ALIGN',     (0, 0), (-1, -1), 'RIGHT'),
+            ('ROWBACKGROUNDS', (0, 0), (1, 1), [C_WHITE, C_LIGHT]),
+            ('TOPPADDING',    (0, 0), (-1, -1), 4),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('BOX',       (0, 0), (-1, -1), 0.5, C_LTGREY),
+            ('LINEBELOW', (0, 0), (-1, -2), 0.3, C_LTGREY),
+            # TOTAL BOOKING VALUE row
+            ('LINEABOVE',     (0, booking_val_idx), (-1, booking_val_idx), 1.5, C_NAVY),
+            ('BACKGROUND',    (0, booking_val_idx), (-1, booking_val_idx), C_LIGHT),
+            ('FONTNAME',      (0, booking_val_idx), (-1, booking_val_idx), 'Helvetica-Bold'),
+            ('FONTSIZE',      (0, booking_val_idx), (-1, booking_val_idx), 10),
+            ('TEXTCOLOR',     (0, booking_val_idx), (0, booking_val_idx), C_NAVY),
+            ('TEXTCOLOR',     (1, booking_val_idx), (1, booking_val_idx), C_NAVY),
+            ('TOPPADDING',    (0, booking_val_idx), (-1, booking_val_idx), 6),
+            ('BOTTOMPADDING', (0, booking_val_idx), (-1, booking_val_idx), 6),
+            # Advance Paid row — highlighted in blue
+            ('FONTNAME',  (0, advance_idx), (-1, advance_idx), 'Helvetica-Bold'),
+            ('FONTSIZE',  (0, advance_idx), (-1, advance_idx), 10),
+            ('TEXTCOLOR', (0, advance_idx), (-1, advance_idx), C_BLUE),
+            ('BACKGROUND',(0, advance_idx), (-1, advance_idx), colors.HexColor('#e3f2fd')),
+            ('TOPPADDING',    (0, advance_idx), (-1, advance_idx), 6),
+            ('BOTTOMPADDING', (0, advance_idx), (-1, advance_idx), 6),
+            # Balance Due row — highlighted in amber
+            ('FONTNAME',  (0, venue_idx), (-1, venue_idx), 'Helvetica-Bold'),
+            ('FONTSIZE',  (0, venue_idx), (-1, venue_idx), 10),
+            ('TEXTCOLOR', (0, venue_idx), (-1, venue_idx), C_AMBER),
+            ('BACKGROUND',(0, venue_idx), (-1, venue_idx), colors.HexColor('#fff8e1')),
+            ('TOPPADDING',    (0, venue_idx), (-1, venue_idx), 6),
+            ('BOTTOMPADDING', (0, venue_idx), (-1, venue_idx), 6),
+        ]
     else:
-        grand_total = item_total + shipping_gst
-
-    pay_rows = [
-        ['Subtotal',          f'Rs. {item_total:,.2f}'],
-        ['Handling / GST',    f'Rs. {shipping_gst:,.2f}'],
-    ]
-    if advance_paid is not None:
-        pay_rows.append(['Advance Paid (Online)', f'Rs. {float(advance_paid):,.2f}'])
-    if remaining_amount is not None:
-        pay_rows.append(['Payable at Venue',      f'Rs. {float(remaining_amount):,.2f}'])
-
-    # Grand total row
-    pay_rows.append(['GRAND TOTAL',               f'Rs. {grand_total:,.2f}'])
-
-    grand_idx = len(pay_rows) - 1
+        grand_total = float(total_amount) if total_amount is not None else item_total + shipping_gst
+        pay_rows = [
+            ['Subtotal',        f'Rs. {item_total:,.2f}'],
+            ['Handling / GST',  f'Rs. {shipping_gst:,.2f}'],
+            ['TOTAL PAID',      f'Rs. {grand_total:,.2f}'],
+        ]
+        grand_idx = 2
+        ts = [
+            ('FONTNAME',  (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE',  (0, 0), (-1, -1), 9),
+            ('TEXTCOLOR', (0, 0), (0, -1), C_GREY),
+            ('TEXTCOLOR', (1, 0), (1, -1), C_DARKGRY),
+            ('ALIGN',     (0, 0), (-1, -1), 'RIGHT'),
+            ('ROWBACKGROUNDS', (0, 0), (-1, grand_idx - 1), [C_WHITE, C_LIGHT]),
+            ('TOPPADDING',    (0, 0), (-1, -1), 4),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('LINEABOVE',    (0, grand_idx), (-1, grand_idx), 1.5, C_NAVY),
+            ('BACKGROUND',   (0, grand_idx), (-1, grand_idx), colors.HexColor('#e8f5e9')),
+            ('FONTNAME',     (0, grand_idx), (-1, grand_idx), 'Helvetica-Bold'),
+            ('FONTSIZE',     (0, grand_idx), (-1, grand_idx), 11),
+            ('TEXTCOLOR',    (0, grand_idx), (0, grand_idx), C_NAVY),
+            ('TEXTCOLOR',    (1, grand_idx), (1, grand_idx), C_GREEN),
+            ('BOX',          (0, 0), (-1, -1), 0.5, C_LTGREY),
+            ('LINEBELOW',    (0, 0), (-1, grand_idx - 1), 0.3, C_LTGREY),
+            ('TOPPADDING',    (0, grand_idx), (-1, grand_idx), 6),
+            ('BOTTOMPADDING', (0, grand_idx), (-1, grand_idx), 6),
+        ]
 
     pay_table = Table(pay_rows, colWidths=[110*mm, 60*mm])
-    ts = [
-        ('FONTNAME',     (0, 0), (0, -1), 'Helvetica'),
-        ('FONTNAME',     (1, 0), (1, -1), 'Helvetica'),
-        ('FONTSIZE',     (0, 0), (-1, -1), 9),
-        ('TEXTCOLOR',    (0, 0), (0, -1), C_GREY),
-        ('TEXTCOLOR',    (1, 0), (1, -1), C_DARKGRY),
-        ('ALIGN',        (0, 0), (-1, -1), 'RIGHT'),
-        ('ROWBACKGROUNDS', (0, 0), (-1, grand_idx - 1), [C_WHITE, C_LIGHT]),
-        ('TOPPADDING',    (0, 0), (-1, -1), 4),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-        ('LINEABOVE',    (0, grand_idx), (-1, grand_idx), 1.5, C_NAVY),
-        ('BACKGROUND',   (0, grand_idx), (-1, grand_idx), C_LIGHT),
-        ('FONTNAME',     (0, grand_idx), (-1, grand_idx), 'Helvetica-Bold'),
-        ('FONTSIZE',     (0, grand_idx), (-1, grand_idx), 11),
-        ('TEXTCOLOR',    (0, grand_idx), (0, grand_idx), C_NAVY),
-        ('TEXTCOLOR',    (1, grand_idx), (1, grand_idx), C_GREEN),
-        ('BOX',          (0, 0), (-1, -1), 0.5, C_LTGREY),
-        ('LINEBELOW',    (0, 0), (-1, grand_idx - 1), 0.3, C_LTGREY),
-        ('TOPPADDING',    (0, grand_idx), (-1, grand_idx), 6),
-        ('BOTTOMPADDING', (0, grand_idx), (-1, grand_idx), 6),
-    ]
-    # Highlight 'Payable at Venue' row in amber if it exists
-    if remaining_amount is not None:
-        venue_idx = next(
-            (i for i, r in enumerate(pay_rows) if r[0] == 'Payable at Venue'), None)
-        if venue_idx is not None:
-            ts += [
-                ('TEXTCOLOR', (0, venue_idx), (0, venue_idx), C_AMBER),
-                ('TEXTCOLOR', (1, venue_idx), (1, venue_idx), C_AMBER),
-                ('FONTNAME',  (0, venue_idx), (-1, venue_idx), 'Helvetica-Bold'),
-            ]
-
     pay_table.setStyle(TableStyle(ts))
     elems.append(pay_table)
     elems.append(Spacer(1, 5*mm))
@@ -383,10 +416,13 @@ def generate_invoice_pdf(invoice):
     )
     if booking:
         try:
-            kwargs['booking_code']    = booking.booking_code
-            kwargs['advance_paid']    = float(str(booking.advance_paid))
+            kwargs['booking_code']     = booking.booking_code
+            kwargs['advance_paid']     = float(str(booking.advance_paid))
             kwargs['remaining_amount'] = float(str(booking.remaining_amount))
-            kwargs['booking_date']    = str(booking.booking_date)
+            kwargs['booking_date']     = str(booking.booking_date)
+            # Pass the FULL booking value so the PDF shows correct totals,
+            # not invoice.amount which is only the advance paid.
+            kwargs['total_amount']     = float(str(booking.total_amount))
         except Exception:
             pass
     return generate_bill_pdf(**kwargs)
