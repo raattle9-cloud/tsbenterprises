@@ -208,44 +208,8 @@ def send_invoice_notifications(invoice):
             f"Invoice attached.\n— TSB System"
         )
 
-    # — Customer: rich template message (PDF in header + all booking details + invoice URL button)
     results = {}
-    try:
-        from .whatsapp_service import send_tsb_invoice_receipt_template
-        import re as _re_c
-        _cust_digits = _re_c.sub(r'\D', '', str(customer.mobile))
-        if len(_cust_digits) == 10:
-            _cust_digits = '91' + _cust_digits
-
-        if is_advance and booking_date:
-            try:
-                _bd = datetime.strptime(booking_date, "%Y-%m-%d")
-                _date_str = _bd.strftime("%d %B %Y")
-            except ValueError:
-                _date_str = booking_date
-        else:
-            _date_str = datetime.now().strftime("%d %B %Y")
-
-        _reference = booking_code if is_advance else (
-            getattr(invoice.payment, 'razorpay_payment_id', None) or f"ORD-{invoice.order_id}"
-        )
-
-        results["customer"] = send_tsb_invoice_receipt_template(
-            to=_cust_digits,
-            customer_name=customer.name,
-            service_name=service.title,
-            invoice_no=invoice_no,
-            date=_date_str,
-            total_amount=f"{total_amt:.0f}",
-            reference=str(_reference or invoice_no),
-            invoice_token=str(invoice.token),
-            pdf_media_id=media_id,
-            pdf_filename=pdf_filename,
-        )
-    except Exception as e:
-        logger.error(f"[INVOICE] Customer template notification failed: {e}", exc_info=True)
-        results["customer"] = {"error": str(e)}
-
+    results["customer"] = _send_to(customer.mobile, customer_msg, "customer")
     results["vendor"] = _send_to(service.vendor_whatsapp, vendor_msg, "vendor")
     results["owner"] = _send_to(
         getattr(settings, "PLATFORM_OWNER_PHONE", ""),
