@@ -406,7 +406,11 @@ def show_cart(request):
             razorpay_key_id = settings.RAZOR_PAY_KEY_ID
         except Exception as e:
             print(f"Razorpay order creation failed: {e}")
-    
+
+    # Store actual amounts in session so payment_done records what was really charged
+    request.session['cart_advance_amount'] = advance_amount
+    request.session['cart_full_total'] = totalamount
+
     context = {
         'cart': cart,
         'amount': totalamount,
@@ -511,9 +515,15 @@ def payment_done(request):
         
         invoices = []
         if cart_items:
-            # Calculate total
-            total_amount = sum(c.quantity * c.services.discounted_price for c in cart_items) + 40
-            print(f"[PAYMENT_DONE] Total amount: Rs.{total_amount}")
+            # Full cart value (used as fallback and for reference)
+            full_cart_total = sum(c.quantity * c.services.discounted_price for c in cart_items) + 40
+            # Actual amount charged by Razorpay (advance if cart used advance flow)
+            cart_advance = request.session.pop('cart_advance_amount', None)
+            request.session.pop('cart_full_total', None)
+            total_amount = cart_advance if cart_advance is not None else full_cart_total
+            is_advance = cart_advance is not None and cart_advance < full_cart_total
+            payment_type_str = "ADVANCE" if is_advance else "FULL"
+            print(f"[PAYMENT_DONE] Total amount: Rs.{total_amount} (type={payment_type_str}, full_cart={full_cart_total})")
             
             # Create payment record
             try:
@@ -526,7 +536,7 @@ def payment_done(request):
                     razorpay_order_id=order_id or '',
                     razorpay_payment_id=payment_id or '',
                     paid=True if payment_id else False,
-                    payment_type="FULL"
+                    payment_type=payment_type_str
                 )
                 payment.save()
                 payment.id = _pay_id  # djongo overwrites id with ObjectId after save — restore integer
@@ -540,7 +550,7 @@ def payment_done(request):
                 payment = None
             
             # Create orders and send WhatsApp for each item
-            for item in cart_items:
+            for cart_idx, item in enumerate(cart_items):
                 print(f"[PAYMENT_DONE] Processing: {item.services.title} x{item.quantity}")
                 print(f"[PAYMENT_DONE]   vendor_whatsapp: '{item.services.vendor_whatsapp}'")
                 logger.info(f"[PAYMENT_DONE] Processing: {item.services.title} x{item.quantity}, vendor_whatsapp='{item.services.vendor_whatsapp}'")
@@ -574,7 +584,13 @@ def payment_done(request):
                 if customer and payment:
                     try:
                         from .invoice_service import create_and_notify
-                        item_amount = item.quantity * item.services.discounted_price + 40
+                        # For advance payments use the actual amount collected; for full payments
+                        # split the total evenly across cart items (Rs. 40 shipping counted once total)
+                        if is_advance:
+                            item_amount = total_amount / len(cart_items)
+                        else:
+                            # Rs. 40 shipping charged once per order, not per item
+                            item_amount = item.quantity * item.services.discounted_price + (40 if cart_idx == 0 else 0)
                         invoice = create_and_notify(
                             order=order_obj,
                             payment=payment,

@@ -98,8 +98,11 @@ def send_invoice_notifications(invoice):
         try:
             import base64
             qr_b64 = booking.qr_code_data
-            # Fix potential missing padding
-            qr_b64 += '=' * (4 - len(qr_b64) % 4)
+            # Strip "data:image/png;base64," prefix if present (qr_code_data is stored as a data URL)
+            if ',' in qr_b64:
+                qr_b64 = qr_b64.split(',', 1)[1]
+            # Correct padding: -len % 4 gives 0 when already aligned, avoids adding 4 spurious '='
+            qr_b64 += '=' * (-len(qr_b64) % 4)
             qr_bytes = base64.b64decode(qr_b64)
             qr_media_id = upload_whatsapp_media(qr_bytes, f"QR_{booking_code}.png", mime_type="image/png")
             if qr_media_id:
