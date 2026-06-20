@@ -135,47 +135,89 @@ def advance_booking_checkout(request, service_id):
 @login_required
 def advance_payment_process(request, booking_id):
     """
-    Process Razorpay payment for advance booking
+    Process Razorpay payment for advance booking.
+    Set PAYMENT_MODE=testing in .env to bypass Razorpay for development/QA.
     """
     print(f"========== ADVANCE PAYMENT PROCESS CALLED ==========")
     print(f"Booking ID: {booking_id}")
     print(f"Request method: {request.method}")
-    
+
+    from django.conf import settings
+    payment_mode = getattr(settings, 'PAYMENT_MODE', 'live')
+
     booking = get_object_or_404(AdvanceBooking, id=booking_id, user=request.user)
-    
-    print(f"Booking found: {booking.booking_code}, Status: {booking.status}")
-    
+
+    print(f"Booking found: {booking.booking_code}, Status: {booking.status}, payment_mode={payment_mode}")
+
     if request.method == 'POST':
         print("POST request received - processing payment callback")
-        # Handle Razorpay payment callback
         razorpay_order_id = request.POST.get('razorpay_order_id')
         razorpay_payment_id = request.POST.get('razorpay_payment_id')
         razorpay_signature = request.POST.get('razorpay_signature')
-        
+
         print(f"Payment IDs received: order={razorpay_order_id}, payment={razorpay_payment_id}")
+
+        # ── TESTING MODE: bypass Razorpay entirely ───────────────────────────
+        if payment_mode == 'testing':
+            print("[TEST MODE] Bypassing Razorpay signature verification")
+            import logging
+            logger = logging.getLogger(__name__)
+            try:
+                payment = Payment.objects.create(
+                    user=request.user,
+                    amount=convert_decimal128_to_float(booking.advance_paid),
+                    razorpay_order_id=razorpay_order_id or f'test_order_{booking.booking_code}',
+                    razorpay_payment_id=razorpay_payment_id or f'test_pay_{booking.booking_code}',
+                    razorpay_payment_status='TEST_SUCCESS',
+                    paid=True,
+                    payment_type='ADVANCE'
+                )
+                booking.status = 'PENDING'
+                booking.save(update_fields=['status'])
+                qr_data = generate_qr_code(booking)
+                booking.qr_code_data = qr_data
+                booking.save(update_fields=['qr_code_data'])
+                try:
+                    from .invoice_service import create_and_notify
+                    create_and_notify(
+                        advance_booking=booking,
+                        payment=payment,
+                        customer=booking.customer,
+                        service=booking.service,
+                        amount=convert_decimal128_to_float(booking.advance_paid),
+                        quantity=booking.quantity,
+                    )
+                except Exception as inv_err:
+                    logger.error(f"[INVOICE] Failed for advance booking {booking.booking_code}: {inv_err}", exc_info=True)
+                return redirect('advance-booking-confirmation', booking.id)
+            except Exception as e:
+                logger.error(f"[TEST PAYMENT] Error: {e}", exc_info=True)
+                messages.error(request, f"Test payment error: {e}")
+                return redirect('advance-payment', booking_id)
+        # ── END TESTING MODE ─────────────────────────────────────────────────
+
         # Verify Razorpay signature before confirming payment
         import razorpay
         import hmac
         import hashlib
-        from django.conf import settings
         from django.contrib import messages
-        
+
         # All three values are required for verification
         if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature]):
             messages.error(request, "Payment verification failed: Missing payment details.")
             return redirect('advance-payment', booking_id)
-        
+
         # Verify the signature
         try:
             client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_KEY_SECRET))
-            
+
             # Razorpay signature verification
             params_dict = {
                 'razorpay_order_id': razorpay_order_id,
                 'razorpay_payment_id': razorpay_payment_id,
                 'razorpay_signature': razorpay_signature
             }
-            
+
             # This will raise an exception if signature is invalid
             client.utility.verify_payment_signature(params_dict)
             
@@ -268,32 +310,43 @@ def advance_payment_process(request, booking_id):
     
     # GET - show payment page
     import razorpay
-    from django.conf import settings
-    
-    client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_KEY_SECRET))
-    
-    # Create Razorpay order
-    # Convert Decimal128 to float first, then to paise (multiply by 100)
+
     advance_paid_float = convert_decimal128_to_float(booking.advance_paid)
-    order_amount = int(advance_paid_float * 100)  # Convert to paise
+    order_amount = int(advance_paid_float * 100)
     order_currency = 'INR'
+
+    # ── TESTING MODE: skip Razorpay order creation ───────────────────────────
+    if payment_mode == 'testing':
+        context = {
+            'booking': booking,
+            'razorpay_order_id': f'test_order_{booking.booking_code}',
+            'razorpay_key_id': 'test_key_id',
+            'amount': order_amount,
+            'currency': order_currency,
+            'payment_mode': 'testing',
+        }
+        return render(request, 'app/advance_payment.html', context)
+    # ── END TESTING MODE ─────────────────────────────────────────────────────
+
+    client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_KEY_SECRET))
     order_receipt = f'booking_{booking.booking_code}'
-    
+
     razorpay_order = client.order.create({
         'amount': order_amount,
         'currency': order_currency,
         'receipt': order_receipt,
         'payment_capture': 1
     })
-    
+
     context = {
         'booking': booking,
         'razorpay_order_id': razorpay_order['id'],
         'razorpay_key_id': settings.RAZOR_PAY_KEY_ID,
         'amount': order_amount,
         'currency': order_currency,
+        'payment_mode': 'live',
     }
-    
+
     return render(request, 'app/advance_payment.html', context)
 
 

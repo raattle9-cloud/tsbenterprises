@@ -78,8 +78,7 @@
                 <div class="price-panel">
                     <div class="d-flex align-items-baseline flex-wrap mb-2">
                         <span class="service-price">₹{{ services.discounted_price|floatformat:0 }}/-</span>
-                        {% if services.discounted_price < services.selling_price %} <span class="service-price-old">₹{{
-                            services.selling_price|floatformat:0 }}/-</span>
+                        {% if services.discounted_price < services.selling_price %} <span class="service-price-old">₹{{ services.selling_price|floatformat:0 }}/-</span>
                             {% endif %}
                     </div>
                     {% if services.discounted_price < services.selling_price %} <div class="mt-2">

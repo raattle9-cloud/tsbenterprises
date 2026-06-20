@@ -212,6 +212,7 @@ SITE_BASE_URL = os.getenv('SITE_BASE_URL', 'https://gowaterpark.in')
 
 # Application Mode: 'dev' or 'production'
 APP_MODE = os.getenv('APP_MODE', 'prod')
+PAYMENT_MODE = os.getenv('PAYMENT_MODE', 'live')  # set 'testing' to bypass Razorpay
 
 # Logging Configuration
 LOGGING = {
