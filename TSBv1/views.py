@@ -223,7 +223,7 @@ class CustomerRegistrationView(View):
                 user = form.save()
                 # Auto-login the user after registration
                 from django.contrib.auth import login
-                login(request, user)
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 messages.success(request, "Welcome! You have successfully registered.")
                 return redirect('services')
             except Exception as e:
@@ -448,7 +448,9 @@ def payment_done(request):
     order_id = request.GET.get('order_id')
     payment_id = request.GET.get('payment_id')
     cust_id = request.GET.get('cust_id')
-    
+    inline_name = request.GET.get('inline_name', '').strip()
+    inline_mobile = request.GET.get('inline_mobile', '').strip()
+
     logger.info("=" * 60)
     logger.info("[PAYMENT_DONE] ===== PAYMENT DONE HANDLER TRIGGERED =====")
     logger.info(f"[PAYMENT_DONE] User: {request.user} | Authenticated: {request.user.is_authenticated}")
@@ -457,15 +459,15 @@ def payment_done(request):
     print("[PAYMENT_DONE] ===== PAYMENT DONE HANDLER TRIGGERED =====")
     print(f"[PAYMENT_DONE] User: {request.user} | Authenticated: {request.user.is_authenticated}")
     print(f"[PAYMENT_DONE] order_id={order_id}, payment_id={payment_id}, cust_id={cust_id}")
-    
+
     total_amount = 0
-    
+
     if request.user.is_authenticated:
         user = request.user
         cart_items = list(Cart.objects.filter(user=user))
         print(f"[PAYMENT_DONE] Cart items found: {len(cart_items)}")
         logger.info(f"[PAYMENT_DONE] Cart items found: {len(cart_items)}")
-        
+
         # Get customer
         customer = None
         customer_name = "Customer"
@@ -478,13 +480,34 @@ def payment_done(request):
             except Customer.DoesNotExist:
                 print(f"[PAYMENT_DONE] WARNING: Customer ID {cust_id} not found")
                 logger.warning(f"[PAYMENT_DONE] Customer ID {cust_id} not found")
-        else:
-            # Try to get first customer for this user
+
+        if not customer:
+            # Try existing saved profiles first
             customers = list(Customer.objects.filter(user=user))
             if customers:
                 customer = customers[0]
                 customer_name = customer.name
                 print(f"[PAYMENT_DONE] Using first customer: {customer_name}")
+            elif inline_name and inline_mobile:
+                # Auto-create minimal customer from checkout inline form
+                import re as _re
+                clean_mobile = _re.sub(r'\D', '', inline_mobile)[:10].ljust(10, '0')
+                try:
+                    customer = Customer.objects.create(
+                        user=user,
+                        name=inline_name[:20],
+                        mobile=clean_mobile,
+                        locality="Not provided",
+                        city="Not set",
+                        zipcode=0,
+                        state="MH",
+                    )
+                    customer_name = customer.name
+                    print(f"[PAYMENT_DONE] Auto-created Customer: {customer_name} / {clean_mobile}")
+                    logger.info(f"[PAYMENT_DONE] Auto-created Customer: {customer_name} / {clean_mobile}")
+                except Exception as e:
+                    print(f"[PAYMENT_DONE] ERROR auto-creating Customer: {e}")
+                    logger.error(f"[PAYMENT_DONE] ERROR auto-creating Customer: {e}")
         
         invoices = []
         if cart_items:

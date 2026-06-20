@@ -48,33 +48,38 @@
                             </div>
                         </div>
 
-                        <!-- 2. Select Customer Profile -->
+                        <!-- 2. Delivery Information -->
                         <div class="mb-4">
-                            <h5 class="mb-3">2. Select Customer Profile</h5>
-                            <select name="cust_id" class="form-select" required>
+                            <h5 class="mb-3">2. Delivery Information</h5>
+                            {% if customers %}
+                            <select name="cust_id" id="cust_id" class="form-select">
                                 {% for customer in customers %}
                                 <option value="{{ customer.id }}" {% if forloop.first %}selected{% endif %}>
-                                    {{ customer.name }} - {{ customer.mobile }} ({{ customer.locality }}, {{
-                                    customer.city }})
+                                    {{ customer.name }} - {{ customer.mobile }} ({{ customer.locality }}, {{ customer.city }})
                                 </option>
-                                {% empty %}
-                                <option value="" disabled selected>No customer profiles found.</option>
                                 {% endfor %}
                             </select>
-                            {% if not customers %}
-                            <div class="mt-2 text-danger">
-                                <small>You need to have a customer profile to proceed. <a
-                                        href="{% url 'profile' %}?next={% url 'checkout' %}">Click here</a> to add
-                                    one.</small>
-                            </div>
-                            {% endif %}
-
-                            <div class="mt-2 align-items-center">
-                                <a href="{% url 'profile' %}?next={% url 'checkout' %}"
-                                    class="small text-primary text-decoration-none">
+                            <div class="mt-2">
+                                <a href="{% url 'profile' %}?next={% url 'checkout' %}" class="small text-primary text-decoration-none">
                                     <i class="fas fa-plus-circle me-1"></i>Add New Address
                                 </a>
                             </div>
+                            {% else %}
+                            <div class="alert alert-info py-2 mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Enter your contact details to proceed. You can add a full delivery address from your <a href="{% url 'profile' %}">profile</a> later.
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Your Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="inline_name" class="form-control" placeholder="Enter your name" maxlength="20">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Mobile Number <span class="text-danger">*</span></label>
+                                    <input type="tel" id="inline_mobile" class="form-control" placeholder="10-digit mobile number" maxlength="10">
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
 
                         <!-- 3. Payment Method (Static for now as per flow) -->
@@ -110,31 +115,14 @@
                     </div>
 
                     <div class="d-grid gap-2 mt-4">
-                        <!-- Points to a hypothetical payment processing view or directly submits form -->
-                        <!-- Adjust 'payments' url name if your actual payment logic is elsewhere. 
-                             For now assuming 'payments' or similar view handles the final transaction -->
                         {% if razorpay_order_id %}
-                        <!-- Razorpay Button -->
-                        {% if not customers %}
-                        <button type="button" id="rzp-button1" class="btn btn-warning btn-lg fw-bold" disabled>
-                            <i class="fas fa-lock me-2"></i>Pay ₹{{ total_amount }} Now
-                        </button>
-                        {% else %}
                         <button type="button" id="rzp-button1" class="btn btn-warning btn-lg fw-bold">
                             <i class="fas fa-lock me-2"></i>Pay ₹{{ total_amount }} Now
-                        </button>
-                        {% endif %}
-                        {% else %}
-                        <!-- Fallback (likely backend setup issue if price > 0) -->
-                        {% if not customers %}
-                        <button type="submit" form="checkoutForm" class="btn btn-warning btn-lg fw-bold" disabled>
-                            <i class="fas fa-lock me-2"></i>Proceed to Payment (Manual)
                         </button>
                         {% else %}
                         <button type="submit" form="checkoutForm" class="btn btn-warning btn-lg fw-bold">
                             <i class="fas fa-lock me-2"></i>Proceed to Payment (Manual)
                         </button>
-                        {% endif %}
                         {% endif %}
                     </div>
 
@@ -198,10 +186,14 @@
         handler: function (response) {
             var btn = document.getElementById('rzp-button1');
             if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Redirecting…'; }
-            var custId = document.querySelector('select[name="cust_id"]');
+            var custId = document.getElementById('cust_id');
+            var inlineName = document.getElementById('inline_name');
+            var inlineMobile = document.getElementById('inline_mobile');
             var redirectUrl = "{% url 'paymentdone' %}?order_id=" + response.razorpay_order_id
                 + "&payment_id=" + response.razorpay_payment_id
                 + "&cust_id=" + (custId ? custId.value : '');
+            if (inlineName && inlineName.value) redirectUrl += "&inline_name=" + encodeURIComponent(inlineName.value.trim());
+            if (inlineMobile && inlineMobile.value) redirectUrl += "&inline_mobile=" + encodeURIComponent(inlineMobile.value.trim());
             window.location.href = redirectUrl;
         },
         modal: {
@@ -225,10 +217,21 @@
 
     document.getElementById('rzp-button1').onclick = function(e) {
         e.preventDefault();
-        var custId = document.querySelector('select[name="cust_id"]');
-        if (!custId || !custId.value) {
-            showPaymentError('Please select a delivery address before paying.');
-            return;
+        var custId = document.getElementById('cust_id');
+        var inlineName = document.getElementById('inline_name');
+        var inlineMobile = document.getElementById('inline_mobile');
+
+        if (custId && custId.value) {
+            // existing profile selected — ok
+        } else if (inlineName && inlineMobile) {
+            if (!inlineName.value.trim()) {
+                showPaymentError('Please enter your name to proceed.');
+                inlineName.focus(); return;
+            }
+            if (!/^\d{10}$/.test(inlineMobile.value.trim())) {
+                showPaymentError('Please enter a valid 10-digit mobile number.');
+                inlineMobile.focus(); return;
+            }
         }
         this.disabled = true;
         this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Opening payment…';
