@@ -182,6 +182,7 @@ class ServiceImage(models.Model):
 
         image_path = str(self.image)
 
+        # Already a full URL (legacy records stored absolute Cloudinary URLs)
         if image_path.startswith("http"):
             return image_path
 
@@ -194,24 +195,29 @@ class ServiceImage(models.Model):
             if os.path.exists(local_path):
                 return f"{settings.STATIC_URL}images/{image_path}"
 
-        # Production: ask the Cloudinary storage backend
+        # Production: ask the Cloudinary storage backend first
         try:
             url = self.image.url
-            if "cloudinary.com" in url:
+            if url and url.startswith("http"):
                 return url
         except Exception:
             pass
 
-        # Fallback: construct Cloudinary URL directly from stored path
+        # Fallback: construct Cloudinary URL directly from stored public_id.
+        # CLOUDINARY_STORAGE values can be None when os.getenv returns None,
+        # so we must explicitly filter those out (dict.get default only fires
+        # when the key is missing, not when the value is None).
         cloud_name = (
-            settings.CLOUDINARY_STORAGE.get("CLOUD_NAME", "")
-            or settings.CLOUDINARY_STORAGE.get("cloud_name", "")
+            (getattr(settings, 'CLOUDINARY_STORAGE', {}) or {}).get('CLOUD_NAME')
+            or (getattr(settings, 'CLOUDINARY_STORAGE', {}) or {}).get('cloud_name')
+            or os.getenv('CLOUDINARY_CLOUD_NAME', '')
         )
         if cloud_name and image_path:
             public_id = image_path.lstrip("/")
             return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
 
-        return ""
+        # Last resort: Django local media URL (will 404 on Render but at least won't crash)
+        return f"{settings.MEDIA_URL}{image_path}"
 
 
 class HeroImage(models.Model):
