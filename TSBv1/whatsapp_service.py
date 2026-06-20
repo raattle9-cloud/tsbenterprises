@@ -77,7 +77,7 @@ def send_whatsapp_text(to: str, body: str) -> dict:
     }
     
     print(f"[WHATSAPP_SVC] Sending to URL: {url}")
-    print(f"[WHATSAPP_SVC] Message body (first 100 chars): {body[:100]}...")
+    print(f"[WHATSAPP_SVC] Message body (first 100 chars): {body[:100].encode('ascii', 'replace').decode()}...")
     
     try:
         response = requests.post(url, headers=headers, json=payload, timeout=20)
@@ -212,22 +212,28 @@ def send_whatsapp_document(to, media_id, filename, caption=""):
         return {"success": False, "error": str(e)}
 
 
-def send_purchase_receipt_template(to: str, recipient_name: str, invoice_no: str, invoice_url: str) -> dict:
+def send_tsb_invoice_receipt_template(
+    to: str,
+    customer_name: str,
+    service_name: str,
+    invoice_no: str,
+    date: str,
+    total_amount: str,
+    reference: str,
+    invoice_token: str,
+    pdf_media_id: str = None,
+    pdf_filename: str = None,
+) -> dict:
     """
-    Send WhatsApp template `purchase_receipt_3` to a single recipient.
+    Send WhatsApp template `tsb_invoice_receipt` (English US) to a customer.
 
-    Template body (two dynamic text fields):
-        Hello {{1}},
-        Your invoice for order {{2}} is attached.
-        Thank you for shopping with us!
-
-    Because the template button URL is currently configured as Static in WhatsApp
-    Business Manager, a second plain-text message containing the direct download
-    link is sent immediately after so the recipient can always tap through.
-
-    To make the button itself open the correct invoice URL, edit the template in
-    WhatsApp Business Manager: change the URL type to Dynamic and set the URL to
-    https://yourdomain.com/invoices/{{1}}  — then remove the follow-up text message.
+    Template structure:
+        Header : Document (PDF) — attached if pdf_media_id is provided
+        Body   : Hello {{1}}, ... Service: {{2}}, Invoice No: {{3}},
+                 Date: {{4}}, Total Amount: Rs. {{5}}, Reference: {{6}}
+        Button : "View Invoice" → https://tsbenterprises.onrender.com/invoices/{{1}}
+                 (dynamic suffix = invoice_token + "/")
+        Footer : TSB Enterprises - Book. Visit. Enjoy.
     """
     token, phone_id, api_version = _get_whatsapp_config()
 
@@ -239,55 +245,67 @@ def send_purchase_receipt_template(to: str, recipient_name: str, invoice_no: str
     except ValueError as e:
         return {"skipped": True, "reason": str(e)}
 
-    url = f"{GRAPH_API_BASE}/{api_version}/{phone_id}/messages"
+    api_url = f"{GRAPH_API_BASE}/{api_version}/{phone_id}/messages"
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
-    # --- Template message ---
-    template_payload = {
+    components = []
+
+    if pdf_media_id:
+        components.append({
+            "type": "header",
+            "parameters": [{
+                "type": "document",
+                "document": {
+                    "id": pdf_media_id,
+                    "filename": pdf_filename or f"TSB_Invoice_{invoice_no}.pdf",
+                },
+            }],
+        })
+
+    components.append({
+        "type": "body",
+        "parameters": [
+            {"type": "text", "text": str(customer_name)},
+            {"type": "text", "text": str(service_name)},
+            {"type": "text", "text": str(invoice_no)},
+            {"type": "text", "text": str(date)},
+            {"type": "text", "text": str(total_amount)},
+            {"type": "text", "text": str(reference)},
+        ],
+    })
+
+    components.append({
+        "type": "button",
+        "sub_type": "url",
+        "index": "0",
+        "parameters": [{"type": "text", "text": f"{invoice_token}/"}],
+    })
+
+    payload = {
         "messaging_product": "whatsapp",
         "recipient_type": "individual",
         "to": to_clean,
         "type": "template",
         "template": {
-            "name": "purchase_receipt_3",
-            "language": {"code": "en"},
-            "components": [
-                {
-                    "type": "body",
-                    "parameters": [
-                        {"type": "text", "text": str(recipient_name)},
-                        {"type": "text", "text": str(invoice_no)},
-                    ],
-                }
-            ],
+            "name": "tsb_invoice_receipt",
+            "language": {"code": "en_US"},
+            "components": components,
         },
     }
 
-    print(f"[WHATSAPP_SVC] Sending purchase_receipt_3 template to {to_clean}")
-    template_result = {}
+    print(f"[WHATSAPP_SVC] Sending tsb_invoice_receipt template to {to_clean}")
     try:
-        resp = requests.post(url, headers=headers, json=template_payload, timeout=20)
-        print(f"[WHATSAPP_SVC] Template response {resp.status_code}: {resp.text[:300]}")
+        resp = requests.post(api_url, headers=headers, json=payload, timeout=20)
+        print(f"[WHATSAPP_SVC] Template response {resp.status_code}: {resp.text[:400]}")
         if resp.status_code >= 400:
             err = resp.json().get("error", {}).get("message", resp.text[:200])
-            logger.error(f"WhatsApp template send failed ({resp.status_code}): {err}")
-            template_result = {"success": False, "error": err}
-        else:
-            template_result = {"success": True, "response": resp.json()}
+            logger.error(f"WhatsApp tsb_invoice_receipt failed ({resp.status_code}): {err}")
+            return {"success": False, "status_code": resp.status_code, "error": err}
+        logger.info(f"WhatsApp tsb_invoice_receipt sent to {to_clean}")
+        return {"success": True, "response": resp.json()}
     except Exception as e:
-        logger.error(f"WhatsApp template request failed: {e}")
-        template_result = {"success": False, "error": str(e)}
-
-    # --- Follow-up text with direct link ---
-    link_body = (
-        f"\U0001f4cb *Your Invoice — {invoice_no}*\n\n"
-        f"Tap the link below to view or download your invoice:\n"
-        f"{invoice_url}\n\n"
-        f"— TSB Enterprises"
-    )
-    link_result = send_whatsapp_text(to_clean, link_body)
-
-    return {"template": template_result, "link_message": link_result}
+        logger.error(f"WhatsApp tsb_invoice_receipt request failed: {e}")
+        return {"success": False, "error": str(e)}
 
 
 def send_vendor_purchase_notification(service, customer_name, quantity, booking_code=None, 
