@@ -513,11 +513,14 @@ def payment_done(request):
         if cart_items:
             # Calculate total
             total_amount = sum(c.quantity * c.services.discounted_price for c in cart_items) + 40
-            print(f"[PAYMENT_DONE] Total amount: ₹{total_amount}")
+            print(f"[PAYMENT_DONE] Total amount: Rs.{total_amount}")
             
             # Create payment record
             try:
-                payment = Payment.objects.create(
+                import time as _time, random as _random
+                _pay_id = int(_time.time() * 1000) % 2147483647 + _random.randint(1, 999)
+                payment = Payment(
+                    id=_pay_id,
                     user=user,
                     amount=total_amount,
                     razorpay_order_id=order_id or '',
@@ -525,6 +528,8 @@ def payment_done(request):
                     paid=True if payment_id else False,
                     payment_type="FULL"
                 )
+                payment.save()
+                payment.id = _pay_id  # djongo overwrites id with ObjectId after save — restore integer
                 print(f"[PAYMENT_DONE] Payment record created: ID={payment.id}")
                 logger.info(f"[PAYMENT_DONE] Payment record created: ID={payment.id}")
             except Exception as e:
@@ -544,7 +549,10 @@ def payment_done(request):
                 order_obj = None
                 if customer:
                     try:
-                        order_obj = OrderPlaced.objects.create(
+                        import time as _ot, random as _or
+                        _ord_id = int(_ot.time() * 1000) % 2147483647 + _or.randint(1, 999)
+                        order_obj = OrderPlaced(
+                            id=_ord_id,
                             user=user,
                             customer=customer,
                             services=item.services,
@@ -552,6 +560,8 @@ def payment_done(request):
                             status="PENDING",
                             payment=payment
                         )
+                        order_obj.save()
+                        order_obj.id = _ord_id  # restore after djongo ObjectId override
                         print(f"[PAYMENT_DONE] OrderPlaced created: ID={order_obj.id}")
                         logger.info(f"[PAYMENT_DONE] OrderPlaced created: ID={order_obj.id}")
                     except Exception as e:
@@ -645,20 +655,19 @@ class checkout(View):
         amount = 0
         for c in cart:
             item_total = c.quantity * c.services.discounted_price
-            print(f"[CHECKOUT POST] Cart item: {c.services.title} x{c.quantity} @ ₹{c.services.discounted_price} = ₹{item_total}")
+            print(f"[CHECKOUT POST] Cart item: {c.services.title} x{c.quantity} @ Rs.{c.services.discounted_price} = Rs.{item_total}")
             print(f"[CHECKOUT POST]   vendor_whatsapp: '{c.services.vendor_whatsapp}'")
             amount += item_total
         total_amount = amount + 40
-        print(f"[CHECKOUT POST] Subtotal: ₹{amount}, Total (with ₹40 shipping): ₹{total_amount}")
+        print(f"[CHECKOUT POST] Subtotal: Rs.{amount}, Total (with Rs.40 shipping): Rs.{total_amount}")
         
         # Create payment record
         try:
-            payment = Payment.objects.create(
-                user=user,
-                amount=total_amount,
-                paid=False,
-                payment_type="FULL"
-            )
+            import time as _time, random as _random
+            _pay_id = int(_time.time() * 1000) % 2147483647 + _random.randint(1, 999)
+            payment = Payment(id=_pay_id, user=user, amount=total_amount, paid=False, payment_type="FULL")
+            payment.save()
+            payment.id = _pay_id  # restore integer after djongo ObjectId override
             print(f"[CHECKOUT POST] Payment record created: ID={payment.id}")
         except Exception as e:
             print(f"[CHECKOUT POST] ERROR creating payment: {e}")
@@ -672,14 +681,12 @@ class checkout(View):
         for c in cart_items:
             order_obj = None
             try:
-                order_obj = OrderPlaced.objects.create(
-                    user=user,
-                    customer=customer,
-                    services=c.services,
-                    quantity=c.quantity,
-                    status="PENDING",
-                    payment=payment
-                )
+                import time as _ot2, random as _or2
+                _ord_id2 = int(_ot2.time() * 1000) % 2147483647 + _or2.randint(1, 999)
+                order_obj = OrderPlaced(id=_ord_id2, user=user, customer=customer,
+                    services=c.services, quantity=c.quantity, status="PENDING", payment=payment)
+                order_obj.save()
+                order_obj.id = _ord_id2  # restore after djongo ObjectId override
                 print(f"[CHECKOUT POST] OrderPlaced created: ID={order_obj.id} for {c.services.title}")
             except Exception as e:
                 print(f"[CHECKOUT POST] ERROR creating OrderPlaced: {e}")
@@ -706,7 +713,7 @@ class checkout(View):
         cart.delete()
         print(f"[CHECKOUT POST] Cart cleared for user {user}")
         
-        messages.success(request, f"Order placed successfully! Total: ₹{total_amount}. Our team will contact you shortly.")
+        messages.success(request, f"Order placed successfully! Total: Rs.{total_amount}. Our team will contact you shortly.")
         print(f"[CHECKOUT POST] ===== CHECKOUT COMPLETE =====")
         print("="*60 + "\n")
         return redirect('home')
@@ -745,23 +752,27 @@ class checkout(View):
             remaining_amount = total_amount # Simplified for now
 
             # Razorpay logic
+            payment_mode = getattr(settings, 'PAYMENT_MODE', 'live')
             if cart and total_amount > 0:
-                try:
-                    # Logic similar to show_cart/checkout_buynow
-                     # Convert to paise
-                    razoramount = int(total_amount * 100)
-                    
-                    client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_KEY_SECRET))
-                    razorpay_order = client.order.create({
-                        'amount': razoramount,
-                        'currency': 'INR',
-                        'receipt': f'checkout_{request.user.id}_{int(timezone.now().timestamp())}',
-                        'payment_capture': 1
-                    })
-                    razorpay_order_id = razorpay_order['id']
-                    razorpay_key_id = settings.RAZOR_PAY_KEY_ID
-                except Exception as e:
-                    print(f"Razorpay order creation failed: {e}")
+                razoramount = int(total_amount * 100)
+                if payment_mode == 'testing':
+                    import time as _time
+                    razorpay_order_id = f'test_order_full_{request.user.id}_{int(_time.time())}'
+                    razorpay_key_id = 'test_key'
+                else:
+                    try:
+                        # Logic similar to show_cart/checkout_buynow
+                        client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_KEY_SECRET))
+                        razorpay_order = client.order.create({
+                            'amount': razoramount,
+                            'currency': 'INR',
+                            'receipt': f'checkout_{request.user.id}_{int(timezone.now().timestamp())}',
+                            'payment_capture': 1
+                        })
+                        razorpay_order_id = razorpay_order['id']
+                        razorpay_key_id = settings.RAZOR_PAY_KEY_ID
+                    except Exception as e:
+                        print(f"Razorpay order creation failed: {e}")
 
         else:
             cart = []
@@ -770,7 +781,7 @@ class checkout(View):
             razorpay_order_id = None
 
         currency = 'INR'
-        return render(request, 'app/checkout.html', locals())
+        return render(request, 'app/checkout.html', {**locals(), 'payment_mode': payment_mode})
 
 def checkout_buynow(request, service_id):
     """

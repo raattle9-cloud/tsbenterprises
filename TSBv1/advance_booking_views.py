@@ -163,7 +163,10 @@ def advance_payment_process(request, booking_id):
             import logging
             logger = logging.getLogger(__name__)
             try:
-                payment = Payment.objects.create(
+                import time as _t, random as _r
+                _pid = int(_t.time() * 1000) % 2147483647 + _r.randint(1, 999)
+                payment = Payment(
+                    id=_pid,
                     user=request.user,
                     amount=convert_decimal128_to_float(booking.advance_paid),
                     razorpay_order_id=razorpay_order_id or f'test_order_{booking.booking_code}',
@@ -172,6 +175,8 @@ def advance_payment_process(request, booking_id):
                     paid=True,
                     payment_type='ADVANCE'
                 )
+                payment.save()
+                payment.id = _pid  # restore integer after djongo ObjectId override
                 booking.status = 'PENDING'
                 booking.save(update_fields=['status'])
                 qr_data = generate_qr_code(booking)
@@ -222,7 +227,10 @@ def advance_payment_process(request, booking_id):
             client.utility.verify_payment_signature(params_dict)
             
             # Signature verified - Create payment record with SUCCESS status
-            payment = Payment.objects.create(
+            import time as _t2, random as _r2
+            _pid2 = int(_t2.time() * 1000) % 2147483647 + _r2.randint(1, 999)
+            payment = Payment(
+                id=_pid2,
                 user=request.user,
                 amount=convert_decimal128_to_float(booking.advance_paid),
                 razorpay_order_id=razorpay_order_id,
@@ -231,6 +239,8 @@ def advance_payment_process(request, booking_id):
                 paid=True,
                 payment_type='ADVANCE'
             )
+            payment.save()
+            payment.id = _pid2  # restore integer after djongo ObjectId override
             
             # Update booking status to PENDING (paid but waiting for venue verification)
             # NOTE: NOT linking payment via ForeignKey due to Djongo bugs
@@ -287,15 +297,12 @@ def advance_payment_process(request, booking_id):
         except razorpay.errors.SignatureVerificationError:
             # Payment signature verification failed
             # Create a failed payment record for tracking
-            Payment.objects.create(
-                user=request.user,
-                amount=convert_decimal128_to_float(booking.advance_paid),
-                razorpay_order_id=razorpay_order_id,
-                razorpay_payment_id=razorpay_payment_id,
-                razorpay_payment_status='FAILED',
-                paid=False,
-                payment_type='ADVANCE'
-            )
+            import time as _t3, random as _r3
+            _pid3 = int(_t3.time() * 1000) % 2147483647 + _r3.randint(1, 999)
+            _fp = Payment(id=_pid3, user=request.user, amount=convert_decimal128_to_float(booking.advance_paid),
+                razorpay_order_id=razorpay_order_id, razorpay_payment_id=razorpay_payment_id,
+                razorpay_payment_status='FAILED', paid=False, payment_type='ADVANCE')
+            _fp.save()
             messages.error(request, "Payment verification failed. Please try again or contact support.")
             return redirect('advance-payment', booking_id)
             

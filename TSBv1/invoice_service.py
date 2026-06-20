@@ -9,9 +9,15 @@ from datetime import datetime
 logger = logging.getLogger("TSBv1")
 
 
-def _make_invoice_number(payment_id: int) -> str:
-    """INV-YYYYMM-<zero-padded payment id>  — unique because payment IDs are unique."""
-    return f"INV-{datetime.now().strftime('%Y%m')}-{int(payment_id):06d}"
+def _make_invoice_number(payment_id) -> str:
+    """INV-YYYYMM-<suffix> — payment_id may be int or MongoDB ObjectId."""
+    import random
+    try:
+        suffix = f"{int(payment_id):06d}"
+    except (TypeError, ValueError):
+        # MongoDB ObjectId — use last 6 hex chars converted to int
+        suffix = f"{int(str(payment_id)[-6:], 16) % 1000000:06d}"
+    return f"INV-{datetime.now().strftime('%Y%m')}-{suffix}"
 
 
 def create_invoice(*, order=None, advance_booking=None, payment, customer, service, amount, quantity=1):
@@ -20,9 +26,12 @@ def create_invoice(*, order=None, advance_booking=None, payment, customer, servi
     Exactly one of `order` or `advance_booking` should be provided.
     """
     from .models import Invoice
+    import time as _time, random as _random
     try:
         invoice_no = _make_invoice_number(payment.id)
-        invoice = Invoice.objects.create(
+        _inv_id = int(_time.time() * 1000) % 2147483647 + _random.randint(1, 999)
+        invoice = Invoice(
+            id=_inv_id,
             invoice_no=invoice_no,
             order=order,
             advance_booking=advance_booking,
@@ -32,6 +41,8 @@ def create_invoice(*, order=None, advance_booking=None, payment, customer, servi
             amount=float(amount),
             quantity=int(quantity),
         )
+        invoice.save()
+        invoice.id = _inv_id  # restore integer after djongo ObjectId override
         logger.info(f"[INVOICE] Created {invoice_no} (token={invoice.token})")
         return invoice
     except Exception as e:
