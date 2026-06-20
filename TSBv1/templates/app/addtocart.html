@@ -113,10 +113,37 @@
             </div>
             {% endif %}
 
+            {% if customers %}
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-muted">Billing Profile</label>
+              <select name="cust_id" id="cart-cust-id" class="form-select form-select-sm">
+                {% for c in customers %}
+                <option value="{{ c.id }}">{{ c.name }} — {{ c.mobile }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            {% else %}
+            <div class="alert alert-warning py-2 mb-3">
+              <small><i class="fas fa-exclamation-triangle me-1"></i>
+                <a href="{% url 'profile' %}">Add a profile</a> to complete checkout.
+              </small>
+            </div>
+            {% endif %}
+
             {% if razorpay_order_id %}
-            <button type="button" id="rzp-button1" class="btn btn-primary btn-lg w-100 buttonshadow">
-              <i class="fas fa-lock me-2"></i>Pay ₹{{ advance_amount }} Now
-            </button>
+              {% if payment_mode == 'testing' %}
+              <div class="alert alert-warning py-2 mb-2 text-center">
+                <small><i class="fas fa-flask me-1"></i> <strong>TEST MODE</strong> — No real payment</small>
+              </div>
+              <a href="{% url 'paymentdone' %}?order_id={{ razorpay_order_id }}&payment_id=test_pay_cart&cust_id={% if customers %}{{ customers.0.id }}{% endif %}"
+                 class="btn btn-warning btn-lg w-100 buttonshadow">
+                <i class="fas fa-flask me-2"></i>Simulate Payment (Test Mode)
+              </a>
+              {% else %}
+              <button type="button" id="rzp-button1" class="btn btn-primary btn-lg w-100 buttonshadow">
+                <i class="fas fa-lock me-2"></i>Pay ₹{{ advance_amount }} Now
+              </button>
+              {% endif %}
             {% else %}
             <button type="button" class="btn btn-secondary btn-lg w-100" disabled>
               <i class="fas fa-exclamation-circle me-2"></i>Payment Unavailable
@@ -153,7 +180,7 @@
     {% endif %}
   </div>
 </div>
-{% if razorpay_order_id %}
+{% if razorpay_order_id and payment_mode != 'testing' %}
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
   var options = {
@@ -167,7 +194,7 @@
     handler: function (response) {
       var btn = document.getElementById("rzp-button1");
       if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Redirecting…'; }
-      var custId = document.querySelector('select[name="cust_id"]');
+      var custId = document.getElementById("cart-cust-id");
       var redirectUrl = "{% url 'paymentdone' %}?order_id=" + response.razorpay_order_id
         + "&payment_id=" + response.razorpay_payment_id
         + "&cust_id=" + (custId ? custId.value : '');

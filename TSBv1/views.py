@@ -392,24 +392,33 @@ def show_cart(request):
     # Create Razorpay order for the advance amount only
     razorpay_order_id = None
     razorpay_key_id = None
-    
+    payment_mode = getattr(settings, 'PAYMENT_MODE', 'live')
+
     if cart and advance_amount > 0:
-        try:
-            client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_KEY_SECRET))
-            razorpay_order = client.order.create({
-                'amount': razoramount,
-                'currency': 'INR',
-                'receipt': f'cart_{user.id}_{int(timezone.now().timestamp())}',
-                'payment_capture': 1
-            })
-            razorpay_order_id = razorpay_order['id']
-            razorpay_key_id = settings.RAZOR_PAY_KEY_ID
-        except Exception as e:
-            print(f"Razorpay order creation failed: {e}")
+        if payment_mode == 'testing':
+            import time as _time
+            razorpay_order_id = f'test_order_cart_{user.id}_{int(_time.time())}'
+            razorpay_key_id = 'test_key'
+        else:
+            try:
+                client = razorpay.Client(auth=(settings.RAZOR_PAY_KEY_ID, settings.RAZOR_PAY_KEY_SECRET))
+                razorpay_order = client.order.create({
+                    'amount': razoramount,
+                    'currency': 'INR',
+                    'receipt': f'cart_{user.id}_{int(timezone.now().timestamp())}',
+                    'payment_capture': 1
+                })
+                razorpay_order_id = razorpay_order['id']
+                razorpay_key_id = settings.RAZOR_PAY_KEY_ID
+            except Exception as e:
+                print(f"Razorpay order creation failed: {e}")
 
     # Store actual amounts in session so payment_done records what was really charged
     request.session['cart_advance_amount'] = advance_amount
     request.session['cart_full_total'] = totalamount
+
+    # Fetch customer profiles so the cart can pass cust_id to payment_done
+    customers = list(Customer.objects.filter(user=user))
 
     context = {
         'cart': cart,
@@ -421,6 +430,8 @@ def show_cart(request):
         'razorpay_order_id': razorpay_order_id,
         'razorpay_key_id': razorpay_key_id,
         'currency': 'INR',
+        'payment_mode': payment_mode,
+        'customers': customers,
     }
     return render(request, 'app/addtocart.html', context)
 
@@ -795,6 +806,7 @@ class checkout(View):
             total_amount = 0
             customers = []
             razorpay_order_id = None
+            payment_mode = getattr(settings, 'PAYMENT_MODE', 'live')
 
         currency = 'INR'
         return render(request, 'app/checkout.html', {**locals(), 'payment_mode': payment_mode})

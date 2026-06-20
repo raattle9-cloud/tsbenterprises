@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib.admin.utils import unquote
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.template.response import TemplateResponse
-from .models import Customer, Services, Cart, Payment, OrderPlaced, ServiceImage, AdvanceBooking, HeroImage, TrustedPartner
+from .models import Customer, Services, Cart, Payment, OrderPlaced, ServiceImage, AdvanceBooking, HeroImage, TrustedPartner, Invoice
 
 # Register your models here.
 
@@ -629,3 +629,23 @@ class TrustedPartnerAdmin(admin.ModelAdmin):
         except (model.DoesNotExist, ValidationError, ValueError):
             return None
         return obj
+
+
+@admin.register(Invoice)
+class InvoiceAdmin(admin.ModelAdmin):
+    list_display = ['invoice_no', 'customer', 'service', 'amount', 'created_at', 'download_link']
+    list_filter = ['created_at']
+    search_fields = ['invoice_no', 'customer__name', 'service__title']
+    readonly_fields = ['invoice_no', 'token', 'created_at', 'download_link']
+    ordering = ()
+
+    def download_link(self, obj):
+        url = obj.get_download_url()
+        return mark_safe(f'<a href="{url}" target="_blank">Download PDF</a>')
+    download_link.short_description = 'Invoice PDF'
+
+    def get_ordering(self, request):
+        return []
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).order_by()

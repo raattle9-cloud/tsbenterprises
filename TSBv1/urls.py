@@ -5,7 +5,7 @@ from . import views
 from . import advance_booking_views
 from . import auth_views as custom_auth_views
 from django.contrib.auth import views as auth_view
-from .forms import LoginForm, MyPasswordResetForm, MyPasswordChangeForm, MyPasswordResetForm, MySetPasswordForm
+from .forms import LoginForm, MyPasswordResetForm, MyPasswordChangeForm, MySetPasswordForm
 
 
 
@@ -57,10 +57,8 @@ urlpatterns = [
     #Customer Authentication url's
     path("registration/", views.CustomerRegistrationView.as_view(), name="customerregistration"),
     path("accounts/login/", custom_auth_views.StaffAwareLoginView.as_view(template_name='app/customerlogin.html', authentication_form=LoginForm), name="customerlogin"),
-    path("password-reset/", auth_view.PasswordResetView.as_view(template_name='app/password_reset.html', form_class=MyPasswordResetForm), name="password_reset"),
-   
     path("passwordchange/", auth_view.PasswordChangeView.as_view(template_name='app/changepassword.html', form_class=MyPasswordChangeForm, success_url='/passwordchangedone'), name="passwordchange"),
-    
+
     path("passwordchangedone/", auth_view.PasswordChangeDoneView.as_view(template_name='app/passwordchangedone.html'), name="passwordchangedone"),
     path("logout/",views.logout_user, name="logout"),
 
