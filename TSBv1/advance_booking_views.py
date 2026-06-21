@@ -1,4 +1,4 @@
-"""
+﻿"""
 Views for Advance Booking System
 """
 from django.shortcuts import render, redirect, get_object_or_404
@@ -189,7 +189,7 @@ def advance_payment_process(request, booking_id):
                         payment=payment,
                         customer=booking.customer,
                         service=booking.service,
-                        amount=convert_decimal128_to_float(booking.advance_paid),
+                        amount=convert_decimal128_to_float(booking.total_amount),
                         quantity=booking.quantity,
                     )
                 except Exception as inv_err:
@@ -285,12 +285,12 @@ def advance_payment_process(request, booking_id):
                     payment=payment,
                     customer=booking.customer,
                     service=booking.service,
-                    amount=convert_decimal128_to_float(booking.advance_paid),
+                    amount=convert_decimal128_to_float(booking.total_amount),
                     quantity=booking.quantity,
                 )
             except Exception as inv_err:
                 logger.error(f"[INVOICE] Failed for advance booking {booking.booking_code}: {inv_err}", exc_info=True)
-            
+
             # Redirect to confirmation page
             return redirect('advance-booking-confirmation', booking.id)
             
@@ -491,6 +491,13 @@ def verify_booking_api(request):
                 'error': 'Booking already used'
             }, status=400)
         
+        # Check if cancelled first — before is_valid() which would overwrite status to EXPIRED
+        if booking.status == 'CANCELLED':
+            return JsonResponse({
+                'status': 'cancelled',
+                'error': 'Booking has been cancelled'
+            }, status=400)
+
         # Check if expired - either by valid_until time or if visit date has passed
         today = timezone.now().date()
         if not booking.is_valid() or booking.booking_date < today:
@@ -501,13 +508,6 @@ def verify_booking_api(request):
                 'error': 'Booking has expired',
                 'valid_until': booking.valid_until.isoformat(),
                 'booking_date': booking.booking_date.isoformat()
-            }, status=400)
-        
-        # Check if cancelled
-        if booking.status == 'CANCELLED':
-            return JsonResponse({
-                'status': 'cancelled',
-                'error': 'Booking has been cancelled'
             }, status=400)
         
         # Booking is valid

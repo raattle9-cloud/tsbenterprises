@@ -1,4 +1,4 @@
-"""
+﻿"""
 PDF Bill/Invoice generator for TSB Enterprises.
 Generates a professional booking receipt using ReportLab.
 
@@ -269,21 +269,20 @@ def generate_bill_pdf(service, customer_name, quantity, total_amount=None,
 
     if is_advance:
         # total_amount here is the FULL booking value (passed from booking.total_amount)
-        full_value = float(total_amount) if total_amount is not None else item_total + shipping_gst
+        full_value = float(total_amount) if total_amount is not None else item_total
         adv = float(advance_paid)
         rem = float(remaining_amount) if remaining_amount is not None else max(0.0, full_value - adv)
 
         pay_rows = [
             ['Subtotal (services)',      f'Rs. {item_total:,.2f}'],
-            ['Handling / Convenience',   f'Rs. {shipping_gst:,.2f}'],
             ['TOTAL BOOKING VALUE',      f'Rs. {full_value:,.2f}'],
             ['Advance Paid (Online)',     f'Rs. {adv:,.2f}'],
             ['Balance Due at Venue',     f'Rs. {rem:,.2f}'],
         ]
         # Row indices for special styling
-        booking_val_idx = 2   # TOTAL BOOKING VALUE  — bold navy/navy
-        advance_idx     = 3   # Advance Paid         — bold blue/blue
-        venue_idx       = 4   # Balance Due          — bold amber/amber
+        booking_val_idx = 1   # TOTAL BOOKING VALUE  — bold navy/navy
+        advance_idx     = 2   # Advance Paid         — bold blue/blue
+        venue_idx       = 3   # Balance Due          — bold amber/amber
 
         ts = [
             ('FONTNAME',  (0, 0), (-1, -1), 'Helvetica'),

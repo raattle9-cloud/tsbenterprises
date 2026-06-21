@@ -1,4 +1,4 @@
-from django.db.models import Count
+﻿from django.db.models import Count
 from .models import Services, Customer, Cart, Wishlist, Payment, OrderPlaced, CATEGORY_CHOICES, HeroImage, TrustedPartner, Invoice
 from django.views import View
 from django.http import JsonResponse
@@ -462,9 +462,32 @@ def payment_done(request):
     
     order_id = request.GET.get('order_id')
     payment_id = request.GET.get('payment_id')
+    signature = request.GET.get('signature')
     cust_id = request.GET.get('cust_id')
     inline_name = request.GET.get('inline_name', '').strip()
     inline_mobile = request.GET.get('inline_mobile', '').strip()
+
+    # Verify Razorpay payment signature (skip in testing mode)
+    from django.conf import settings as _settings
+    _payment_mode = getattr(_settings, 'PAYMENT_MODE', 'live')
+    if _payment_mode != 'testing' and order_id and payment_id:
+        if not signature:
+            logger.error(f"[PAYMENT_DONE] Missing razorpay_signature for order {order_id}")
+            from django.shortcuts import render as _render
+            return _render(request, 'app/payment_failed.html', {'error': 'Payment verification failed — missing signature.'}, status=400)
+        try:
+            import razorpay as _rzp
+            _rzp_client = _rzp.Client(auth=(_settings.RAZOR_PAY_KEY_ID, _settings.RAZOR_PAY_KEY_SECRET))
+            _rzp_client.utility.verify_payment_signature({
+                'razorpay_order_id': order_id,
+                'razorpay_payment_id': payment_id,
+                'razorpay_signature': signature,
+            })
+            logger.info(f"[PAYMENT_DONE] Signature verified for order {order_id}")
+        except Exception as _sig_err:
+            logger.error(f"[PAYMENT_DONE] Signature verification FAILED for order {order_id}: {_sig_err}")
+            from django.shortcuts import render as _render
+            return _render(request, 'app/payment_failed.html', {'error': 'Payment verification failed — invalid signature.'}, status=400)
 
     logger.info("=" * 60)
     logger.info("[PAYMENT_DONE] ===== PAYMENT DONE HANDLER TRIGGERED =====")

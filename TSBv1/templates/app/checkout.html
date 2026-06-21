@@ -1,4 +1,4 @@
-{% extends 'app/layouts/landing_base.html' %}
+﻿{% extends 'app/layouts/landing_base.html' %}
 {% load static %}
 
 {% block title %}Checkout | TSB Enterprises{% endblock %}
@@ -214,6 +214,7 @@ function simulateFullPayment() {
             var inlineMobile = document.getElementById('inline_mobile');
             var redirectUrl = "{% url 'paymentdone' %}?order_id=" + response.razorpay_order_id
                 + "&payment_id=" + response.razorpay_payment_id
+                + "&signature=" + response.razorpay_signature
                 + "&cust_id=" + (custId ? custId.value : '');
             if (inlineName && inlineName.value) redirectUrl += "&inline_name=" + encodeURIComponent(inlineName.value.trim());
             if (inlineMobile && inlineMobile.value) redirectUrl += "&inline_mobile=" + encodeURIComponent(inlineMobile.value.trim());

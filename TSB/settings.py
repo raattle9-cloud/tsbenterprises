@@ -1,4 +1,4 @@
-"""
+﻿"""
 changes for github
 Django settings for TSB project.
 
@@ -192,8 +192,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Razorpay Configuration (from environment variables)
-RAZOR_PAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', 'rzp_live_ZWQJtI7AM0kdlA')
-RAZOR_PAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', 'W7MYw65yiAkUL6A2dKUtLn6R')
+RAZOR_PAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '')
+RAZOR_PAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '')
 
 # Legacy aliases for backward compatibility
 razor_pay_key_id = RAZOR_PAY_KEY_ID

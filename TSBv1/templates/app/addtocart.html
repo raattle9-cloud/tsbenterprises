@@ -1,4 +1,4 @@
-{% extends 'app/layouts/landing_base.html' %}
+﻿{% extends 'app/layouts/landing_base.html' %}
 {% load static %}
 {% block title %}Cart - TSB Enterprises{% endblock title %}
 {% block landing_content %}
@@ -197,6 +197,7 @@
       var custId = document.getElementById("cart-cust-id");
       var redirectUrl = "{% url 'paymentdone' %}?order_id=" + response.razorpay_order_id
         + "&payment_id=" + response.razorpay_payment_id
+        + "&signature=" + response.razorpay_signature
         + "&cust_id=" + (custId ? custId.value : '');
       window.location.href = redirectUrl;
     },
