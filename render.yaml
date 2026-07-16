@@ -9,6 +9,16 @@ services:
     envVars:
       - key: DATABASE_URL
         sync: false  # You'll set this in Render dashboard
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
       - key: DJANGO_SETTINGS_MODULE
         value: TSB.settings
       - key: PYTHONUNBUFFERED

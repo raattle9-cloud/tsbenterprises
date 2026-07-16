@@ -5,6 +5,11 @@ from django.core.validators import RegexValidator
 # Create your models here.
 
 
+import logging
+
+_logger = logging.getLogger("TSBv1")
+
+
 class MongoFloatField(models.FloatField):
     """Custom FloatField that handles MongoDB's Decimal128 type"""
     
@@ -191,8 +196,9 @@ class ServiceImage(models.Model):
             url = self.image.url
             if url and url.startswith("http"):
                 return url
-        except Exception:
-            pass
+            _logger.warning(f"[IMG_URL] ServiceImage storage.url() returned non-http: {url!r} for path={image_path}")
+        except Exception as e:
+            _logger.warning(f"[IMG_URL] ServiceImage storage.url() failed: {e} for path={image_path}")
 
         # 2. Manual Cloudinary URL construction from stored path + cloud_name
         cloud_name = (
@@ -202,7 +208,13 @@ class ServiceImage(models.Model):
         )
         if cloud_name and image_path:
             public_id = image_path.lstrip("/")
-            return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+            url = f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+            _logger.info(f"[IMG_URL] ServiceImage manual Cloudinary URL: {url}")
+            return url
+
+        _logger.error(f"[IMG_URL] ServiceImage FAILED — no cloud_name! cloud_name={cloud_name!r} path={image_path} "
+                      f"env={os.getenv('CLOUDINARY_CLOUD_NAME', '<MISSING>')} "
+                      f"settings={getattr(settings, 'CLOUDINARY_STORAGE', {})}")
 
         # 3. Local dev fallback: serve from static/images/ if file exists locally
         if settings.DEBUG:
@@ -241,8 +253,9 @@ class HeroImage(models.Model):
             url = self.image.url
             if url and url.startswith("http"):
                 return url
-        except Exception:
-            pass
+            _logger.warning(f"[IMG_URL] HeroImage storage.url() returned non-http: {url!r} for path={image_path}")
+        except Exception as e:
+            _logger.warning(f"[IMG_URL] HeroImage storage.url() failed: {e} for path={image_path}")
 
         # 2. Manual Cloudinary URL construction
         cloud_name = (
@@ -253,6 +266,9 @@ class HeroImage(models.Model):
         if cloud_name and image_path:
             public_id = image_path.lstrip("/")
             return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+
+        _logger.error(f"[IMG_URL] HeroImage FAILED — no cloud_name! cloud_name={cloud_name!r} path={image_path} "
+                      f"env={os.getenv('CLOUDINARY_CLOUD_NAME', '<MISSING>')}")
 
         # 3. Local dev fallback
         if settings.DEBUG:
@@ -292,8 +308,9 @@ class TrustedPartner(models.Model):
             url = self.logo.url
             if url and url.startswith("http"):
                 return url
-        except Exception:
-            pass
+            _logger.warning(f"[IMG_URL] TrustedPartner storage.url() returned non-http: {url!r} for path={logo_path}")
+        except Exception as e:
+            _logger.warning(f"[IMG_URL] TrustedPartner storage.url() failed: {e} for path={logo_path}")
 
         # 2. Manual Cloudinary URL construction
         cloud_name = (
@@ -304,6 +321,9 @@ class TrustedPartner(models.Model):
         if cloud_name and logo_path:
             public_id = logo_path.lstrip("/")
             return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+
+        _logger.error(f"[IMG_URL] TrustedPartner FAILED — no cloud_name! cloud_name={cloud_name!r} path={logo_path} "
+                      f"env={os.getenv('CLOUDINARY_CLOUD_NAME', '<MISSING>')}")
 
         # 3. Local dev fallback
         if settings.DEBUG:
