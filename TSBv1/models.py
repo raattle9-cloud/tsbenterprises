@@ -204,20 +204,21 @@ class ServiceImage(models.Model):
             pass
 
         # Fallback: construct Cloudinary URL directly from stored public_id.
-        # CLOUDINARY_STORAGE values can be None when os.getenv returns None,
-        # so we must explicitly filter those out (dict.get default only fires
-        # when the key is missing, not when the value is None).
         cloud_name = (
-            (getattr(settings, 'CLOUDINARY_STORAGE', {}) or {}).get('CLOUD_NAME')
-            or (getattr(settings, 'CLOUDINARY_STORAGE', {}) or {}).get('cloud_name')
+            (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('CLOUD_NAME')
+            or (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('cloud_name')
             or os.getenv('CLOUDINARY_CLOUD_NAME', '')
         )
         if cloud_name and image_path:
             public_id = image_path.lstrip("/")
             return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
 
-        # Last resort: Django local media URL (will 404 on Render but at least won't crash)
-        return f"{settings.MEDIA_URL}{image_path}"
+        # Last resort: return the storage URL as-is
+        try:
+            return self.image.url
+        except Exception:
+            pass
+        return ""
 
 
 class HeroImage(models.Model):
@@ -250,19 +251,24 @@ class HeroImage(models.Model):
 
         try:
             url = self.image.url
-            if "cloudinary.com" in url:
+            if url and url.startswith("http"):
                 return url
         except Exception:
             pass
 
         cloud_name = (
-            settings.CLOUDINARY_STORAGE.get("CLOUD_NAME", "")
-            or settings.CLOUDINARY_STORAGE.get("cloud_name", "")
+            (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('CLOUD_NAME')
+            or (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('cloud_name')
+            or os.getenv('CLOUDINARY_CLOUD_NAME', '')
         )
         if cloud_name and image_path:
             public_id = image_path.lstrip("/")
             return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
 
+        try:
+            return self.image.url
+        except Exception:
+            pass
         return ""
 
 
@@ -297,19 +303,24 @@ class TrustedPartner(models.Model):
 
         try:
             url = self.logo.url
-            if "cloudinary.com" in url:
+            if url and url.startswith("http"):
                 return url
         except Exception:
             pass
 
         cloud_name = (
-            settings.CLOUDINARY_STORAGE.get("CLOUD_NAME", "")
-            or settings.CLOUDINARY_STORAGE.get("cloud_name", "")
+            (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('CLOUD_NAME')
+            or (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('cloud_name')
+            or os.getenv('CLOUDINARY_CLOUD_NAME', '')
         )
         if cloud_name and logo_path:
             public_id = logo_path.lstrip("/")
             return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
 
+        try:
+            return self.logo.url
+        except Exception:
+            pass
         return ""
 
 

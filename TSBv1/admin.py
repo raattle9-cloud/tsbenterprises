@@ -93,7 +93,8 @@ class ServicesModelAdmin(admin.ModelAdmin):
     def primary_image_preview(self, obj):
         image = obj.get_primary_image()
         if image:
-            return mark_safe(f'<img src="{image.image.url}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;" />')
+            url = image.image_url or image.image.url if image.image else ''
+            return mark_safe(f'<img src="{url}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;" />')
         return "-"
 
     primary_image_preview.short_description = 'Primary Image'
@@ -418,13 +419,15 @@ class HeroImageAdmin(admin.ModelAdmin):
 
     def image_preview(self, obj):
         if obj.image:
-            return mark_safe(f'<img src="{obj.image.url}" style="width: 120px; height: 60px; object-fit: cover; border-radius: 6px;" />')
+            url = obj.image_url or obj.image.url
+            return mark_safe(f'<img src="{url}" style="width: 120px; height: 60px; object-fit: cover; border-radius: 6px;" />')
         return "-"
     image_preview.short_description = 'Preview'
 
     def image_preview_large(self, obj):
         if obj.image:
-            return mark_safe(f'<img src="{obj.image.url}" style="max-width: 400px; max-height: 200px; object-fit: cover; border-radius: 8px;" />')
+            url = obj.image_url or obj.image.url
+            return mark_safe(f'<img src="{url}" style="max-width: 400px; max-height: 200px; object-fit: cover; border-radius: 8px;" />')
         return "No image uploaded"
     image_preview_large.short_description = 'Image Preview'
 
@@ -558,13 +561,15 @@ class TrustedPartnerAdmin(admin.ModelAdmin):
 
     def logo_preview(self, obj):
         if obj.logo:
-            return mark_safe(f'<img src="{obj.logo.url}" style="width: 80px; height: 50px; object-fit: contain; border-radius: 6px; background: #f5f5f5; padding: 4px;" />')
+            url = obj.logo_url or obj.logo.url
+            return mark_safe(f'<img src="{url}" style="width: 80px; height: 50px; object-fit: contain; border-radius: 6px; background: #f5f5f5; padding: 4px;" />')
         return "-"
     logo_preview.short_description = 'Preview'
 
     def logo_preview_large(self, obj):
         if obj.logo:
-            return mark_safe(f'<img src="{obj.logo.url}" style="max-width: 300px; max-height: 150px; object-fit: contain; border-radius: 8px; background: #f5f5f5; padding: 8px;" />')
+            url = obj.logo_url or obj.logo.url
+            return mark_safe(f'<img src="{url}" style="max-width: 300px; max-height: 150px; object-fit: contain; border-radius: 8px; background: #f5f5f5; padding: 8px;" />')
         return "No logo uploaded"
     logo_preview_large.short_description = 'Logo Preview'
 
