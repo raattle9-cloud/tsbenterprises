@@ -173,8 +173,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 LOGIN_REDIRECT_URL = '/profile/'
 
-# Configure storage backends using STORAGES (Django 4.2+)
-# WhiteNoise for static files, Cloudinary for media
+# Configure storage backends
+# Django 3.2 uses DEFAULT_FILE_STORAGE; Django 4.2+ uses STORAGES
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
