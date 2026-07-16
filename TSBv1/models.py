@@ -127,8 +127,10 @@ class Services(models.Model):
 
     def get_primary_image_url(self):
         image = self.get_primary_image()
-        if image and image.image:
-            return image.image.url
+        if image:
+            url = image.image_url
+            if url:
+                return url
         return ""
 
     def calculate_advance_amount(self, quantity=1):
@@ -172,11 +174,6 @@ class ServiceImage(models.Model):
 
     @property
     def image_url(self):
-        """
-        Returns the correct image URL.
-        - In DEBUG (local dev): serves from static/images/ on the local filesystem.
-        - In production: uses Cloudinary storage URL, with direct URL construction as fallback.
-        """
         if not self.image:
             return ""
 
@@ -189,13 +186,7 @@ class ServiceImage(models.Model):
         from django.conf import settings
         import os
 
-        # Local dev: images live in MEDIA_ROOT which overlaps with STATICFILES_DIRS
-        if settings.DEBUG:
-            local_path = os.path.join(settings.MEDIA_ROOT, image_path)
-            if os.path.exists(local_path):
-                return f"{settings.STATIC_URL}images/{image_path}"
-
-        # Production: ask the Cloudinary storage backend first
+        # 1. Try the Cloudinary storage backend — it builds the correct URL
         try:
             url = self.image.url
             if url and url.startswith("http"):
@@ -203,21 +194,22 @@ class ServiceImage(models.Model):
         except Exception:
             pass
 
-        # Fallback: construct Cloudinary URL directly from stored public_id.
+        # 2. Manual Cloudinary URL construction from stored path + cloud_name
         cloud_name = (
-            (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('CLOUD_NAME')
-            or (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('cloud_name')
-            or os.getenv('CLOUDINARY_CLOUD_NAME', '')
+            os.getenv('CLOUDINARY_CLOUD_NAME', '')
+            or (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('CLOUD_NAME', '')
+            or (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('cloud_name', '')
         )
         if cloud_name and image_path:
             public_id = image_path.lstrip("/")
             return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
 
-        # Last resort: return the storage URL as-is
-        try:
-            return self.image.url
-        except Exception:
-            pass
+        # 3. Local dev fallback: serve from static/images/ if file exists locally
+        if settings.DEBUG:
+            local_path = os.path.join(settings.MEDIA_ROOT, image_path)
+            if os.path.exists(local_path):
+                return f"{settings.STATIC_URL}images/{image_path}"
+
         return ""
 
 
@@ -244,11 +236,7 @@ class HeroImage(models.Model):
         from django.conf import settings
         import os
 
-        if settings.DEBUG:
-            local_path = os.path.join(settings.MEDIA_ROOT, image_path)
-            if os.path.exists(local_path):
-                return f"{settings.STATIC_URL}images/{image_path}"
-
+        # 1. Try the Cloudinary storage backend
         try:
             url = self.image.url
             if url and url.startswith("http"):
@@ -256,19 +244,22 @@ class HeroImage(models.Model):
         except Exception:
             pass
 
+        # 2. Manual Cloudinary URL construction
         cloud_name = (
-            (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('CLOUD_NAME')
-            or (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('cloud_name')
-            or os.getenv('CLOUDINARY_CLOUD_NAME', '')
+            os.getenv('CLOUDINARY_CLOUD_NAME', '')
+            or (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('CLOUD_NAME', '')
+            or (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('cloud_name', '')
         )
         if cloud_name and image_path:
             public_id = image_path.lstrip("/")
             return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
 
-        try:
-            return self.image.url
-        except Exception:
-            pass
+        # 3. Local dev fallback
+        if settings.DEBUG:
+            local_path = os.path.join(settings.MEDIA_ROOT, image_path)
+            if os.path.exists(local_path):
+                return f"{settings.STATIC_URL}images/{image_path}"
+
         return ""
 
 
@@ -296,11 +287,7 @@ class TrustedPartner(models.Model):
         from django.conf import settings
         import os
 
-        if settings.DEBUG:
-            local_path = os.path.join(settings.MEDIA_ROOT, logo_path)
-            if os.path.exists(local_path):
-                return f"{settings.STATIC_URL}images/{logo_path}"
-
+        # 1. Try the Cloudinary storage backend
         try:
             url = self.logo.url
             if url and url.startswith("http"):
@@ -308,19 +295,22 @@ class TrustedPartner(models.Model):
         except Exception:
             pass
 
+        # 2. Manual Cloudinary URL construction
         cloud_name = (
-            (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('CLOUD_NAME')
-            or (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('cloud_name')
-            or os.getenv('CLOUDINARY_CLOUD_NAME', '')
+            os.getenv('CLOUDINARY_CLOUD_NAME', '')
+            or (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('CLOUD_NAME', '')
+            or (getattr(settings, 'CLOUDINARY_STORAGE', None) or {}).get('cloud_name', '')
         )
         if cloud_name and logo_path:
             public_id = logo_path.lstrip("/")
             return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
 
-        try:
-            return self.logo.url
-        except Exception:
-            pass
+        # 3. Local dev fallback
+        if settings.DEBUG:
+            local_path = os.path.join(settings.MEDIA_ROOT, logo_path)
+            if os.path.exists(local_path):
+                return f"{settings.STATIC_URL}images/{logo_path}"
+
         return ""
 
 
