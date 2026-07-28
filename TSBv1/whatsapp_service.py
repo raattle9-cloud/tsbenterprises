@@ -306,7 +306,59 @@ def send_tsb_invoice_receipt_template(
     except Exception as e:
         logger.error(f"WhatsApp tsb_invoice_receipt request failed: {e}")
         return {"success": False, "error": str(e)}
+def send_vendor_invoice_template(
+    to: str,
+    vendor_name: str,
+    service_name: str,
+    invoice_no: str,
+    customer_name: str,
+    quantity: str,
+    total_amount: str,
+    pdf_media_id: str = None,
+) -> dict:
+    """Vendor ke liye Template - 24hr Hi ki zarurat nahi"""
+    token, phone_id, api_version = _get_whatsapp_config()
+    if not token or not phone_id:
+        return {"skipped": True, "reason": "credentials_not_configured"}
+    try:
+        to_clean = _validate_phone(to)
+    except ValueError as e:
+        return {"skipped": True, "reason": str(e)}
 
+    api_url = f"{GRAPH_API_BASE}/{api_version}/{phone_id}/messages"
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+    components = []
+    if pdf_media_id:
+        components.append({
+            "type": "header",
+            "parameters": [{"type": "document", "document": {"id": pdf_media_id}}],
+        })
+    
+    components.append({
+        "type": "body",
+        "parameters": [
+            {"type": "text", "text": str(vendor_name)},
+            {"type": "text", "text": str(service_name)},
+            {"type": "text", "text": str(invoice_no)},
+            {"type": "text", "text": str(customer_name)},
+            {"type": "text", "text": str(quantity)},
+            {"type": "text", "text": str(total_amount)},
+        ],
+    })
+
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": to_clean,
+        "type": "template",
+        "template": {"name": "vendor_new_order_received", "language": {"code": "en_US"}, "components": components},
+    }
+    print(f"[WHATSAPP_SVC] Sending VENDOR template to {to_clean}")
+    resp = requests.post(api_url, headers=headers, json=payload, timeout=20)
+    print(f"[WHATSAPP_SVC] Vendor Template response {resp.status_code}: {resp.text[:500]}")
+    if resp.status_code >= 400:
+        return {"success": False, "error": resp.text[:500]}
+    return {"success": True, "response": resp.json()}
 
 def send_vendor_purchase_notification(service, customer_name, quantity, booking_code=None, 
                                        advance_paid=None, remaining_amount=None, booking_date=None,
