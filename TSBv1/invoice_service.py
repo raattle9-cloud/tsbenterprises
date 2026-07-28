@@ -229,7 +229,7 @@ def send_invoice_notifications(invoice):
             )
             results["vendor"] = vendor_res
         else:
-            results["vendor"] = {"skipped": True}
+        results["vendor"] = {"skipped": True}
     except Exception as e:
         results["vendor"] = {"error": str(e)}
     results["owner"] = _send_to(
