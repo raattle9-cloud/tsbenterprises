@@ -217,23 +217,14 @@ def send_invoice_notifications(invoice):
     try:
         v_phone = str(getattr(service, 'vendor_whatsapp', '') or '')
         if v_phone:
-            vendor_res = send_vendor_invoice_template(
-                toi_str=v_phone,
-                vendor_name_str=str(getattr(service, 'vendor_name', 'Vendor')),
-                service_name_str=str(service.title),
-                invoice_no_str=str(invoice_no),
-                customer_name_str=str(customer.name),
-                quantity_str=str(qty),
-                total_amount_str=str(total_amt),
-                pdf_media_id_str=media_id
-            )
-            results["vendor"] = vendor_res
+            results["vendor"] = _send_to(v_phone, vendor_msg, "vendor")
         else:
-        results["vendor"] = {"skipped": True}
+            results["vendor"] = {"skipped": True, "reason": "no_phone"}
     except Exception as e:
         results["vendor"] = {"error": str(e)}
+
     results["owner"] = _send_to(
-        getattr(settings, "PLATFORM_OWNER_PHONE", ""),
+        getattr(settings, "PLATFORM_OWNER_PHONE", "91810455118"),
         admin_msg, "platform_owner"
     )
 
