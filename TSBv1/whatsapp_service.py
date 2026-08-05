@@ -451,4 +451,40 @@ def send_vendor_purchase_notification(service, customer_name, quantity, booking_
         "text_result": text_result,
         "pdf_result": pdf_result,
     }
+def send_whatsapp_template(to: str, template_name: str, params: list) -> dict:
+    """Template message - isko 24hr window ki zarurat nahi, hamesha jayega"""
+    token, phone_id, api_version = _get_whatsapp_config()
+    if not token or not phone_id:
+        print(f"[WHATSAPP_SVC] SKIP template: no credentials")
+        return {"skipped": True}
 
+    try:
+        to = _validate_phone(to)
+    except ValueError as e:
+        return {"skipped": True, "reason": str(e)}
+
+    url = f"{GRAPH_API_BASE}/{api_version}/{phone_id}/messages"
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": to,
+        "type": "template",
+        "template": {
+            "name": template_name,
+            "language": {"code": "en"},
+            "components": [{"type": "body", "parameters": [{"type": "text", "text": str(p)} for p in params]}]
+        }
+    }
+    
+    print(f"[WHATSAPP_SVC] Sending TEMPLATE {template_name} to {to}")
+    try:
+        response = requests.post(url, headers=headers, json=payload, timeout=20)
+        print(f"[WHATSAPP_SVC] TEMPLATE Response: {response.status_code} - {response.text[:300]}")
+        if response.status_code >= 400:
+            return {"success": False, "error": response.text}
+        return {"success": True, "response": response.json()}
+    except Exception as e:
+        print(f"[WHATSAPP_SVC] TEMPLATE ERROR: {e}")
+        return {"success": False, "error": str(e)}
